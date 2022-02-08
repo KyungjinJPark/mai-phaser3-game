@@ -4,6 +4,8 @@ const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
+  watch: true,
+  
   entry: {
     app: './src/main.ts',
     vendors: ['phaser'],
