@@ -17,14 +17,15 @@ export class WorldScene extends Phaser.Scene {
 
     let map = this.make.tilemap({ key: 'map' })
     let tiles = map.addTilesetImage('Roguelike', 'tiles')
-    let ground = map.createLayer('Ground/terrain', tiles)
-    let paths = map.createLayer('Ground overlay', tiles)
+    let ground = map.createLayer('Ground', tiles)
+    let groundOver = map.createLayer('Ground_Over', tiles)
+    let groundOverColl = map.createLayer('Ground_Over_Coll', tiles)
     let objects = map.createLayer('Objects', tiles)
-    let doorsWindowsEtc = map.createLayer('Doors\/windows\/roof', tiles)
-    let roofObjs = map.createLayer('Roof object', tiles)
-    objects.setCollisionByExclusion([-1]) // -1 = all layers are collidable
-    doorsWindowsEtc.setCollisionByExclusion([-1])
-    roofObjs.setCollisionByExclusion([-1])
+    let objectsColl = map.createLayer('Objects_Coll', tiles)
+    let houseMisc = map.createLayer('HouseMisc', tiles)
+    let toppers = map.createLayer('Toppers', tiles)
+    groundOverColl.setCollisionByExclusion([-1]) // -1 = all layers are collidable
+    objectsColl.setCollisionByExclusion([-1])
     
     this.player = this.physics.add.sprite(200, 100, 'player', 0)
 
@@ -58,9 +59,8 @@ export class WorldScene extends Phaser.Scene {
     this.physics.world.bounds.width = mapWidth
     this.physics.world.bounds.height = mapHeight
     this.player.setCollideWorldBounds(true)
-    this.physics.add.collider(this.player, objects)
-    this.physics.add.collider(this.player, doorsWindowsEtc)
-    this.physics.add.collider(this.player, roofObjs)
+    this.physics.add.collider(this.player, groundOverColl)
+    this.physics.add.collider(this.player, objectsColl)
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
     this.cameras.main.startFollow(this.player)
     this.cameras.main.roundPixels = true // even w/o this, the tile doesnt bleed
