@@ -34,7 +34,6 @@ module.exports = {
 
   devServer: {
     static: path.resolve(__dirname, 'dist'),
-    // writeToDisk: true, // do i need this?
     open: true,
   },
 
