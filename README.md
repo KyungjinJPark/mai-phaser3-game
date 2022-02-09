@@ -5,4 +5,5 @@ Based on:
 - [and this RPG guide](https://gamedevacademy.org/how-to-create-a-turn-based-rpg-game-in-phaser-3-part-1/)
 
 Pixel art:
-- [kenney.nl](https://kenney.nl/assets)
+- [alot: kenney.nl](https://kenney.nl/assets)
+- [player](https://opengameart.org/content/tiny-characters-set)
