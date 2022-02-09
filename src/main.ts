@@ -8,16 +8,16 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'TS Game',
 
   scale: {
-    width: 320,
-    height: 240,
+    width: 16 * 20,
+    height: 16 * 16,
   },
-  zoom: 2, // enlarges the game scale
+  zoom: 3, // enlarges the game scale
   pixelArt: true,
 
   physics: {
     default: 'arcade',
     arcade: {
-      // debug: true
+      debug: true
     },
   },
 

@@ -89,9 +89,36 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
     this.cameras.main.startFollow(this.player)
     this.cameras.main.roundPixels = true // even w/o this, the tile doesnt bleed
+
+    // add a sign
+    let sign = this.add.rectangle(200, 200, 16, 16)
+    this.physics.add.existing(sign, true)
+    sign.setData('interact_able', true) // this might be a redundant. could just check if `interact_action` is `undefined`
+    sign.setData('interact_action', () => {
+      console.log('interacted with sign')
+    })
+
+    // player interaction
+    this.cursorKeys.space.on('down', () => {
+      let checkX = this.player.x
+      let checkY = this.player.y
+      if (this.moveDir === 'right') {
+        checkX += 16
+      } else if (this.moveDir === 'up') {
+        checkY -= 16
+      } else if (this.moveDir === 'left') {
+        checkX -= 16
+      } else {
+        checkY += 16
+      }
+      this.physics.overlapRect(checkX, checkY, 2, 2, true, true).forEach((obj: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody) => {
+        obj.gameObject.getData('interact_able') && obj.gameObject.getData('interact_action')()
+      })
+    })
   }
 
   public update () {
+    // player movement
     if (this.cursorKeys.up.isDown) {
       this.player.body.setVelocityY(-80)
     } else if (this.cursorKeys.down.isDown) {
@@ -107,12 +134,13 @@ export class WorldScene extends Phaser.Scene {
       this.player.body.setVelocityX(0)
     }
 
-    if (this.cursorKeys.left.isDown) {
-      this.player.anims.play('walk_left', true)
-      this.moveDir = 'left'
-    } else if (this.cursorKeys.right.isDown) {
+    // player animation
+    if (this.cursorKeys.right.isDown) {
       this.player.anims.play('walk_right', true)
       this.moveDir = 'right'
+    } else if (this.cursorKeys.left.isDown) {
+      this.player.anims.play('walk_left', true)
+      this.moveDir = 'left'
     } else if (this.cursorKeys.up.isDown) {
       this.player.anims.play('walk_up', true)
       this.moveDir = 'up'
