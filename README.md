@@ -4,7 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Lock character movements to 16x16 grid
 - Add babel
 - Dialogue system
   - make an interaction spawn dialogue
@@ -26,6 +25,8 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - movement
   - animations
   - idles
+- Lock character movements to 16x16 grid
+  - took a lot longer than I expected...
 
 ---
 
