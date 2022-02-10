@@ -39,10 +39,6 @@ class GridPhysics { // custom physics engine
 
   movePlayer(direction: Direction) { // public by default
     this.movingIntent = direction
-    console.log('move pressing');
-    console.log(this.isMoving());
-    
-    
     if (this.isMoving()) {
       return
     } else if (this.isBlockedInDir(direction)) {
@@ -211,13 +207,13 @@ export class TestScene extends Phaser.Scene {
     let tiles = map.addTilesetImage('green_tiles', 'green_tiles')
     for (let i = 0; i < map.layers.length; i++) {
       const layer = map.createLayer(i, tiles)
-      layer.setDepth(i)
+      layer.setDepth(i*10)
       // layer.scale = 3 // this seems like a good idea
     } // when do I enable collisions?
 
     // init player
     const playerSprite = this.add.sprite(0, 0, 'reaper', 1)
-    playerSprite.setDepth(3)
+    playerSprite.setDepth(25)
     // playerSprite.scale = 3 // this too
     const mapWidth = map.widthInPixels
     const mapHeight = map.heightInPixels
