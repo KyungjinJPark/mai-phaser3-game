@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser'
 
 import { BootScene } from './scenes/BootScene'
+import { TestScene } from './scenes/TestScene'
 import { WorldScene } from './scenes/WorldScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -11,7 +12,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     width: 16 * 20,
     height: 16 * 16,
   },
-  zoom: 3, // enlarges the game scale
+  zoom: 2, // enlarges the game scale
   pixelArt: true,
 
   physics: {
@@ -21,7 +22,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     },
   },
 
-  scene: [BootScene, WorldScene],
+  scene: [BootScene, WorldScene, TestScene],
 
   parent: 'game',
   backgroundColor: '#000000'
