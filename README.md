@@ -4,7 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Add babel
 - Dialogue system
   - make an interaction spawn dialogue
 - Should all this logic be in the WorldScene?
@@ -27,6 +26,8 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - idles
 - Lock character movements to 16x16 grid
   - took a lot longer than I expected...
+  - mirrors [Annoraaq's grid engine](https://github.com/Annoraaq/grid-engine)
+- Add babel 🤷 seems like not needed for our purposes
 
 ---
 
