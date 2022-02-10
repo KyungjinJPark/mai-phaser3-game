@@ -18,7 +18,7 @@ type Vector2 = Phaser.Math.Vector2
 class GridPhysics { // custom physics engine
   private movingDirection: Direction = Direction.NONE
   private movingIntent: Direction = Direction.NONE
-  private movePixelsPerSecond: number = 100
+  private movePixelsPerSecond: number = 500
   private directionVectors: { [key in Direction]: Vector2 } = {
     [Direction.NONE]: new Vector2(0, 0),
     [Direction.RIGHT]: new Vector2(1, 0),
@@ -191,7 +191,7 @@ class Player {
 }
 
 export class TestScene extends Phaser.Scene {
-  public static readonly TILE_SIZE = 16
+  public static readonly TILE_SIZE = 16 * 3
 
   private gridPhysics: GridPhysics
   private gridControls: GridControls
@@ -208,18 +208,18 @@ export class TestScene extends Phaser.Scene {
     for (let i = 0; i < map.layers.length; i++) {
       const layer = map.createLayer(i, tiles)
       layer.setDepth(i*10)
-      // layer.scale = 3 // this seems like a good idea
+      layer.scale = 3 // this seems like a good idea
     } // when do I enable collisions?
 
     // init player
     const playerSprite = this.add.sprite(0, 0, 'reaper', 1)
     playerSprite.setDepth(25)
-    // playerSprite.scale = 3 // this too
-    const mapWidth = map.widthInPixels
-    const mapHeight = map.heightInPixels
+    playerSprite.scale = 3 // this too
+    const mapWidth = map.widthInPixels * 3
+    const mapHeight = map.heightInPixels * 3
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
     this.cameras.main.startFollow(playerSprite)
-    // this.cameras.main.roundPixels = true // even w/o this, the tile doesnt bleed
+    this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     this.player = new Player(playerSprite, new Phaser.Math.Vector2(3, 3))
     this.createPlayerAnim(Direction.RIGHT, 6, 8)
     this.createPlayerAnim(Direction.UP, 9, 11)
