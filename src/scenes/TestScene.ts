@@ -1,3 +1,5 @@
+import { DialogueModalPlugin } from "../plugins/DialogueModal"
+
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
   visible: false,
@@ -18,7 +20,7 @@ type Vector2 = Phaser.Math.Vector2
 class GridPhysics { // custom physics engine
   private movingDirection: Direction = Direction.NONE
   private movingIntent: Direction = Direction.NONE
-  private movePixelsPerSecond: number = 500
+  private movePixelsPerSecond: number = 350
   private directionVectors: { [key in Direction]: Vector2 } = {
     [Direction.NONE]: new Vector2(0, 0),
     [Direction.RIGHT]: new Vector2(1, 0),
@@ -197,11 +199,21 @@ export class TestScene extends Phaser.Scene {
   private gridControls: GridControls
   private player: Player
 
+
+
+  private dialoguePlugin: DialogueModalPlugin
+  private cursors: Phaser.Types.Input.Keyboard.CursorKeys
+
+
+
   constructor () {
     super(testSceneConfig)
   }
 
   public create () {
+    // load the DialogueModalPlugin 
+    this.dialoguePlugin = this.plugins.get('DialogueModalPlugin') as any
+
     // make map
     let map = this.make.tilemap({ key: 'green_map' })
     let tiles = map.addTilesetImage('green_tiles', 'green_tiles')
@@ -237,6 +249,13 @@ export class TestScene extends Phaser.Scene {
     // sign.setData('interact_action', () => {
     //   console.log('interacted with sign')
     // })
+
+
+
+    this.cursors = this.input.keyboard.createCursorKeys()
+
+
+
   }
   createPlayerAnim(name: Direction, startFrames: number, endFrame: number) {
     this.anims.create({
@@ -254,5 +273,14 @@ export class TestScene extends Phaser.Scene {
   public update (_time: number, delta: number) {
     this.gridControls.update()
     this.gridPhysics.update(delta) // in ms // delta only matters for different framerates
+
+
+
+    if (this.cursors.space.isDown) {
+      this.dialoguePlugin.createDialogueBox()
+    }
+
+
+
   }
 }
