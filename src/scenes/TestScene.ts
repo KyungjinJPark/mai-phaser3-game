@@ -1,11 +1,5 @@
 import { DialogueModalPlugin } from "../plugins/DialogueModal"
 
-const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
-  active: false,
-  visible: false,
-  key: 'TestScene'
-}
-
 enum Direction {
   NONE = 'none',
   RIGHT = 'right',
@@ -135,13 +129,14 @@ class GridControls {
   ) {}
 
   update() {
+    // TODO: do most recent action when many keys are pressed
     const cursors = this.input.keyboard.createCursorKeys()
     if (cursors.right.isDown) {
       this.gridPhysics.movePlayer(Direction.RIGHT)
-    } else if (cursors.up.isDown) {
-      this.gridPhysics.movePlayer(Direction.UP)
     } else if (cursors.left.isDown) {
       this.gridPhysics.movePlayer(Direction.LEFT)
+    } else if (cursors.up.isDown) {
+      this.gridPhysics.movePlayer(Direction.UP)
     } else if (cursors.down.isDown) {
       this.gridPhysics.movePlayer(Direction.DOWN)
     }
@@ -190,6 +185,13 @@ class Player {
     this.sprite.anims.stop()
     this.sprite.setFrame(idleFrame)
   }
+}
+
+
+const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
+  active: false,
+  visible: false,
+  key: 'TestScene'
 }
 
 export class TestScene extends Phaser.Scene {
@@ -253,10 +255,23 @@ export class TestScene extends Phaser.Scene {
 
 
     this.cursors = this.input.keyboard.createCursorKeys()
+    this.cursors.space.on('down', () => {
+      // TODO: this spawns a new dialogue box every interaction
+      this.dialoguePlugin.createDialogueBox()
+      this.dialoguePlugin.setText(
+        'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod ' +
+        'tempor lorem ipsum eiusmod tempor lorem ipsum dolor sit amet consectetur ' +
+        'adipiscing elit sed do eiusmod tempor lorem ipsum dolor sit amet ' +
+        'consectetur adipiscing elit sed do eiusmod tempor incididunt ut ' +
+        'labore et dolore magna aliqua',
+        true
+      )
+    })
 
 
 
   }
+
   createPlayerAnim(name: Direction, startFrames: number, endFrame: number) {
     this.anims.create({
       key: name,
@@ -273,14 +288,5 @@ export class TestScene extends Phaser.Scene {
   public update (_time: number, delta: number) {
     this.gridControls.update()
     this.gridPhysics.update(delta) // in ms // delta only matters for different framerates
-
-
-
-    if (this.cursors.space.isDown) {
-      this.dialoguePlugin.createDialogueBox()
-    }
-
-
-
   }
 }

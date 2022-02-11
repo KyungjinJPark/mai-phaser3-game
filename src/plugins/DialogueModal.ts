@@ -6,7 +6,7 @@ type optionalParameters = {
   windowColor?: number,
   windowHeight?: number,
   padding?: number,
-  closeBtnColor?: string,
+  closeBtnColor?: number,
   dialogSpeed?: number,
 }
 
@@ -17,17 +17,19 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     borderAlpha: 1,
     windowAlpha: 0.8,
     windowColor: 0x303030,
-    windowHeight: 150,
-    padding: 32,
-    closeBtnColor: 'darkgoldenrod',
+    windowHeight: 200,
+    padding: 16,
+    closeBtnColor: 0x907748,
     dialogSpeed: 3
   }
   private graphics: Phaser.GameObjects.Graphics
-  private eventCounter
-  private visible
+  private closeBtn: Phaser.GameObjects.Text
+  private visible: boolean
+  private timedEvent: Phaser.Time.TimerEvent
+  private dialogueSpeed: number = 4
   private currentText
-  private dialog
-  private closeBtn
+  private fullText: string[]
+  private eventCounter
 
   constructor(pluginManager) {
     super(pluginManager)
@@ -39,17 +41,20 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
         this.options[param] = opts[param]
       }
     }
-
-    this.eventCounter = 0
-    this.visible = true
   }
 
   private _getGameWidth(): number {
     return this.game.scale.width
   }
+  
   private _getGameHeight(): number {
     return this.game.scale.height
   }
+
+  private _getActiveScene(): Phaser.Scene {
+    return this.game.scene.getScenes(true)[0]
+  }
+
   private _calculateWindowDimensions(width: number, height: number) {
     let x = this.options.padding
     let y = height - this.options.windowHeight - this.options.padding
@@ -73,27 +78,120 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.graphics.strokeRect(x, y, rectWidth, rectHeigth)
   }
 
+  private _createCloseBtn(width: number, height: number) {
+    const self = this
+    this.closeBtn = this._getActiveScene().make.text({
+      x: width - this.options.padding - 18,
+      y: height - this.options.padding - this.options.windowHeight + 6,
+      text: 'X',
+      style: {
+        font: 'bold 16px Arial',
+        color: this.options.closeBtnColor.toString(),
+      }
+    })
+    this.closeBtn.setDepth(200) // TODO: there's gotta be a better way
+
+    this.closeBtn.setInteractive()
+    this.closeBtn.on('pointerover', function () {
+      self.closeBtn.setColor('#ff0000')
+    })
+    this.closeBtn.on('pointerout', function () {
+      self.closeBtn.setColor(self.options.closeBtnColor.toString())
+    })
+    this.closeBtn.on('pointerdown', () => {
+      self._toggleWindow()
+      if (this.timedEvent) this.timedEvent.remove()
+      if (this.currentText) this.currentText.destroy()
+    })
+  }
+
+  private _createCloseBtnBorder(width: number, height: number) {
+    const x = width - this.options.padding - 18
+    const y = height - this.options.padding - this.options.windowHeight
+    this.graphics.strokeRect(x, y, 18, 18)
+  }
+
   private _createWindow() {
     const gameHeight = this._getGameHeight()
     const gameWidth = this._getGameWidth()
     const {x, y, boxWidth, boxHeight} = this._calculateWindowDimensions(gameWidth, gameHeight)
-    const activeScene = this.game.scene.getScenes(true)[0]
+    const activeScene = this._getActiveScene()
     if (activeScene) {
       this.graphics = activeScene.add.graphics()
-      this.graphics.setDepth(200)
+      this.graphics.setDepth(200) // TODO: there's gotta be a better way
   
-      this._createOuterWindow(x, y, boxWidth, boxHeight)
       this._createInnerWindow(x, y, boxWidth, boxHeight)
+      this._createOuterWindow(x, y, boxWidth, boxHeight)
+      this._createCloseBtn(gameWidth, gameHeight)
+      this._createCloseBtnBorder(gameWidth, gameHeight)
     }
   }
 
+  private _toggleWindow() {
+    this.visible = !this.visible
+    
+    if (this.currentText) {
+      this.currentText.setVisible(this.visible)
+    }
+    this.closeBtn.setVisible(this.visible)
+    this.graphics.setVisible(this.visible)
+
+  }
+
   createDialogueBox(): void {
+    this.visible = true
     this._createWindow()
   }
 
-  destroy(): void {}
+  setText(text: string, animate: boolean) {
+    this.eventCounter = 0
+
+    if (animate) {
+      this._setText('')
+      this.fullText = Array.from(text)
+      
+      if (this.timedEvent) this.timedEvent.destroy()
+      this.timedEvent = this._getActiveScene().time.addEvent({
+        delay: 150 - (this.dialogueSpeed * 30), // TODO: this could be better
+        callback: this._animateText,
+        callbackScope: this,
+        loop: true
+      })
+    } else { 
+      this._setText(text)
+    }
+  }
+
+  private _animateText() {
+    this.currentText.setText(this.currentText.text + this.fullText[this.eventCounter])
+    if (this.eventCounter === this.fullText.length - 1) {
+      this.timedEvent.remove()
+    }
+    this.eventCounter++
+  }
+
+  private _setText(text: string) {
+    if (this.currentText) {this.currentText.destroy()}
+
+    const x = this.options.padding + 10
+    const y = this._getGameHeight() - this.options.windowHeight - this.options.padding + 10
+    this.currentText = this._getActiveScene().make.text({
+      x, y, text, style: {
+        wordWrap: { width: this._getGameWidth() - (2 * this.options.padding) - 25},
+        fontSize: '18px',
+        color: '#ffffff'
+      }
+    }).setDepth(200) // TODO: there's gotta be a better way
+  }
+
+  destroy(): void {
+    // TODO: do I need to destroy all the things?
+  }
 
   start(): void {}
 
-  shutdown(): void {}
+  stop(): void {
+    if (this.timedEvent) this.timedEvent.remove()
+    if (this.currentText) this.currentText.destroy()
+  }
 }
