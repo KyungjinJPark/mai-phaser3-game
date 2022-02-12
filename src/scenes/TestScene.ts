@@ -211,8 +211,7 @@ export class TestScene extends Phaser.Scene {
   }
 
   public create () {
-    // launch the HUD scene and load the DialogueModalPlugin
-    this.scene.launch('HUDScene')
+    // load the DialogueModalPlugin
     this.dialoguePlugin = this.plugins.get('DialogueModalPlugin') as any
 
     // make map
