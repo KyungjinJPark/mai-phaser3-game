@@ -5,14 +5,12 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 ## The Todo 📋
 
 - Dialogue system
-  - Get something working ✅
-  - make box spawn at the right position even when you have moved away
-    - layer multiple scenes a solution?
-      - [1](https://phaser.discourse.group/t/hud-scene-multiple-scenes/6348) 
-      - [2](https://phaser.io/examples/v3/view/scenes/ui-scene-es6)
-  - make an interaction spawn dialogue
-- Should all this logic be in the WorldScene?
-  - After creating the TestScene, it is clear that it should not be.
+  - ✅ get something working
+  - ✅ make box spawn at the right position even when you have moved away
+    - layer multiple scenes: TOOK ME FOREVER... didn't know how default draw order was determined. didn't know it was even a thing
+  - dialogue spawning interaction 
+- Should all this logic be in the TestScene?
+  - after creating the TestScene, it is clear that it should not be. Refactor time!
 - Get an idea of what the game will be about
   - generate more todos
 
@@ -24,7 +22,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 - Set up Phaser 3 + TypeScript
 - Add webpack
-- Get a tiled map working
+- Static maps from tiled
 - Get a character working
   - movement
   - animations

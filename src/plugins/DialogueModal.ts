@@ -52,7 +52,14 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   private _getActiveScene(): Phaser.Scene {
-    return this.game.scene.getScenes(true)[0]
+    const hudSceneKey = 'HUDScene'
+    const hudScene = this.game.scene.getScene(hudSceneKey)
+    if (hudScene === undefined || !this.game.scene.isActive(hudSceneKey)) {
+      // This can happen only if im not making things properly
+      console.error('DialogueModalPlugin: Could not find HUDScene OR HUDScene is not active')
+      throw new Error('DialogueModalPlugin: Could not find HUDScene OR HUDScene is not active')
+    }
+    return hudScene
   }
 
   private _calculateWindowDimensions(width: number, height: number) {

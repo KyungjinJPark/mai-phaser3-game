@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser'
 
 import { BootScene } from './scenes/BootScene'
+import { HUDScene } from './scenes/HUDScene'
 import { TestScene } from './scenes/TestScene'
-import { WorldScene } from './scenes/WorldScene'
 
 import { DialogueModalPlugin } from './plugins/DialogueModal'
 
@@ -25,7 +25,11 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     ],
   },
 
-  scene: [BootScene, WorldScene, TestScene],
+  scene: [ // array order determintes draw order
+    BootScene,
+    HUDScene,
+    TestScene,
+  ],
 
   parent: 'game',
   backgroundColor: '#000000'

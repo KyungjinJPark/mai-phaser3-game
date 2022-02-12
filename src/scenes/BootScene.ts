@@ -1,6 +1,4 @@
 const bootSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
-  // active: false,
-  // visible: false, // idk what are these for
   key: 'BootScene'
 }
 
@@ -25,10 +23,10 @@ export class BootScene extends Phaser.Scene {
 
   public create () {
     // go straight to WorldScene
-    // this.scene.start('WorldScene');
+    // this.scene.start('WorldScene')
 
     
     // go straight to TestScene
-    this.scene.start('TestScene');
+    this.scene.start('TestScene')
   }
 }

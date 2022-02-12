@@ -189,8 +189,6 @@ class Player {
 
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
-  active: false,
-  visible: false,
   key: 'TestScene'
 }
 
@@ -213,7 +211,8 @@ export class TestScene extends Phaser.Scene {
   }
 
   public create () {
-    // load the DialogueModalPlugin 
+    // launch the HUD scene and load the DialogueModalPlugin
+    this.scene.launch('HUDScene')
     this.dialoguePlugin = this.plugins.get('DialogueModalPlugin') as any
 
     // make map
