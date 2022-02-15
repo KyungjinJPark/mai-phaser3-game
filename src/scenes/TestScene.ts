@@ -23,6 +23,7 @@ class GridPhysics { // custom physics engine
     [Direction.DOWN]: new Vector2(0, 1)
   }
   private tilePixelsMoved = 0
+  private facingDirection: Direction = Direction.NONE
 
   constructor(private player: Player, private map: Phaser.Tilemaps.Tilemap) {}
 
@@ -39,8 +40,10 @@ class GridPhysics { // custom physics engine
       return
     } else if (this.isBlockedInDir(direction)) {
       this.player.stopAnimation(direction)
+      this.facingDirection = direction
     } else {
       this.startMoving(direction)
+      this.facingDirection = direction
     }
   }
 
@@ -120,24 +123,63 @@ class GridPhysics { // custom physics engine
     this.tilePixelsMoved %= TestScene.TILE_SIZE
     this.player.setPosition(newPos)
   }
+
+  playerInteract() {
+    if (this.isMoving()) {
+      return
+    } else {
+      const interactable = this.getInteractableAt(this.tilePosInDir(this.facingDirection))
+      if (interactable !== undefined) {
+        interactable.interact()
+      }
+    }
+  }
+
+
+  // stopgap manual creation of interactables
+  private interactables: { [key: string]: Interactable } = {
+    '4,4': {
+      interact: () => {
+        console.log('interacted with a thing')
+      }
+    }
+  }
+
+  private getInteractableAt(tilePos: Vector2): Interactable {
+    return this.interactables[`${tilePos.x},${tilePos.y}`]
+  }
 }
 
+// TODO Make this a thing
+type Interactable = any
+
 class GridControls {
+  private cursors: Phaser.Types.Input.Keyboard.CursorKeys
+
   constructor(
     private input: Phaser.Input.InputPlugin,
     private gridPhysics: GridPhysics
-  ) {}
+  ) {
+    this.create()
+  }
+
+  create() {
+    this.cursors = this.input.keyboard.createCursorKeys()
+
+    this.cursors.space.on('down', () => {
+      this.gridPhysics.playerInteract()
+    })
+  }
 
   update() {
     // TODO: do most recent action when many keys are pressed
-    const cursors = this.input.keyboard.createCursorKeys()
-    if (cursors.right.isDown) {
+    if (this.cursors?.right.isDown) {
       this.gridPhysics.movePlayer(Direction.RIGHT)
-    } else if (cursors.left.isDown) {
+    } else if (this.cursors?.left.isDown) {
       this.gridPhysics.movePlayer(Direction.LEFT)
-    } else if (cursors.up.isDown) {
+    } else if (this.cursors?.up.isDown) {
       this.gridPhysics.movePlayer(Direction.UP)
-    } else if (cursors.down.isDown) {
+    } else if (this.cursors?.down.isDown) {
       this.gridPhysics.movePlayer(Direction.DOWN)
     }
   }
@@ -242,18 +284,8 @@ export class TestScene extends Phaser.Scene {
     this.gridPhysics = new GridPhysics(this.player, map)
     this.gridControls = new GridControls(this.input, this.gridPhysics)
 
-    // // add a sign
-    // let sign = this.add.rectangle(200, 200, 16, 16)
-    // this.physics.add.existing(sign, true)
-    // sign.setData('interact_able', true) // this might be a redundant. could just check if `interact_action` is `undefined`
-    // sign.setData('interact_action', () => {
-    //   console.log('interacted with sign')
-    // })
-
-
-
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.cursors.space.on('down', () => {
+    this.cursors.shift.on('down', () => {
       // TODO: this spawns a new dialogue box every interaction
       this.dialoguePlugin.createDialogueBox()
       this.dialoguePlugin.setText(

@@ -9,6 +9,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - ✅ make box spawn at the right position even when you have moved away
     - layer multiple scenes: TOOK ME FOREVER... didn't know how default draw order was determined. didn't know it was even a thing
   - dialogue spawning interaction 
+  - many dialogue boxes can be spawned at once 
 - Should all this logic be in the TestScene?
   - after creating the TestScene, it is clear that it should not be. Refactor time!
 - Get an idea of what the game will be about
