@@ -25,7 +25,11 @@ class GridPhysics { // custom physics engine
   private tilePixelsMoved = 0
   private facingDirection: Direction = Direction.NONE
 
-  constructor(private player: Player, private map: Phaser.Tilemaps.Tilemap) {}
+  constructor(private player: Player, private map: Phaser.Tilemaps.Tilemap,
+    
+    private da: DialogueManager // this probably shouldn't be here, but i need the temporary interaction to work
+    
+    ) {}
 
   update(delta: number) {
     if (this.isMoving()) {
@@ -138,14 +142,30 @@ class GridPhysics { // custom physics engine
 
   // stopgap manual creation of interactables
   private interactables: { [key: string]: Interactable } = {
-    '4,4': {
+    '31,0': {
       interact: () => {
-        console.log('interacted with a thing')
+        this.da.showDialogue('boja sitkny')
       }
-    }
+    },
+    '5,1': {
+      interact: () => {
+        this.da.showDialogue('RIP our dog\nHEE HEE HOO HOO')
+      }
+    },
+    '10,7': {
+      interact: () => {
+        this.da.showDialogue('our house')
+      }
+    },
+    '18,21': {
+      interact: () => {
+        this.da.showDialogue('<-- somewhere\n--> somewhere else')
+      }
+    },
   }
 
   private getInteractableAt(tilePos: Vector2): Interactable {
+    // console.log(`${tilePos.x},${tilePos.y}`)
     return this.interactables[`${tilePos.x},${tilePos.y}`]
   }
 }
@@ -182,6 +202,23 @@ class GridControls {
     } else if (this.cursors?.down.isDown) {
       this.gridPhysics.movePlayer(Direction.DOWN)
     }
+  }
+}
+
+/**
+ * TODO: The dialogue manager existing doesn't require a HUD Scene to have already been created.
+ */
+class DialogueManager {
+  private dialoguePlugin: DialogueModalPlugin
+
+  constructor(that) {
+    // load the DialogueModalPlugin
+    this.dialoguePlugin = that.plugins.get('DialogueModalPlugin') as any
+  }
+
+  showDialogue(message: string) {
+    this.dialoguePlugin.createDialogueBox()
+    this.dialoguePlugin.setText(message, true)
   }
 }
 
@@ -240,22 +277,13 @@ export class TestScene extends Phaser.Scene {
   private gridPhysics: GridPhysics
   private gridControls: GridControls
   private player: Player
-
-
-
-  private dialoguePlugin: DialogueModalPlugin
-  private cursors: Phaser.Types.Input.Keyboard.CursorKeys
-
-
+  private dialogueManager: DialogueManager
 
   constructor () {
     super(testSceneConfig)
   }
 
   public create () {
-    // load the DialogueModalPlugin
-    this.dialoguePlugin = this.plugins.get('DialogueModalPlugin') as any
-
     // make map
     let map = this.make.tilemap({ key: 'green_map' })
     let tiles = map.addTilesetImage('green_tiles', 'green_tiles')
@@ -281,25 +309,9 @@ export class TestScene extends Phaser.Scene {
     this.createPlayerAnim(Direction.DOWN, 0, 2)
     
     // init Grid logic
-    this.gridPhysics = new GridPhysics(this.player, map)
+    this.dialogueManager = new DialogueManager(this)
+    this.gridPhysics = new GridPhysics(this.player, map, this.dialogueManager)
     this.gridControls = new GridControls(this.input, this.gridPhysics)
-
-    this.cursors = this.input.keyboard.createCursorKeys()
-    this.cursors.shift.on('down', () => {
-      // TODO: this spawns a new dialogue box every interaction
-      this.dialoguePlugin.createDialogueBox()
-      this.dialoguePlugin.setText(
-        'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod ' +
-        'tempor lorem ipsum eiusmod tempor lorem ipsum dolor sit amet consectetur ' +
-        'adipiscing elit sed do eiusmod tempor lorem ipsum dolor sit amet ' +
-        'consectetur adipiscing elit sed do eiusmod tempor incididunt ut ' +
-        'labore et dolore magna aliqua',
-        true
-      )
-    })
-
-
-
   }
 
   createPlayerAnim(name: Direction, startFrames: number, endFrame: number) {
