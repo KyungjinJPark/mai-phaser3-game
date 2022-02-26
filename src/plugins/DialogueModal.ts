@@ -135,6 +135,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   private _toggleWindow() {
+    // TODO: I don't think this frees up the resources
     this.visible = !this.visible
     
     if (this.currentText) {
@@ -142,12 +143,20 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     }
     this.closeBtn.setVisible(this.visible)
     this.graphics.setVisible(this.visible)
-
   }
 
   createDialogueBox(): void {
+    if (this.closeBtn === undefined) {
+      this._createWindow()
+    } else {
+      // TODO: I think this check is unnecessary, should just make 1 method that sets text and makes box
+      if (this.currentText) {
+        this.currentText.setVisible(true)
+      }
+      this.closeBtn.setVisible(true)
+      this.graphics.setVisible(true)
+    }
     this.visible = true
-    this._createWindow()
   }
 
   setText(text: string, animate: boolean) {

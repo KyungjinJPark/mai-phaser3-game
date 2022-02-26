@@ -4,12 +4,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Dialogue system
-  - ✅ get something working
-  - ✅ make box spawn at the right position even when you have moved away
-    - layer multiple scenes: TOOK ME FOREVER... didn't know how default draw order was determined. didn't know it was even a thing
-  - ✅ dialogue spawning interaction 
-  - many dialogue boxes can be spawned at once !?!?!?!? 🤯🤯🤯
+- Many refactors to be made 😰
 - Should all this logic be in the TestScene?
   - after creating the TestScene, it is clear that it should not be. Refactor time!
 - Get an idea of what the game will be about
@@ -32,6 +27,12 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - took a lot longer than I expected...
   - mirrors [Annoraaq's grid engine](https://github.com/Annoraaq/grid-engine)
 - Add babel 🤷 seems like not needed for our purposes
+- Dialogue system
+  - get something working
+  - make box spawn at the right position even when you have moved away
+    - layer multiple scenes: TOOK ME FOREVER... didn't know how default draw order was determined. didn't know it was even a thing
+  - dialogue spawning interaction 
+  - many dialogue boxes can be spawned at once !?!?!?!? 🤯🤯🤯
 
 ---
 
