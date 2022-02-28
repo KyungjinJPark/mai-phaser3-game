@@ -1,5 +1,3 @@
-import { DialogueModalPlugin } from '../plugins/DialogueModal'
-
 const hudSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'HUDScene',
 }

@@ -11,12 +11,9 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'Phas3r RPG',
 
   scale: {
-    // width: 16 * 3 * 18,
-    // height: 16 * 3 * 12,
     width: 750,
     height: 700,
   },
-  // zoom: 2, // enlarges the game scale
   pixelArt: true,
 
   plugins: {
@@ -27,7 +24,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
 
   scene: [ // array order determintes draw order
     BootScene,
-    HUDScene,
+    HUDScene, // brought to the top in its create()
     TestScene,
   ],
 

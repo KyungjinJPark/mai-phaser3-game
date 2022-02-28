@@ -4,9 +4,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Many refactors to be made 😰
-- Should all this logic be in the TestScene?
-  - after creating the TestScene, it is clear that it should not be. Refactor time!
+- Scattered TODOs
 - Get an idea of what the game will be about
   - generate more todos
 
@@ -33,6 +31,9 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
     - layer multiple scenes: TOOK ME FOREVER... didn't know how default draw order was determined. didn't know it was even a thing
   - dialogue spawning interaction 
   - many dialogue boxes can be spawned at once !?!?!?!? 🤯🤯🤯
+- Should all this logic be in the TestScene?
+  - after creating the TestScene, it is clear that it should not be. Refactor time!
+    - Many refactors to be made 😰
 
 ---
 
