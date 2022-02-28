@@ -1,12 +1,9 @@
 import { DialogueModalPlugin } from "../plugins/DialogueModal"
 
-enum Direction {
-  NONE = 'none',
-  RIGHT = 'right',
-  UP = 'up',
-  LEFT = 'left',
-  DOWN = 'down'
-}
+import { Settings } from "../settings/Settings"
+import { Direction } from "../types/Direction"
+import { Player } from '../objects/Player'
+
 // aliases
 const Vector2 = Phaser.Math.Vector2
 type Vector2 = Phaser.Math.Vector2
@@ -76,7 +73,7 @@ class GridPhysics { // custom physics engine
       this.movePlayerSprite(pixelsToMove)
       this.updatePlayerTilePos()
     } else {
-      this.movePlayerSprite(TestScene.TILE_SIZE - this.tilePixelsMoved)
+      this.movePlayerSprite(Settings.getTileSize() - this.tilePixelsMoved)
       this.stopMoving()
     }
   }
@@ -117,14 +114,14 @@ class GridPhysics { // custom physics engine
   }
 
   private willCrossBorder(pixelsToMove: number): boolean {
-    return this.tilePixelsMoved + pixelsToMove >= TestScene.TILE_SIZE
+    return this.tilePixelsMoved + pixelsToMove >= Settings.getTileSize()
   }
 
   private movePlayerSprite(pixelsToMove: number) {
     const moveVect = this.directionVectors[this.movingDirection].clone()
     const newPos = this.player.getPosition().add(moveVect.scale(pixelsToMove))
     this.tilePixelsMoved += pixelsToMove
-    this.tilePixelsMoved %= TestScene.TILE_SIZE
+    this.tilePixelsMoved %= Settings.getTileSize()
     this.player.setPosition(newPos)
   }
 
@@ -222,58 +219,11 @@ class DialogueManager {
   }
 }
 
-class Player {
-  constructor(
-    private sprite: Phaser.GameObjects.Sprite,
-    private tilePos: Phaser.Math.Vector2,
-  ) {
-    const offsetX = TestScene.TILE_SIZE / 2
-    const offsetY = TestScene.TILE_SIZE // what are these for?
-
-    this.sprite.setOrigin(0.5, 1)
-    this.sprite.setPosition(
-      tilePos.x * TestScene.TILE_SIZE + offsetX,
-      tilePos.y * TestScene.TILE_SIZE + offsetY
-    )
-  }
-
-  getPosition() {
-    return this.sprite.getBottomCenter()
-  }
-
-  getTilePosition() {
-    return this.tilePos.clone()
-  }
-
-  setPosition(pos: Phaser.Math.Vector2) {
-    this.sprite.setPosition(pos.x, pos.y)
-  }
-
-  setTilePosition(pos: Phaser.Math.Vector2) {
-    this.tilePos = pos.clone()
-    
-  }
-
-  startAnimation(direction: Direction) {
-    this.sprite.anims.play(direction)
-  }
-
-  stopAnimation(direction: Direction) {
-    const animForDir = this.sprite.anims.animationManager.get(direction)
-    const idleFrame = animForDir.frames[1].frame.name
-    this.sprite.anims.stop()
-    this.sprite.setFrame(idleFrame)
-  }
-}
-
-
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene'
 }
 
 export class TestScene extends Phaser.Scene {
-  public static readonly TILE_SIZE = 16 * 3
-
   private gridPhysics: GridPhysics
   private gridControls: GridControls
   private player: Player
@@ -290,15 +240,15 @@ export class TestScene extends Phaser.Scene {
     for (let i = 0; i < map.layers.length; i++) {
       const layer = map.createLayer(i, tiles)
       layer.setDepth(i*10)
-      layer.scale = 3 // this seems like a good idea
-    } // when do I enable collisions?
+      layer.scale = Settings.getZoom()
+    }
 
     // init player
     const playerSprite = this.add.sprite(0, 0, 'reaper', 1)
     playerSprite.setDepth(25)
-    playerSprite.scale = 3 // this too
-    const mapWidth = map.widthInPixels * 3
-    const mapHeight = map.heightInPixels * 3
+    playerSprite.scale = Settings.getZoom()
+    const mapWidth = map.widthInPixels * Settings.getZoom()
+    const mapHeight = map.heightInPixels * Settings.getZoom()
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
     this.cameras.main.startFollow(playerSprite)
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
