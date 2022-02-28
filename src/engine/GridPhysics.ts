@@ -1,16 +1,12 @@
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction"
 import { DialogueManager } from "../managers/DialogueManager"
+import { Interactable } from "../objects/Interactable"
 import { Player } from '../objects/Player'
 
 // aliases
 const Vector2 = Phaser.Math.Vector2
 type Vector2 = Phaser.Math.Vector2
-
-
-// TODO Make this a thing
-type Interactable = any
-
 
 export class GridPhysics { // custom physics engine
   private movingDirection: Direction = Direction.NONE
