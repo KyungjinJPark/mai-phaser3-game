@@ -8,6 +8,7 @@ import { GridPhysics } from "../engine/GridPhysics"
 // types
 import { Direction } from "../types/Direction"
 // objects
+import { Interactable } from "../objects/Interactable"
 import { Player } from '../objects/Player'
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -19,6 +20,30 @@ export class TestScene extends Phaser.Scene {
   private dialogueManager: DialogueManager
   private gridPhysics: GridPhysics
   private player: Player
+
+  // stopgap manual creation of interactables
+  private interactables: { [key: string]: Interactable } = {
+    '31,0': {
+      interact: () => {
+        this.dialogueManager.showDialogue('boja sitkny')
+      }
+    },
+    '5,1': {
+      interact: () => {
+        this.dialogueManager.showDialogue('RIP our dog\nHEE HEE HOO HOO')
+      }
+    },
+    '10,7': {
+      interact: () => {
+        this.dialogueManager.showDialogue('our house')
+      }
+    },
+    '18,21': {
+      interact: () => {
+        this.dialogueManager.showDialogue('<-- somewhere\n--> somewhere else')
+      }
+    },
+  }
 
   constructor () {
     super(testSceneConfig)
@@ -51,7 +76,8 @@ export class TestScene extends Phaser.Scene {
     
     // init Grid logic
     this.dialogueManager = new DialogueManager(this)
-    this.gridPhysics = new GridPhysics(this.player, map, this.dialogueManager)
+    this.gridPhysics = new GridPhysics(this.player, map)
+    this.gridPhysics.registerInteractables(this.interactables)
     this.inputManager = new InputManager(this.input, this.gridPhysics)
   }
 

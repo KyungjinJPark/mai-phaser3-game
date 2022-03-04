@@ -21,12 +21,9 @@ export class GridPhysics { // custom physics engine
   }
   private tilePixelsMoved = 0
   private facingDirection: Direction = Direction.NONE
+  private interactables: { [key: string]: Interactable } = {}
 
-  constructor(private player: Player, private map: Phaser.Tilemaps.Tilemap,
-    
-    private da: DialogueManager // this probably shouldn't be here, but i need the temporary interaction to work
-    
-    ) {}
+  constructor(private player: Player, private map: Phaser.Tilemaps.Tilemap) {}
 
   update(delta: number) {
     if (this.isMoving()) {
@@ -125,6 +122,14 @@ export class GridPhysics { // custom physics engine
     this.player.setPosition(newPos)
   }
 
+  // Interactables
+  registerInteractables(interactables: { [key: string]: Interactable }) {
+    this.interactables = interactables
+    for (const param in interactables) {
+      this.interactables[param] = interactables[param]
+    }
+  }
+
   playerInteract() {
     if (this.isMoving()) {
       return
@@ -134,31 +139,6 @@ export class GridPhysics { // custom physics engine
         interactable.interact()
       }
     }
-  }
-
-
-  // stopgap manual creation of interactables
-  private interactables: { [key: string]: Interactable } = {
-    '31,0': {
-      interact: () => {
-        this.da.showDialogue('boja sitkny')
-      }
-    },
-    '5,1': {
-      interact: () => {
-        this.da.showDialogue('RIP our dog\nHEE HEE HOO HOO')
-      }
-    },
-    '10,7': {
-      interact: () => {
-        this.da.showDialogue('our house')
-      }
-    },
-    '18,21': {
-      interact: () => {
-        this.da.showDialogue('<-- somewhere\n--> somewhere else')
-      }
-    },
   }
 
   private getInteractableAt(tilePos: Vector2): Interactable {

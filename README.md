@@ -4,7 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Interactables still hardcoded in GridPhysics
 - Get an idea of what the game will be about
   - generate more todos
 
@@ -35,6 +34,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - after creating the TestScene, it is clear that it should not be. Refactor time!
     - Many refactors to be made 😰
 - Did some TODOs
+- Interactables still hardcoded in GridPhysics
 
 ---
 

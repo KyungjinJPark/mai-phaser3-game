@@ -1,3 +1,3 @@
-export type Interactable = {
+export interface Interactable {
   interact: () => void
 }
