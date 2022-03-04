@@ -20,7 +20,7 @@ export class InputManager {
   }
 
   update() {
-    // TODO: do most recent action when many keys are pressed
+    // TOmaybeDO: do most recent action when many keys are pressed
     if (this.cursors?.right.isDown) {
       this.gridPhysics.movePlayer(Direction.RIGHT)
     } else if (this.cursors?.left.isDown) {
