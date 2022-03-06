@@ -10,6 +10,7 @@ import { Direction } from "../types/Direction"
 // objects
 import { Interactable } from "../objects/Interactable"
 import { Player } from '../objects/Player'
+import { NPC } from "../objects/NPC"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene'
@@ -21,8 +22,8 @@ export class TestScene extends Phaser.Scene {
   private gridPhysics: GridPhysics
   private player: Player
 
-  // stopgap manual creation of interactables
-  private interactables: { [key: string]: Interactable } = {
+  // stopgap manual creation of interactables & NPCs
+  private interactables_MANUAL: { [key: string]: Interactable } = {
     '31,0': {
       interact: () => {
         this.dialogueManager.showDialogue('boja sitkny')
@@ -44,6 +45,10 @@ export class TestScene extends Phaser.Scene {
       }
     },
   }
+  private NPCs_MANUAL: [string, number, number][] = [
+    ['npc', 5, 4],
+    ['npc', 1, 5],
+  ]
 
   constructor () {
     super(testSceneConfig)
@@ -74,10 +79,18 @@ export class TestScene extends Phaser.Scene {
     this.createPlayerAnim(Direction.LEFT, 3, 5)
     this.createPlayerAnim(Direction.DOWN, 0, 2)
     
+    // make NPC
+    this.NPCs_MANUAL.forEach(([key, x, y]) => {
+      const NPCSprite = this.add.sprite(0, 0, key)
+      NPCSprite.setDepth(25)
+      NPCSprite.scale = Settings.getZoom()
+      new NPC(NPCSprite, new Phaser.Math.Vector2(x, y))
+    })
+
     // init Grid logic
     this.dialogueManager = new DialogueManager(this)
     this.gridPhysics = new GridPhysics(this.player, map)
-    this.gridPhysics.registerInteractables(this.interactables)
+    this.gridPhysics.registerInteractables(this.interactables_MANUAL)
     this.inputManager = new InputManager(this.input, this.gridPhysics)
   }
 
