@@ -37,11 +37,19 @@ export class GridPhysics { // custom physics system
   // }
 
   hasCollisionTileAt(tilePos: Phaser.Math.Vector2): boolean {
+    let answer = false
+    // does map collision tile here?
     if (!this.mapHasTileAt(tilePos)) return true
-    return this.map.layers.some((layer) => {
+    answer = answer || this.map.layers.some((layer) => {
       const tile = this.map.getTileAt(tilePos.x, tilePos.y, false, layer.name)
-      return tile && tile.properties.collides
+      return (tile && tile.properties.collides)
     })
+    // is there a dude here?
+    this.movables.forEach(movable => { // TODO: assumes all movables are collidable (also that non-movables are not collidable)
+      const personHere = movable.getTilePosition().equals(tilePos) // TODO: assumes all movables have positions, which should be true, but not enforced in code
+      answer = answer || personHere
+    })
+    return answer
   }
 
   private mapHasTileAt(tilePos: Phaser.Math.Vector2) {

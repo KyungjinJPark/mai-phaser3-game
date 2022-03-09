@@ -64,7 +64,7 @@ export class TestScene extends Phaser.Scene {
       layer.scale = Settings.getZoom()
     }
 
-    // init player
+    // init player // TODO: maybe shouldn't be here
     const playerSprite = this.add.sprite(0, 0, 'reaper', 1)
     playerSprite.setDepth(25)
     playerSprite.scale = Settings.getZoom()
@@ -79,13 +79,53 @@ export class TestScene extends Phaser.Scene {
     this.createPlayerAnim(Direction.LEFT, 3, 5)
     this.createPlayerAnim(Direction.DOWN, 0, 2)
     
-    // make NPC
+    // make NPC // TODO: maybe shouldn't be here
     this.NPCs_MANUAL.forEach(([key, x, y], i) => {
-      const NPCSprite = this.add.sprite(0, 0, key)
+      const NPCSprite = this.add.sprite(0, 0, key, 55)
       NPCSprite.setDepth(25)
       NPCSprite.scale = Settings.getZoom()
       const theNPC = new NPC(NPCSprite, new Phaser.Math.Vector2(x, y))
       this.NPCs_MANUAL[i][3] = theNPC 
+    })
+    this.anims.create({
+      key: `npc_${Direction.RIGHT}`,
+      frames: this.anims.generateFrameNumbers('npc', {
+        start: 54 + 24,
+        end: 56 + 24,
+      }),
+      frameRate: 10,
+      repeat: -1,
+      yoyo: true
+    })
+    this.anims.create({
+      key: `npc_${Direction.UP}`,
+      frames: this.anims.generateFrameNumbers('npc', {
+        start: 54 + 36,
+        end: 56 + 36,
+      }),
+      frameRate: 10,
+      repeat: -1,
+      yoyo: true
+    })
+    this.anims.create({
+      key: `npc_${Direction.LEFT}`,
+      frames: this.anims.generateFrameNumbers('npc', {
+        start: 54 + 12,
+        end: 56 + 12,
+      }),
+      frameRate: 10,
+      repeat: -1,
+      yoyo: true
+    })
+    this.anims.create({
+      key: `npc_${Direction.DOWN}`,
+      frames: this.anims.generateFrameNumbers('npc', {
+        start: 54 + 0,
+        end: 56 + 0,
+      }),
+      frameRate: 10,
+      repeat: -1,
+      yoyo: true
     })
 
     // init Grid logic

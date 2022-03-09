@@ -4,13 +4,18 @@ import { Direction } from "../types/Direction"
 
 export interface Movable {
   mover: GridMover
+
+
+  getTilePosition() // should be `beer: positionHaver`
+
+
   initMover(physics: GridPhysics)
 }
   
 const Vector2 = Phaser.Math.Vector2
 
 export class GridMover {
-  private directionVectors: { [key in Direction]: Phaser.Math.Vector2 } = {
+  private directionVectors: { [key in Direction]: Phaser.Math.Vector2 } = { // TODO: this could be already implemented officially
     [Direction.NONE]: new Vector2(0, 0),
     [Direction.RIGHT]: new Vector2(1, 0),
     [Direction.UP]: new Vector2(0, -1),

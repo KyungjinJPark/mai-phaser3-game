@@ -15,7 +15,10 @@ export class BootScene extends Phaser.Scene {
       frameHeight: 36
     })
     // NPC
-    this.load.image('npc', 'assets/npc.png')
+    this.load.spritesheet('npc', 'assets/ss_eight_people.png', {
+      frameWidth: 26,
+      frameHeight: 36
+    })
   }
 
   public create () {

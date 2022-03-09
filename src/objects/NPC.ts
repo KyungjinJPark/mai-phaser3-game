@@ -55,9 +55,14 @@ export class NPC implements Movable {
   /**
    * TODO: animations should be a Movable class thing
    */
-  startAnimation(direction: Direction) {}
+  startAnimation(direction: Direction) {
+    this.sprite.anims.play(`npc_${direction}`)}
 
-  stopAnimation(direction: Direction) {}
+  stopAnimation(direction: Direction) {
+    const animForDir = this.sprite.anims.animationManager.get(`npc_${direction}`)
+    const idleFrame = animForDir.frames[1].frame.name
+    this.sprite.anims.stop()
+    this.sprite.setFrame(idleFrame)}
   /**
    * ==================== END =========================
    */
