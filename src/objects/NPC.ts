@@ -15,5 +15,24 @@ export class NPC {
     )
   }
 
-
+  update(delta: number) {
+    // create a number 0 to 19
+    const randomNumber = Math.floor(Math.random() * 20)
+    switch (randomNumber) {
+      case 0:
+        //trigger a move right
+        break
+      case 1:
+        //trigger a move up
+        break
+      case 2:
+        //trigger a move left
+        break
+      case 3:
+        //trigger a move down
+        break
+      default:
+        break
+    }
+  }
 }

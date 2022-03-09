@@ -45,9 +45,9 @@ export class TestScene extends Phaser.Scene {
       }
     },
   }
-  private NPCs_MANUAL: [string, number, number][] = [
-    ['npc', 5, 4],
-    ['npc', 1, 5],
+  private NPCs_MANUAL: [string, number, number, NPC][] = [
+    ['npc', 5, 4, null],
+    ['npc', 1, 5, null],
   ]
 
   constructor () {
@@ -80,11 +80,12 @@ export class TestScene extends Phaser.Scene {
     this.createPlayerAnim(Direction.DOWN, 0, 2)
     
     // make NPC
-    this.NPCs_MANUAL.forEach(([key, x, y]) => {
+    this.NPCs_MANUAL.forEach(([key, x, y], i) => {
       const NPCSprite = this.add.sprite(0, 0, key)
       NPCSprite.setDepth(25)
       NPCSprite.scale = Settings.getZoom()
-      new NPC(NPCSprite, new Phaser.Math.Vector2(x, y))
+      const theNPC = new NPC(NPCSprite, new Phaser.Math.Vector2(x, y))
+      this.NPCs_MANUAL[i][3] = theNPC 
     })
 
     // init Grid logic
@@ -110,5 +111,8 @@ export class TestScene extends Phaser.Scene {
   public update (_time: number, delta: number) {
     this.inputManager.update()
     this.gridPhysics.update(delta) // in ms // delta only matters for different framerates
+    this.NPCs_MANUAL.forEach(([, , , npc]) => {
+      npc.update(delta)
+    })
   }
 }

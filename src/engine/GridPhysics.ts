@@ -9,9 +9,6 @@ const Vector2 = Phaser.Math.Vector2
 type Vector2 = Phaser.Math.Vector2
 
 export class GridPhysics { // custom physics engine
-  private movingDirection: Direction = Direction.NONE
-  private movingIntent: Direction = Direction.NONE
-  private movePixelsPerSecond: number = 350
   private directionVectors: { [key in Direction]: Vector2 } = {
     [Direction.NONE]: new Vector2(0, 0),
     [Direction.RIGHT]: new Vector2(1, 0),
@@ -19,9 +16,14 @@ export class GridPhysics { // custom physics engine
     [Direction.LEFT]: new Vector2(-1, 0),
     [Direction.DOWN]: new Vector2(0, 1)
   }
+  private interactables: { [key: string]: Interactable } = {}
+
+  //player movement
+  private movingDirection: Direction = Direction.NONE
+  private movingIntent: Direction = Direction.NONE
+  private movePixelsPerSecond: number = 350
   private tilePixelsMoved = 0
   private facingDirection: Direction = Direction.NONE
-  private interactables: { [key: string]: Interactable } = {}
 
   constructor(private player: Player, private map: Phaser.Tilemaps.Tilemap) {}
 
