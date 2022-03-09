@@ -40,6 +40,7 @@ export class Player implements Movable {
     }
   }
 
+  // WET code
   /**
    * TODO: animations should be a Movable class thing
    */

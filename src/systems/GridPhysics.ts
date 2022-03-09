@@ -19,7 +19,7 @@ export class GridPhysics { // custom physics system
 
   update(delta: number) { // public by default
     this.movables.forEach(movable => {
-      movable.mover.update(delta)
+      movable.mover.update(delta) // TODO: should I put the update there or in each objects own update? prob not here
     })
   }
 
