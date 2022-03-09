@@ -3,8 +3,8 @@ import { Settings } from "../settings/Settings"
 // managers
 import { InputManager } from "../managers/InputManager"
 import { DialogueManager } from "../managers/DialogueManager"
-// engine
-import { GridPhysics } from "../engine/GridPhysics"
+// systems
+import { GridPhysics } from "../systems/GridPhysics"
 // types
 import { Direction } from "../types/Direction"
 // objects
@@ -90,9 +90,10 @@ export class TestScene extends Phaser.Scene {
 
     // init Grid logic
     this.dialogueManager = new DialogueManager(this)
-    this.gridPhysics = new GridPhysics(this.player, map)
-    this.gridPhysics.registerInteractables(this.interactables_MANUAL)
-    this.inputManager = new InputManager(this.input, this.gridPhysics)
+    this.gridPhysics = new GridPhysics(map, this.interactables_MANUAL, [this.player, this.NPCs_MANUAL[0][3]])
+    // this.gridPhysics.registerMovables([this.player, this.NPCs_MANUAL[0][3]])
+    // this.gridPhysics.registerInteractables(this.interactables_MANUAL)
+    this.inputManager = new InputManager(this.input, this.player)
   }
 
   createPlayerAnim(name: Direction, startFrames: number, endFrame: number) {

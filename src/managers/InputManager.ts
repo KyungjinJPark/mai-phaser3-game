@@ -1,12 +1,13 @@
-import { GridPhysics } from "../engine/GridPhysics"
+import { GridPhysics } from "../systems/GridPhysics"
 import { Direction } from "../types/Direction"
+import { Player } from "../objects/Player"
 
 export class InputManager {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
 
   constructor(
     private input: Phaser.Input.InputPlugin,
-    private gridPhysics: GridPhysics
+    private player: Player
   ) {
     this.create()
   }
@@ -15,20 +16,20 @@ export class InputManager {
     this.cursors = this.input.keyboard.createCursorKeys()
 
     this.cursors.space.on('down', () => {
-      this.gridPhysics.playerInteract()
+      this.player.tryInteract()
     })
   }
 
   update() {
     // TOmaybeDO: do most recent action when many keys are pressed
     if (this.cursors?.right.isDown) {
-      this.gridPhysics.movePlayer(Direction.RIGHT)
+      this.player.mover.tryMove(Direction.RIGHT) // TODO: maybe should be a method on player
     } else if (this.cursors?.left.isDown) {
-      this.gridPhysics.movePlayer(Direction.LEFT)
+      this.player.mover.tryMove(Direction.LEFT)
     } else if (this.cursors?.up.isDown) {
-      this.gridPhysics.movePlayer(Direction.UP)
+      this.player.mover.tryMove(Direction.UP)
     } else if (this.cursors?.down.isDown) {
-      this.gridPhysics.movePlayer(Direction.DOWN)
+      this.player.mover.tryMove(Direction.DOWN)
     }
   }
 }

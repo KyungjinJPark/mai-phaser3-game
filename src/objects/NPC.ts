@@ -1,6 +1,10 @@
+import { GridPhysics } from "../systems/GridPhysics"
 import { Settings } from "../settings/Settings"
+import { Movable, GridMover } from "./Movable"
 
-export class NPC {
+export class NPC implements Movable {
+  public mover = null
+  
   constructor( // TODO: wet code
     private sprite: Phaser.GameObjects.Sprite,
     private tilePos: Phaser.Math.Vector2,
@@ -34,5 +38,9 @@ export class NPC {
       default:
         break
     }
+  }
+
+  initMover(gridPhysics: GridPhysics) {
+    this.mover = new GridMover(this, gridPhysics)
   }
 }
