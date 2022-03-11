@@ -9,7 +9,7 @@ export class Player implements Movable {
   private tempGridPhysicsMaybeMakeInteractorClass // TODO: read variable name
 
   constructor(
-    private sprite: Phaser.GameObjects.Sprite,
+    private sprite: Phaser.GameObjects.Sprite, // TODO: should be in a GameObject class
     private tilePos: Phaser.Math.Vector2,
   ) {
     const offsetX = Settings.getTileSize() / 2
@@ -35,7 +35,7 @@ export class Player implements Movable {
     if (!this.mover.isMoving()) {
       const interactable = this.tempGridPhysicsMaybeMakeInteractorClass.getInteractableAt(this.mover.tilePosInDir(this.mover.getFacingDirection())) // TODO: should this be here?
       if (interactable !== undefined) {
-        interactable.interact()
+        interactable.interactee.interact()
       }
     }
   }

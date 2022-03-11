@@ -11,6 +11,8 @@ import { Direction } from "../types/Direction"
 import { Interactable } from "../objects/Interactable"
 import { Player } from '../objects/Player'
 import { NPC } from "../objects/NPC"
+import { Sign } from "../objects/Sign"
+import { CurrentSceneManager } from "../managers/CurrentSceneManager"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene'
@@ -22,29 +24,7 @@ export class TestScene extends Phaser.Scene {
   private gridPhysics: GridPhysics
   private player: Player
 
-  // stopgap manual creation of interactables & NPCs
-  private interactables_MANUAL: { [key: string]: Interactable } = {
-    '31,0': {
-      interact: () => {
-        this.dialogueManager.showDialogue('boja sitkny')
-      }
-    },
-    '5,1': {
-      interact: () => {
-        this.dialogueManager.showDialogue('RIP our dog\nHEE HEE HOO HOO')
-      }
-    },
-    '10,7': {
-      interact: () => {
-        this.dialogueManager.showDialogue('our house')
-      }
-    },
-    '18,21': {
-      interact: () => {
-        this.dialogueManager.showDialogue('<-- somewhere\n--> somewhere else')
-      }
-    },
-  }
+  // TODO: stopgap manual creation of interactables & NPCs
   private NPCs_MANUAL: [string, number, number, NPC][] = [
     ['npc', 5, 4, null],
     ['npc', 1, 5, null],
@@ -55,6 +35,11 @@ export class TestScene extends Phaser.Scene {
   }
 
   public create () {
+    // Initialize managers
+    new CurrentSceneManager(this) // not used here, but used by children
+    this.inputManager = new InputManager(this.input)
+    this.dialogueManager = new DialogueManager(this)
+
     // make map
     let map = this.make.tilemap({ key: 'green_map' })
     let tiles = map.addTilesetImage('green_tiles', 'green_tiles')
@@ -78,7 +63,15 @@ export class TestScene extends Phaser.Scene {
     this.createPlayerAnim(Direction.UP, 9, 11)
     this.createPlayerAnim(Direction.LEFT, 3, 5)
     this.createPlayerAnim(Direction.DOWN, 0, 2)
+    this.inputManager.registerPlayer(this.player)
     
+    const interactables: Interactable[] = [
+      new Sign(31, 0, 'boja sitkny'),
+      new Sign(5, 1, 'RIP our dog\nHEE HEE HOO HOO'),
+      new Sign(10, 7, 'our house'),
+      new Sign(18, 21, '<-- somewhere\n--> somewhere else'),
+    ]
+
     // make NPC // TODO: maybe shouldn't be here
     this.NPCs_MANUAL.forEach(([key, x, y], i) => {
       const NPCSprite = this.add.sprite(0, 0, key, 55)
@@ -129,11 +122,13 @@ export class TestScene extends Phaser.Scene {
     })
 
     // init Grid logic
-    this.dialogueManager = new DialogueManager(this)
-    this.gridPhysics = new GridPhysics(map, this.interactables_MANUAL, [this.player, this.NPCs_MANUAL[0][3]])
+    this.gridPhysics = new GridPhysics(
+      map,
+      interactables,
+      [this.player, this.NPCs_MANUAL[0][3]]
+    )
     // this.gridPhysics.registerMovables([this.player, this.NPCs_MANUAL[0][3]])
     // this.gridPhysics.registerInteractables(this.interactables_MANUAL)
-    this.inputManager = new InputManager(this.input, this.player)
   }
 
   createPlayerAnim(name: Direction, startFrames: number, endFrame: number) {

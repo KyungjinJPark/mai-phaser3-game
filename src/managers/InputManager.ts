@@ -4,10 +4,10 @@ import { Player } from "../objects/Player"
 
 export class InputManager {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
+  private player: Player
 
   constructor(
     private input: Phaser.Input.InputPlugin,
-    private player: Player
   ) {
     this.create()
   }
@@ -31,5 +31,9 @@ export class InputManager {
     } else if (this.cursors?.down.isDown) {
       this.player.mover.tryMove(Direction.DOWN)
     }
+  }
+
+  registerPlayer(player: Player) {
+    this.player = player
   }
 }

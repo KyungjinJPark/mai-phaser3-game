@@ -9,7 +9,7 @@ import { Player } from '../objects/Player'
 export class GridPhysics { // custom physics system
   constructor(
     private map: Phaser.Tilemaps.Tilemap,
-    private interactables: { [key: string]: Interactable },
+    private interactables: Interactable[],
     private movables: Movable[]
   ) {
     this.movables.forEach(movable => {
@@ -68,7 +68,12 @@ export class GridPhysics { // custom physics system
   // }
 
   getInteractableAt(tilePos: Phaser.Math.Vector2): Interactable {
-    // console.log(`${tilePos.x},${tilePos.y}`)
-    return this.interactables[`${tilePos.x},${tilePos.y}`]
+    console.log(this.interactables)
+    for (const interactable of this.interactables) {
+      if (interactable.getTilePosition().equals(tilePos)) {
+        return interactable
+      }
+    }
+    return undefined
   }
 }
