@@ -13,7 +13,6 @@ export class NPC implements Movable, Interactable {
   public interactee: Interactee
 
   private sprite: Phaser.GameObjects.Sprite
-  private tilePos: Phaser.Math.Vector2
   
   constructor(x: number, y: number, spriteKey: string) {
     const currScene = CurrentSceneManager.getInstance().getCurrentScene()
@@ -73,28 +72,6 @@ export class NPC implements Movable, Interactable {
     const idleFrame = animForDir.frames[1].frame.name
     this.sprite.anims.stop()
     this.sprite.setFrame(idleFrame)}
-  /**
-   * ==================== END =========================
-   */
-
-  /**
-   * TODO: should all be moved ot to a PositionHaver class 
-   */
-  getPosition() {
-    return this.sprite.getBottomCenter()
-  }
-
-  getTilePosition() {
-    return this.tilePos.clone()
-  }
-
-  setPosition(pos: Phaser.Math.Vector2) {
-    this.sprite.setPosition(pos.x, pos.y)
-  }
-
-  setTilePosition(pos: Phaser.Math.Vector2) {
-    this.tilePos = pos.clone()
-  }
   /**
    * ==================== END =========================
    */
