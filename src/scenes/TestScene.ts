@@ -114,9 +114,10 @@ export class TestScene extends Phaser.Scene {
     })
 
     // init Grid logic
+    const allInteractables = interactables.concat(this.NPCs)
     this.gridPhysics = new GridPhysics(
       map,
-      interactables,
+      allInteractables, // TODO: this seems wierd to have to do
       [this.player, this.NPCs[0]]
     )
     // this.gridPhysics.registerMovables([this.player, this.NPCs_MANUAL[0][3]])

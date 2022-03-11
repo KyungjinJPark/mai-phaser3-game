@@ -1,8 +1,8 @@
 import { Beer } from "./PositionHaver"
 
 export interface Interactable {
-  interactee: Interactee
   beer: Beer
+  interactee: Interactee
 }
 
 export interface Interactee {

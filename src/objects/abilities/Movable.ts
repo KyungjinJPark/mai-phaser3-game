@@ -4,8 +4,8 @@ import { Direction } from "../../types/Direction"
 import { Beer } from "./PositionHaver"
 
 export interface Movable {
-  mover: GridMover
   beer: Beer // TODO: should use the Type instead of this (like `interface Movable = { ... } & PositionHaver`)
+  mover: GridMover
   initMover(physics: GridPhysics)
 }
   

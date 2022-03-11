@@ -1,13 +1,16 @@
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
+import { DialogueManager } from "../managers/DialogueManager"
 import { GridPhysics } from "../systems/GridPhysics"
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction" // TODO: consider: maybe shouldn't be a dependency
 import { Beer } from "./abilities/PositionHaver"
 import { Movable, GridMover } from "./abilities/Movable"
+import { Interactable, Interactee } from "./abilities/Interactable"
 
-export class NPC implements Movable {
+export class NPC implements Movable, Interactable {
   public beer: Beer
-  public mover: GridMover = null
+  public mover: GridMover
+  public interactee: Interactee
 
   private sprite: Phaser.GameObjects.Sprite
   private tilePos: Phaser.Math.Vector2
@@ -18,10 +21,17 @@ export class NPC implements Movable {
     this.sprite.setDepth(25)
     this.sprite.scale = Settings.getZoom()
     this.beer = new Beer(this, x, y)
+    
+    const dm = DialogueManager.getInstance()
+    this.interactee = {
+      interact: () => {
+        dm.showDialogue('Hello!')
+      }
+    }
   }
 
   update(delta: number) {
-    if (this.mover !== null) { // TODO: what if I want NPCs that can't move?, Not all NPCs should have to do this check. prob shouldn't even import Movable
+    if (this.mover !== undefined) { // TODO: what if I want NPCs that can't move?, Not all NPCs should have to do this check. prob shouldn't even import Movable
       // create a number 0 to 999
       const randomNumber = Math.floor(Math.random() * 1000)
       switch (randomNumber) {
