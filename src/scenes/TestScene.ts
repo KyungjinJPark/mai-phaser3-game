@@ -8,7 +8,7 @@ import { GridPhysics } from "../systems/GridPhysics"
 // types
 import { Direction } from "../types/Direction"
 // objects
-import { Interactable } from "../objects/Interactable"
+import { Interactable } from "../objects/abilities/Interactable"
 import { Player } from '../objects/Player'
 import { NPC } from "../objects/NPC"
 import { Sign } from "../objects/Sign"
@@ -23,12 +23,7 @@ export class TestScene extends Phaser.Scene {
   private dialogueManager: DialogueManager
   private gridPhysics: GridPhysics
   private player: Player
-
-  // TODO: stopgap manual creation of interactables & NPCs
-  private NPCs_MANUAL: [string, number, number, NPC][] = [
-    ['npc', 5, 4, null],
-    ['npc', 1, 5, null],
-  ]
+  private NPCs: NPC[]
 
   constructor () {
     super(testSceneConfig)
@@ -58,7 +53,7 @@ export class TestScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
     this.cameras.main.startFollow(playerSprite)
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
-    this.player = new Player(playerSprite, new Phaser.Math.Vector2(3, 3))
+    this.player = new Player(3, 3, playerSprite)
     this.createPlayerAnim(Direction.RIGHT, 6, 8)
     this.createPlayerAnim(Direction.UP, 9, 11)
     this.createPlayerAnim(Direction.LEFT, 3, 5)
@@ -72,14 +67,11 @@ export class TestScene extends Phaser.Scene {
       new Sign(18, 21, '<-- somewhere\n--> somewhere else'),
     ]
 
-    // make NPC // TODO: maybe shouldn't be here
-    this.NPCs_MANUAL.forEach(([key, x, y], i) => {
-      const NPCSprite = this.add.sprite(0, 0, key, 55)
-      NPCSprite.setDepth(25)
-      NPCSprite.scale = Settings.getZoom()
-      const theNPC = new NPC(NPCSprite, new Phaser.Math.Vector2(x, y))
-      this.NPCs_MANUAL[i][3] = theNPC 
-    })
+    this.NPCs = [
+      new NPC(5, 4, 'npc'),
+      new NPC(1, 5, 'npc')
+    ]
+    // TODO: maybe make NPC animations in class... something to think about: recreating NPCs w same animations
     this.anims.create({
       key: `npc_${Direction.RIGHT}`,
       frames: this.anims.generateFrameNumbers('npc', {
@@ -125,7 +117,7 @@ export class TestScene extends Phaser.Scene {
     this.gridPhysics = new GridPhysics(
       map,
       interactables,
-      [this.player, this.NPCs_MANUAL[0][3]]
+      [this.player, this.NPCs[0]]
     )
     // this.gridPhysics.registerMovables([this.player, this.NPCs_MANUAL[0][3]])
     // this.gridPhysics.registerInteractables(this.interactables_MANUAL)
@@ -147,7 +139,7 @@ export class TestScene extends Phaser.Scene {
   public update (_time: number, delta: number) {
     this.inputManager.update()
     this.gridPhysics.update(delta) // in ms // delta only matters for different framerates
-    this.NPCs_MANUAL.forEach(([, , , npc]) => {
+    this.NPCs.forEach((npc) => {
       npc.update(delta)
     })
   }

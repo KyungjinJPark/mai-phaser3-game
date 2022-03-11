@@ -1,14 +1,11 @@
-import { GridPhysics } from "../systems/GridPhysics"
-import { Settings } from "../settings/Settings"
-import { Direction } from "../types/Direction"
+import { GridPhysics } from "../../systems/GridPhysics"
+import { Settings } from "../../settings/Settings"
+import { Direction } from "../../types/Direction"
+import { Beer } from "./PositionHaver"
 
 export interface Movable {
   mover: GridMover
-
-
-  getTilePosition() // should be `beer: positionHaver`
-
-
+  beer: Beer // TODO: should use the Type instead of this (like `interface Movable = { ... } & PositionHaver`)
   initMover(physics: GridPhysics)
 }
   
@@ -59,7 +56,7 @@ export class GridMover {
   }
 
   tilePosInDir(dir: Direction): Phaser.Math.Vector2 { // TODO: should be in the a PositionHaver class
-    return this.parent.getTilePosition().add(this.directionVectors[dir])
+    return this.parent.beer.getTilePosition().add(this.directionVectors[dir])
   }
 
   getFacingDirection(): Direction {  // TODO: this is only public because the player
@@ -98,10 +95,10 @@ export class GridMover {
 
   private moveSprite(pixelsToMove: number) { // should this have a reference to parent?
     const moveVect = this.directionVectors[this.movingDirection].clone()
-    const newPos = this.parent.getPosition().add(moveVect.scale(pixelsToMove))
+    const newPos = this.parent.beer.getPosition().add(moveVect.scale(pixelsToMove))
     this.pixelsMovedSinceTile += pixelsToMove
     this.pixelsMovedSinceTile %= Settings.getTileSize()
-    this.parent.setPosition(newPos)
+    this.parent.beer.setPosition(newPos)
   }
 
   private shouldContinueMove() {
@@ -116,8 +113,8 @@ export class GridMover {
   }
 
   private updatePlayerTilePos() {
-    this.parent.setTilePosition(
-      this.parent.getTilePosition().add(this.directionVectors[this.movingDirection])
+    this.parent.beer.setTilePosition(
+      this.parent.beer.getTilePosition().add(this.directionVectors[this.movingDirection])
     )
   }
 }

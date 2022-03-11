@@ -1,25 +1,19 @@
 import { GridPhysics } from "../systems/GridPhysics"
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction"
-import { Movable, GridMover } from "./Movable"
+import { Beer } from "./abilities/PositionHaver"
+import { Movable, GridMover } from "./abilities/Movable"
 
 export class Player implements Movable {
-  public mover: GridMover = null
+  public beer: Beer
+  public mover: GridMover
 
   private tempGridPhysicsMaybeMakeInteractorClass // TODO: read variable name
 
-  constructor(
+  constructor(x, y,
     private sprite: Phaser.GameObjects.Sprite, // TODO: should be in a GameObject class
-    private tilePos: Phaser.Math.Vector2,
   ) {
-    const offsetX = Settings.getTileSize() / 2
-    const offsetY = Settings.getTileSize() // what are these for?
-
-    this.sprite.setOrigin(0.5, 1)
-    this.sprite.setPosition(
-      tilePos.x * Settings.getTileSize() + offsetX,
-      tilePos.y * Settings.getTileSize() + offsetY
-    )
+    this.beer = new Beer(this, x, y)
   }
 
   initMover(gridPhysics: GridPhysics) {
@@ -53,28 +47,6 @@ export class Player implements Movable {
     const idleFrame = animForDir.frames[1].frame.name
     this.sprite.anims.stop()
     this.sprite.setFrame(idleFrame)
-  }
-  /**
-   * ==================== END =========================
-   */
-
-  /**
-   * TODO: should all be moved ot to a PositionHaver class 
-   */
-  getPosition() {
-    return this.sprite.getBottomCenter()
-  }
-
-  getTilePosition() {
-    return this.tilePos.clone()
-  }
-
-  setPosition(pos: Phaser.Math.Vector2) {
-    this.sprite.setPosition(pos.x, pos.y)
-  }
-
-  setTilePosition(pos: Phaser.Math.Vector2) {
-    this.tilePos = pos.clone()
   }
   /**
    * ==================== END =========================

@@ -1,23 +1,23 @@
+import { CurrentSceneManager } from "../managers/CurrentSceneManager"
 import { GridPhysics } from "../systems/GridPhysics"
 import { Settings } from "../settings/Settings"
-import { Movable, GridMover } from "./Movable"
-import { Direction } from "../types/Direction" // Porb shouldn't be a dependency
+import { Direction } from "../types/Direction" // TODO: consider: maybe shouldn't be a dependency
+import { Beer } from "./abilities/PositionHaver"
+import { Movable, GridMover } from "./abilities/Movable"
 
 export class NPC implements Movable {
+  public beer: Beer
   public mover: GridMover = null
-  
-  constructor( // TODO: wet code
-    private sprite: Phaser.GameObjects.Sprite,
-    private tilePos: Phaser.Math.Vector2,
-  ) {
-    const offsetX = Settings.getTileSize() / 2
-    const offsetY = Settings.getTileSize() // what are these for?
 
-    this.sprite.setOrigin(0.5, 1)
-    this.sprite.setPosition(
-      tilePos.x * Settings.getTileSize() + offsetX,
-      tilePos.y * Settings.getTileSize() + offsetY
-    )
+  private sprite: Phaser.GameObjects.Sprite
+  private tilePos: Phaser.Math.Vector2
+  
+  constructor(x: number, y: number, spriteKey: string) {
+    const currScene = CurrentSceneManager.getInstance().getCurrentScene()
+    this.sprite = currScene.add.sprite(0, 0, spriteKey, 55)
+    this.sprite.setDepth(25)
+    this.sprite.scale = Settings.getZoom()
+    this.beer = new Beer(this, x, y)
   }
 
   update(delta: number) {

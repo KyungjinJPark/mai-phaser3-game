@@ -1,7 +1,7 @@
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction"
-import { Movable, GridMover } from "../objects/Movable"
-import { Interactable } from "../objects/Interactable"
+import { Movable, GridMover } from "../objects/abilities/Movable"
+import { Interactable } from "../objects/abilities/Interactable"
 import { Player } from '../objects/Player'
 
 // aliases
@@ -46,7 +46,7 @@ export class GridPhysics { // custom physics system
     })
     // is there a dude here?
     this.movables.forEach(movable => { // TODO: assumes all movables are collidable (also that non-movables are not collidable)
-      const personHere = movable.getTilePosition().equals(tilePos) // TODO: assumes all movables have positions, which should be true, but not enforced in code
+      const personHere = movable.beer.getTilePosition().equals(tilePos) // TODO: assumes all movables have positions, which should be true, but not enforced in code
       answer = answer || personHere
     })
     return answer
@@ -68,9 +68,8 @@ export class GridPhysics { // custom physics system
   // }
 
   getInteractableAt(tilePos: Phaser.Math.Vector2): Interactable {
-    console.log(this.interactables)
     for (const interactable of this.interactables) {
-      if (interactable.getTilePosition().equals(tilePos)) {
+      if (interactable.beer.getTilePosition().equals(tilePos)) {
         return interactable
       }
     }
