@@ -58,7 +58,7 @@ export class TestScene extends Phaser.Scene {
     this.createPlayerAnim(Direction.UP, 9, 11)
     this.createPlayerAnim(Direction.LEFT, 3, 5)
     this.createPlayerAnim(Direction.DOWN, 0, 2)
-    this.inputManager.registerPlayer(this.player)
+    this.inputManager.setPlayer(this.player)
     
     const interactables: Interactable[] = [
       new Sign(31, 0, 'boja sitkny'),
@@ -68,8 +68,8 @@ export class TestScene extends Phaser.Scene {
     ]
 
     this.NPCs = [
-      new NPC(5, 4, 'npc'),
-      new NPC(1, 5, 'npc')
+      new NPC(5, 4, 'npc', [{type: 'dialogue', msg: '2 fast 2 quick'}], ['l','u','u','r','r','d','d','l']),
+      new NPC(1, 5, 'npc', [{type: 'dialogue', msg: 'Why am I alive'}])
     ]
     // TODO: maybe make NPC animations in class... something to think about: recreating NPCs w same animations
     this.anims.create({
@@ -139,7 +139,7 @@ export class TestScene extends Phaser.Scene {
 
   public update (_time: number, delta: number) {
     this.inputManager.update()
-    this.gridPhysics.update(delta) // in ms // delta only matters for different framerates
+    this.player.update(delta)
     this.NPCs.forEach((npc) => {
       npc.update(delta)
     })

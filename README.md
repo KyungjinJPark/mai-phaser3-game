@@ -4,7 +4,10 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Make NPCs not all the same
+- Many things to consider.
+  - lots of TODOs
+  - reconsider approach to composition
+  - organize an order of initialization and dependency bind timings
 - Scene transitions
   - saving scene state
 - Different interactions
@@ -58,6 +61,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
     - w collisions
     - w animations
   - talk to them
+  - make NPCs not all the same
 
 ---
 

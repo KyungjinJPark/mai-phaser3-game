@@ -14,50 +14,63 @@ export class NPC implements Movable, Interactable {
 
   private sprite: Phaser.GameObjects.Sprite
   
-  constructor(x: number, y: number, spriteKey: string) {
+  constructor(x: number, y: number, spriteKey: string, interactionCommands?: any[], private movementCommands?: any[]) {
     const currScene = CurrentSceneManager.getInstance().getCurrentScene()
     this.sprite = currScene.add.sprite(0, 0, spriteKey, 55)
     this.sprite.setDepth(25)
     this.sprite.scale = Settings.getZoom()
     this.beer = new Beer(this, x, y)
     
+    // Implement these interaction Commands and Movement Commands
     const dm = DialogueManager.getInstance()
     this.interactee = {
       interact: () => {
-        dm.showDialogue('Hello!')
+        interactionCommands.forEach(cmd => {
+          switch (cmd.type) {
+            case 'dialogue':
+              dm.showDialogue(cmd.msg)
+              break
+            default:
+              break
+          }
+        })
       }
     }
   }
 
   update(delta: number) {
-    if (this.mover !== undefined) { // TODO: what if I want NPCs that can't move?, Not all NPCs should have to do this check. prob shouldn't even import Movable
-      // create a number 0 to 999
-      const randomNumber = Math.floor(Math.random() * 1000)
-      switch (randomNumber) {
-        case 0:
-          //trigger a move right
-          this.mover.tryMove(Direction.RIGHT)
-          break
-        case 1:
-          //trigger a move up
-          this.mover.tryMove(Direction.UP)
-          break
-        case 2:
-          //trigger a move left
-          this.mover.tryMove(Direction.LEFT)
-          break
-        case 3:
-          //trigger a move down
-          this.mover.tryMove(Direction.DOWN)
-          break
-        default:
-          break
-      }
+    if (this.mover !== undefined) {
+      this.mover.update(delta)
     }
+    // if (this.mover !== undefined) { // TODO: what if I want NPCs that can't move?, Not all NPCs should have to do this check. prob shouldn't even import Movable
+    //   // create a number 0 to 999
+    //   const randomNumber = Math.floor(Math.random() * 1000)
+    //   switch (randomNumber) {
+    //     case 0:
+    //       //trigger a move right
+    //       this.mover.tryMove(Direction.RIGHT)
+    //       break
+    //     case 1:
+    //       //trigger a move up
+    //       this.mover.tryMove(Direction.UP)
+    //       break
+    //     case 2:
+    //       //trigger a move left
+    //       this.mover.tryMove(Direction.LEFT)
+    //       break
+    //     case 3:
+    //       //trigger a move down
+    //       this.mover.tryMove(Direction.DOWN)
+    //       break
+    //     default:
+    //       break
+    //   }
+    // }
   }
 
   initMover(gridPhysics: GridPhysics) {
     this.mover = new GridMover(this, gridPhysics)
+    this.mover.setMovementCommands(this.movementCommands)
   }
 
   // WET code

@@ -33,7 +33,7 @@ export class InputManager {
     }
   }
 
-  registerPlayer(player: Player) {
+  setPlayer(player: Player) {
     this.player = player
   }
 }

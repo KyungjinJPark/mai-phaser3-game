@@ -26,6 +26,9 @@ export class GridMover {
   private pixelsMovedSinceTile = 0
   private facingDirection: Direction = Direction.NONE
 
+  private movementCommands: any[]
+  private cmdsIndex = 0
+
   constructor(
     private parent: any, // TODO: this seems like bad practice // any -> GameObject
     private physicsSystem: GridPhysics
@@ -35,22 +38,57 @@ export class GridMover {
     if (this.isMoving()) {
       this.updatePosition(delta)
     }
+    if (this.movementCommands !== undefined) {
+      switch (this.movementCommands[this.cmdsIndex]) {
+        case 'r':
+          if (this.tryMove(Direction.RIGHT)) {
+            this.cmdsIndex++
+          }
+          break
+        case 'u':
+          if (this.tryMove(Direction.UP)) {
+            this.cmdsIndex++
+          }
+          break
+        case 'l':
+          if (this.tryMove(Direction.LEFT)) {
+            this.cmdsIndex++
+          }
+          break
+        case 'd':
+          if (this.tryMove(Direction.DOWN)) {
+            this.cmdsIndex++
+          }
+          break
+        default:
+          break
+      }
+      if (this.cmdsIndex >= this.movementCommands.length) {
+        this.cmdsIndex = 0
+      }
+    }
     this.movingIntent = Direction.NONE
   }
 
-  tryMove(direction: Direction) {
+  tryMove(direction: Direction): boolean {
     this.movingIntent = direction
     if (this.isMoving()) {
-      return
+      return false
     } else if (this.isBlockedInDir(direction)) {
       this.parent.stopAnimation(direction) // TODO: assumes animation exists // does this check even have to exist?
       this.facingDirection = direction
+      return false
     } else {
       this.startMoving(direction)
       this.facingDirection = direction
+      return true
     }
   }
   
+  setMovementCommands(movementCommands: any[]) {
+    this.movementCommands = movementCommands
+  }
+
   isMoving(): boolean {
     return this.movingDirection !== Direction.NONE
   }

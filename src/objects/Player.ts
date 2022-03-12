@@ -16,6 +16,10 @@ export class Player implements Movable {
     this.beer = new Beer(this, x, y)
   }
 
+  update(delta: number) {
+    this.mover.update(delta)
+  }
+
   initMover(gridPhysics: GridPhysics) {
     this.mover = new GridMover(this, gridPhysics)
 
