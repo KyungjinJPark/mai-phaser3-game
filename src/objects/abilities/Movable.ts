@@ -12,12 +12,12 @@ export interface Movable {
 const Vector2 = Phaser.Math.Vector2
 
 export class GridMover {
-  private directionVectors: { [key in Direction]: Phaser.Math.Vector2 } = { // TODO: this could be already implemented officially
-    [Direction.NONE]: new Vector2(0, 0),
-    [Direction.RIGHT]: new Vector2(1, 0),
-    [Direction.UP]: new Vector2(0, -1),
-    [Direction.LEFT]: new Vector2(-1, 0),
-    [Direction.DOWN]: new Vector2(0, 1)
+  private directionVectors: { [key in Direction]: Phaser.Math.Vector2 } = {
+    [Direction.NONE]: Vector2.ZERO,
+    [Direction.RIGHT]: Vector2.RIGHT,
+    [Direction.UP]: Vector2.UP,
+    [Direction.LEFT]: Vector2.LEFT,
+    [Direction.DOWN]: Vector2.DOWN,
   }
 
   private movingDirection: Direction = Direction.NONE
