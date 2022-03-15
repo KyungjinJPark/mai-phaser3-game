@@ -20,7 +20,6 @@ const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class TestScene extends Phaser.Scene {
   private inputManager: InputManager
-  private dialogueManager: DialogueManager
   private gridPhysics: GridPhysics
   private player: Player
   private NPCs: NPC[]
@@ -31,9 +30,8 @@ export class TestScene extends Phaser.Scene {
 
   public create () {
     // Initialize managers
-    new CurrentSceneManager(this) // not used here, but used by children
+    CurrentSceneManager.getInstance().setCurrentScene(this)
     this.inputManager = new InputManager(this.input)
-    this.dialogueManager = new DialogueManager(this)
 
     // make map
     let map = this.make.tilemap({ key: 'green_map' })

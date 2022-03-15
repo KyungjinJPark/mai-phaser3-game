@@ -3,16 +3,14 @@ export class CurrentSceneManager {
   private static instance: CurrentSceneManager
   public static getInstance(): CurrentSceneManager {
     if (!CurrentSceneManager.instance) {
-      throw new Error("singleton instance does not exist")
-      // CurrentSceneManager.singleton = new CurrentSceneManager()
+      CurrentSceneManager.instance = new CurrentSceneManager()
     }
     return CurrentSceneManager.instance
   }
 
   private currentScene: Phaser.Scene
 
-  constructor(scene: Phaser.Scene) {
-    this.currentScene = scene
+  private constructor() {
     CurrentSceneManager.instance = this
   }
 

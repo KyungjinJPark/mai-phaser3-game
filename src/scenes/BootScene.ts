@@ -1,3 +1,5 @@
+import { DialogueManager } from "../managers/DialogueManager"
+
 const bootSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'BootScene'
 }
@@ -23,7 +25,7 @@ export class BootScene extends Phaser.Scene {
 
   public create () {
     // go straight to TestScene
-    this.scene.launch('HUDScene')
+    DialogueManager.getInstance().init(this)
     this.scene.start('TestScene')
   }
 }
