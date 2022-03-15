@@ -3,11 +3,11 @@ import { DialogueManager } from "../managers/DialogueManager"
 import { GridPhysics } from "../systems/GridPhysics"
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction" // TODO: consider: maybe shouldn't be a dependency
-import { Beer } from "./abilities/PositionHaver"
+import { Beer, PositionHaver } from "./abilities/PositionHaver"
 import { Movable, GridMover } from "./abilities/Movable"
 import { Interactable, Interactee } from "./abilities/Interactable"
 
-export class NPC implements Movable, Interactable {
+export class NPC implements PositionHaver, Movable, Interactable {
   public beer: Beer
   public mover: GridMover
   public interactee: Interactee

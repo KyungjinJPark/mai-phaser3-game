@@ -1,10 +1,10 @@
 import { GridPhysics } from "../systems/GridPhysics"
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction"
-import { Beer } from "./abilities/PositionHaver"
+import { Beer, PositionHaver } from "./abilities/PositionHaver"
 import { Movable, GridMover } from "./abilities/Movable"
 
-export class Player implements Movable {
+export class Player implements PositionHaver, Movable {
   public beer: Beer
   public mover: GridMover
 

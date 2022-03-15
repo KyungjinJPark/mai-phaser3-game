@@ -1,10 +1,10 @@
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
 import { DialogueManager } from "../managers/DialogueManager"
 import { Settings } from "../settings/Settings"
-import { Beer } from "./abilities/PositionHaver"
+import { Beer, PositionHaver } from "./abilities/PositionHaver"
 import { Interactable, Interactee } from "./abilities/Interactable"
 
-export class Sign implements Interactable {
+export class Sign implements PositionHaver, Interactable {
   public beer: Beer
   public interactee: Interactee
 
