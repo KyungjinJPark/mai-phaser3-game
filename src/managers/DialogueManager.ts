@@ -17,13 +17,12 @@ export class DialogueManager {
   }
 
   init(scene: Phaser.Scene) {
-    // load the DialogueModalPlugin
-    this.dialoguePlugin = scene.plugins.get('DialogueModalPlugin') as any
-  
     // launch the HUD Scene
     if (!scene.scene.isActive('HUDScene')) {
       scene.scene.launch('HUDScene')
     }
+    // load the DialogueModalPlugin
+    this.dialoguePlugin = scene.plugins.get('DialogueModalPlugin') as any
   }
 
   showDialogue(message: string) {

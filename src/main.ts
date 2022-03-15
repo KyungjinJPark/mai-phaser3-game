@@ -18,7 +18,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
 
   plugins: {
     global: [
-      { key: 'DialogueModalPlugin', plugin: DialogueModalPlugin, start: true },
+      { key: 'DialogueModalPlugin', plugin: DialogueModalPlugin, start: false },
     ],
   },
 

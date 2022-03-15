@@ -33,18 +33,6 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
 
   constructor(pluginManager) {
     super(pluginManager)
-
-    const x = this.options.padding + 10
-    const y = this.getGameHeight() - this.options.windowHeight - this.options.padding + 10
-    this.currentText = this.getHUDScene().make.text({
-      x, y,
-      text:'',
-      style: {
-        wordWrap: { width: this.getGameWidth() - (2 * this.options.padding) - 25},
-        fontSize: '18px',
-        color: '#ffffff'
-      }
-    }).setDepth(10)
   } 
 
   init(opts: optionalParameters): void { // optional parameters
@@ -56,6 +44,20 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   createDialogue(text: string, animate = true): void {
+    if (this.currentText === undefined) {
+      const x = this.options.padding + 10
+      const y = this.getGameHeight() - this.options.windowHeight - this.options.padding + 10
+      this.currentText = this.getHUDScene().make.text({
+        x, y,
+        text:'',
+        style: {
+          wordWrap: { width: this.getGameWidth() - (2 * this.options.padding) - 25},
+          fontSize: '18px',
+          color: '#ffffff'
+        }
+      }).setDepth(10)
+    }
+
     this.setText(text, animate)
     this.createDialogueBox()
   }
