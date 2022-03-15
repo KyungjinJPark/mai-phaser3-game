@@ -1,17 +1,23 @@
 import { GridPhysics } from "../systems/GridPhysics"
 import { Direction } from "../types/Direction"
 import { Player } from "../objects/Player"
+import { CanMove } from "../types/CanMove"
 
 export class InputManager {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  private keysDownLastTick: Direction[]
-  private lastMove: Direction
-  private nextMove: Direction
+  private allCommands: Direction[]
+  private commandsThisFrame: Direction[]
+  // private keysDownLastTick: Direction[]
+  // private lastMove: Direction
+  // private newMoves: Direction[]
   private player: Player
 
   constructor(input: Phaser.Input.InputPlugin) {
     this.cursors = input.keyboard.createCursorKeys()
-    this.keysDownLastTick = []
+    this.allCommands = []
+    this.commandsThisFrame = []
+    // this.keysDownLastTick = []
+    // this.newMoves = []
     this.create()
   }
 
@@ -19,58 +25,75 @@ export class InputManager {
     this.cursors.space.on('down', () => {
       this.player.tryInteract()
     })
+
+    this.cursors.right.on('down', () => {
+      this.allCommands.push(Direction.RIGHT)
+      this.commandsThisFrame.push(Direction.RIGHT)
+    })
+    this.cursors.right.on('up', () => {
+      const resolve = this.allCommands.indexOf(Direction.RIGHT)
+      if (resolve !== -1) {
+        this.allCommands.splice(resolve, 1)
+      }
+    })
+
+    this.cursors.up.on('down', () => {
+      this.allCommands.push(Direction.UP)
+      this.commandsThisFrame.push(Direction.UP)
+    })
+    this.cursors.up.on('up', () => {
+      const resolve = this.allCommands.indexOf(Direction.UP)
+      if (resolve !== -1) {
+        this.allCommands.splice(resolve, 1)
+      }
+    })
+
+    this.cursors.left.on('down', () => {
+      this.allCommands.push(Direction.LEFT)
+      this.commandsThisFrame.push(Direction.LEFT)
+    })
+    this.cursors.left.on('up', () => {
+      const resolve = this.allCommands.indexOf(Direction.LEFT)
+      if (resolve !== -1) {
+        this.allCommands.splice(resolve, 1)
+      }
+    })
+
+    this.cursors.down.on('down', () => {
+      this.allCommands.push(Direction.DOWN)
+      this.commandsThisFrame.push(Direction.DOWN)
+    })
+    this.cursors.down.on('up', () => {
+      const resolve = this.allCommands.indexOf(Direction.DOWN)
+      if (resolve !== -1) {
+        this.allCommands.splice(resolve, 1)
+      }
+    })
   }
 
   update() {
-    // TOmaybeDO: do most recent action when many keys are pressed
-    const keysDownThisTick = []
-    if (this.cursors.right.isDown) {
-      keysDownThisTick.push(Direction.RIGHT)
-    }
-    if (this.cursors.left.isDown) {
-      keysDownThisTick.push(Direction.LEFT)
-    }
-    if (this.cursors.up.isDown) {
-      keysDownThisTick.push(Direction.UP)
-    }
-    if (this.cursors.down.isDown) {
-      keysDownThisTick.push(Direction.DOWN)
-    }
+    let moveSucc = false
 
-    if (keysDownThisTick.length !== 0) { // if you are hitting keys
-      const diff = keysDownThisTick.filter(key => !this.keysDownLastTick.includes(key))
-
-      if (diff.length === 0) {
-        if (keysDownThisTick.length === this.keysDownLastTick.length) { // hitting same keys
-          this.nextMove = this.lastMove
-        } else { // hitting less keys
-          if (keysDownThisTick.includes(this.lastMove)) { // if the current direction is still down
-            this.nextMove = this.lastMove
-          } else { // go whatever direction
-            this.nextMove = keysDownThisTick[0]
-          }
-        }
-      } else { // if you are hitting new keys
-        if (diff.includes(Direction.RIGHT)) {
-          this.nextMove = Direction.RIGHT
-        } else if (diff.includes(Direction.LEFT)) {
-          this.nextMove = Direction.LEFT
-        } else if (diff.includes(Direction.UP)) {
-          this.nextMove = Direction.UP
-        } else if (diff.includes(Direction.DOWN)) {
-          this.nextMove = Direction.DOWN
-        }
+    const numCommandsThisFrame = this.commandsThisFrame.length
+    if (numCommandsThisFrame !== 0) {
+      const moveDir = this.commandsThisFrame[numCommandsThisFrame - 1]
+      const canMove = this.player.mover.canMove(moveDir)
+      if (canMove === CanMove.YES) {
+        moveSucc = this.player.mover.tryMove(moveDir)
+      } else if (canMove === CanMove.COLLIDES) { // TODO: causes minor flashing
+        this.player.mover.tryMove(moveDir)
+        moveSucc = true
       }
     } else {
-      this.nextMove = Direction.NONE
+      const numAllCommands = this.allCommands.length
+      if (numAllCommands !== 0) {
+        moveSucc = this.player.mover.tryMove(this.allCommands[numAllCommands - 1])
+      }
     }
 
-    if (this.nextMove !== Direction.NONE) {
-      this.player.mover.tryMove(this.nextMove)
+    if (moveSucc) {
+      this.commandsThisFrame = []
     }
-
-    this.lastMove = this.nextMove
-    this.keysDownLastTick = keysDownThisTick
   }
 
   setPlayer(player: Player) {

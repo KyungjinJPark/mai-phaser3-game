@@ -2,6 +2,7 @@ import { GridPhysics } from "../../systems/GridPhysics"
 import { Settings } from "../../settings/Settings"
 import { Direction } from "../../types/Direction"
 import { Beer } from "./PositionHaver"
+import { CanMove } from "../../types/CanMove"
 
 export interface Movable {
   beer: Beer // TODO: should use the Type instead of this (like `interface Movable = { ... } & PositionHaver`)
@@ -22,7 +23,7 @@ export class GridMover {
 
   private movingDirection: Direction = Direction.NONE
   private movingIntent: Direction = Direction.NONE
-  private movePixelsPerSecond: number = 350
+  private movePixelsPerSecond: number = 100 * Settings.getZoom()
   private pixelsMovedSinceTile = 0
   private facingDirection: Direction = Direction.NONE
 
@@ -70,18 +71,37 @@ export class GridMover {
     this.movingIntent = Direction.NONE
   }
 
+  // 0: canMove; 1: moving; 2: blocked
+  canMove(direction: Direction): CanMove {
+    if (this.isMoving()) {
+      return CanMove.IS_MOVING
+    } else if (this.isBlockedInDir(direction)) {
+      return CanMove.COLLIDES
+    } else {
+      return CanMove.YES
+    }
+  }
+
+  move(direction: Direction) {
+    this.startMoving(direction)
+    this.facingDirection = direction
+  }
+
   tryMove(direction: Direction): boolean {
     this.movingIntent = direction
-    if (this.isMoving()) {
-      return false
-    } else if (this.isBlockedInDir(direction)) {
-      this.parent.stopAnimation(direction) // TODO: assumes animation exists // does this check even have to exist?
-      this.facingDirection = direction
-      return false
-    } else {
-      this.startMoving(direction)
-      this.facingDirection = direction
-      return true
+    const canMove = this.canMove(direction)
+    switch (canMove) {
+      case CanMove.YES:
+        this.move(direction)
+        return true
+      case CanMove.IS_MOVING:
+        return false
+      case CanMove.COLLIDES:
+        this.parent.stopAnimation(direction) // TODO: assumes animation exists // does this check even have to exist?
+        this.facingDirection = direction
+        return false
+      default:
+        throw new Error("Invalid canMove value")
     }
   }
   
