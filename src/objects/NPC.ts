@@ -11,12 +11,12 @@ export class NPC implements PositionHaver, Movable, Interactable {
   public beer: Beer
   public mover: GridMover
   public interactee: Interactee
-
+  private spriteKey: string 
   private sprite: Phaser.GameObjects.Sprite
   
   constructor(x: number, y: number, spriteKey: string, interactionCommands?: any[], private movementCommands?: any[]) {
-    const currScene = CurrentSceneManager.getInstance().getCurrentScene()
-    this.sprite = currScene.add.sprite(0, 0, spriteKey, 55)
+    this.spriteKey = spriteKey
+    this.sprite = CurrentSceneManager.getInstance().getCurrentScene().add.sprite(0, 0, spriteKey, 55)
     this.sprite.setDepth(25)
     this.sprite.scale = Settings.getZoom()
     this.beer = new Beer(this, x, y)
@@ -45,23 +45,7 @@ export class NPC implements PositionHaver, Movable, Interactable {
   }
 
   initMover(gridPhysics: GridPhysics) {
-    this.mover = new GridMover(this, gridPhysics)
+    this.mover = new GridMover(this, gridPhysics, this.spriteKey)
     this.mover.setMovementCommands(this.movementCommands)
   }
-
-  // WET code
-  /**
-   * TODO: animations should be a Movable class thing
-   */
-  startAnimation(direction: Direction) {
-    this.sprite.anims.play(`npc_${direction}`)}
-
-  stopAnimation(direction: Direction) {
-    const animForDir = this.sprite.anims.animationManager.get(`npc_${direction}`)
-    const idleFrame = animForDir.frames[1].frame.name
-    this.sprite.anims.stop()
-    this.sprite.setFrame(idleFrame)}
-  /**
-   * ==================== END =========================
-   */
 }

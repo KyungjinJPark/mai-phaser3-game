@@ -9,13 +9,15 @@ export class Player implements PositionHaver, Movable {
   public beer: Beer
   public mover: GridMover
   private sprite: Phaser.GameObjects.Sprite
+  private spriteKey: string
   private gridPhysics: GridPhysics
 
-  constructor(x: number, y: number, spriteKey: string,) {
-    this.beer = new Beer(this, x, y)
+  constructor(x: number, y: number, spriteKey: string) {
+    this.spriteKey = spriteKey
     this.sprite = CurrentSceneManager.getInstance().getCurrentScene().add.sprite(0, 0, spriteKey, 1)
     this.sprite.setDepth(25)
     this.sprite.scale = Settings.getZoom()
+    this.beer = new Beer(this, x, y)
   }
 
   update(delta: number) {
@@ -23,7 +25,7 @@ export class Player implements PositionHaver, Movable {
   }
 
   initMover(gridPhysics: GridPhysics) {
-    this.mover = new GridMover(this, gridPhysics)
+    this.mover = new GridMover(this, gridPhysics, this.spriteKey)
     this.gridPhysics = gridPhysics
   }
 
@@ -39,22 +41,4 @@ export class Player implements PositionHaver, Movable {
   getSprite() {
     return this.sprite
   }
-
-  // WET code
-  /**
-   * TODO: animations should be a Movable class thing
-   */
-  startAnimation(direction: Direction) {
-    this.sprite.anims.play(direction)
-  }
-
-  stopAnimation(direction: Direction) {
-    const animForDir = this.sprite.anims.animationManager.get(direction)
-    const idleFrame = animForDir.frames[1].frame.name
-    this.sprite.anims.stop()
-    this.sprite.setFrame(idleFrame)
-  }
-  /**
-   * ==================== END =========================
-   */
 }

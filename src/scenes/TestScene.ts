@@ -45,10 +45,10 @@ export class TestScene extends Phaser.Scene {
 
     // create player
     this.player = new Player(3, 3, 'reaper')
-    this.createPlayerAnim(Direction.RIGHT, 6, 8)
-    this.createPlayerAnim(Direction.UP, 9, 11)
-    this.createPlayerAnim(Direction.LEFT, 3, 5)
-    this.createPlayerAnim(Direction.DOWN, 0, 2)
+    this.createAnim('reaper', Direction.RIGHT, 6, 8)
+    this.createAnim('reaper', Direction.UP, 9, 11)
+    this.createAnim('reaper', Direction.LEFT, 3, 5)
+    this.createAnim('reaper', Direction.DOWN, 0, 2)
     this.inputManager.setPlayer(this.player)
 
     // create & set up camera
@@ -70,46 +70,10 @@ export class TestScene extends Phaser.Scene {
       new NPC(1, 5, 'npc', [{type: 'dialogue', msg: 'Why am I alive'}])
     ]
     // TODO: maybe make NPC animations in class... something to think about: recreating NPCs w same animations
-    this.anims.create({
-      key: `npc_${Direction.RIGHT}`,
-      frames: this.anims.generateFrameNumbers('npc', {
-        start: 54 + 24,
-        end: 56 + 24,
-      }),
-      frameRate: 10,
-      repeat: -1,
-      yoyo: true
-    })
-    this.anims.create({
-      key: `npc_${Direction.UP}`,
-      frames: this.anims.generateFrameNumbers('npc', {
-        start: 54 + 36,
-        end: 56 + 36,
-      }),
-      frameRate: 10,
-      repeat: -1,
-      yoyo: true
-    })
-    this.anims.create({
-      key: `npc_${Direction.LEFT}`,
-      frames: this.anims.generateFrameNumbers('npc', {
-        start: 54 + 12,
-        end: 56 + 12,
-      }),
-      frameRate: 10,
-      repeat: -1,
-      yoyo: true
-    })
-    this.anims.create({
-      key: `npc_${Direction.DOWN}`,
-      frames: this.anims.generateFrameNumbers('npc', {
-        start: 54 + 0,
-        end: 56 + 0,
-      }),
-      frameRate: 10,
-      repeat: -1,
-      yoyo: true
-    })
+    this.createAnim('npc', Direction.RIGHT, 54 + 24, 56 + 24)
+    this.createAnim('npc', Direction.UP, 54 + 36, 56 + 36)
+    this.createAnim('npc', Direction.LEFT, 54 + 12, 56 + 12)
+    this.createAnim('npc', Direction.DOWN, 54 + 0, 56 + 0)
 
     // init Grid logic
     const allInteractables = interactables.concat(this.NPCs)
@@ -120,10 +84,10 @@ export class TestScene extends Phaser.Scene {
     )
   }
 
-  createPlayerAnim(name: Direction, startFrames: number, endFrame: number) {
+  createAnim(spriteKey: string, direction: Direction, startFrames: number, endFrame: number) {
     this.anims.create({
-      key: name,
-      frames: this.anims.generateFrameNumbers('reaper', {
+      key: `${spriteKey}_${direction}`,
+      frames: this.anims.generateFrameNumbers(spriteKey, {
         start: startFrames,
         end: endFrame
       }),

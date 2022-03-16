@@ -33,7 +33,8 @@ export class GridMover {
 
   constructor(
     private parent: any, // TODO: this seems like bad practice // any -> GameObject
-    private physicsSystem: GridPhysics
+    private physicsSystem: GridPhysics,
+    private spriteKey?: string
   ) {}
 
   update(delta: number) {
@@ -102,7 +103,7 @@ export class GridMover {
         return false
         break
       case CanMove.COLLIDES:
-        this.parent.stopAnimation(direction) // TODO: assumes animation exists // does this check even have to exist?
+        this.stopAnimation(direction) // TODO: assumes animation exists // does this check even have to exist?
         this.frozen = true
         setTimeout(() => {
           this.frozen = false
@@ -134,14 +135,25 @@ export class GridMover {
     return this.facingDirection
   }
 
+  startAnimation(direction: Direction) {
+    this.parent.sprite.anims.play(`${this.spriteKey}_${direction}`)
+  }
+
+  stopAnimation(direction: Direction) {
+    const animForDir = this.parent.sprite.anims.animationManager.get(`${this.spriteKey}_${direction}`)
+    const idleFrame = animForDir.frames[1].frame.name
+    this.parent.sprite.anims.stop()
+    this.parent.sprite.setFrame(idleFrame)
+  }
+
   private startMoving(direction: Direction) {
-    this.parent.startAnimation(direction) // TODO: assumes animation exists
+    this.startAnimation(direction) // TODO: assumes animation exists
     this.movingDirection = direction
     this.updatePlayerTilePos()
   }
 
   private stopMoving() {
-    this.parent.stopAnimation(this.movingDirection) // TODO: assumes animation exists
+    this.stopAnimation(this.movingDirection) // TODO: assumes animation exists
     this.movingDirection = Direction.NONE
   }
 
