@@ -1,11 +1,10 @@
 import { GridPhysics } from "../../systems/GridPhysics"
 import { Settings } from "../../settings/Settings"
 import { Direction } from "../../types/Direction"
-import { Beer } from "./PositionHaver"
+import { PositionHaver } from "./PositionHaver"
 import { CanMove } from "../../types/CanMove"
 
-export interface Movable {
-  beer: Beer // TODO: should use the Type instead of this (like `interface Movable = { ... } & PositionHaver`)
+export interface Movable extends PositionHaver {
   mover: GridMover
   initMover(physics: GridPhysics)
 }
@@ -32,7 +31,7 @@ export class GridMover {
   frozen: boolean
 
   constructor(
-    private parent: any, // TODO: this seems like bad practice // any -> GameObject
+    private parent: Movable & { sprite: Phaser.GameObjects.Sprite },
     private physicsSystem: GridPhysics,
     private spriteKey?: string
   ) {}

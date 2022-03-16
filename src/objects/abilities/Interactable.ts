@@ -1,7 +1,6 @@
-import { Beer } from "./PositionHaver"
+import { PositionHaver } from "./PositionHaver"
 
-export interface Interactable {
-  beer: Beer
+export interface Interactable extends PositionHaver{
   interactee: Interactee
 }
 

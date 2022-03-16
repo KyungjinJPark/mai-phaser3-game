@@ -6,9 +6,9 @@ import { Movable, GridMover } from "./abilities/Movable"
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
 
 export class Player implements PositionHaver, Movable {
+  public sprite: Phaser.GameObjects.Sprite
   public beer: Beer
   public mover: GridMover
-  private sprite: Phaser.GameObjects.Sprite
   private spriteKey: string
   private gridPhysics: GridPhysics
 
@@ -31,7 +31,8 @@ export class Player implements PositionHaver, Movable {
 
   tryInteract() {
     if (!this.mover.isMoving()) {
-      const interactable = this.gridPhysics.getInteractableAt(this.mover.tilePosInDir(this.mover.getFacingDirection())) // TODO: should this be here?
+      const interactSpot = this.mover.tilePosInDir(this.mover.getFacingDirection())
+      const interactable = this.gridPhysics.getInteractableAt(interactSpot)
       if (interactable !== undefined) {
         interactable.interactee.interact()
       }

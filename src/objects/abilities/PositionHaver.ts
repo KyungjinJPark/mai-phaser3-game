@@ -8,7 +8,7 @@ export class Beer {
   private parentSprite: any // TODO: this seems like bad practice // any -> GameObject
   private tilePos: Phaser.Math.Vector2
 
-  constructor(parent, tileX: number, tileY: number) {
+  constructor(parent: PositionHaver & { sprite: Phaser.GameObjects.Sprite }, tileX: number, tileY: number) {
     this.parentSprite = parent.sprite // TODO: no guarantee that there is a sprite
 
     parent.sprite.setOrigin(0.5, 1)

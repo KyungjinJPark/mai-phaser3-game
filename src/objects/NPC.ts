@@ -8,11 +8,11 @@ import { Movable, GridMover } from "./abilities/Movable"
 import { Interactable, Interactee } from "./abilities/Interactable"
 
 export class NPC implements PositionHaver, Movable, Interactable {
+  public sprite: Phaser.GameObjects.Sprite
   public beer: Beer
   public mover: GridMover
   public interactee: Interactee
   private spriteKey: string 
-  private sprite: Phaser.GameObjects.Sprite
   
   constructor(x: number, y: number, spriteKey: string, interactionCommands?: any[], private movementCommands?: any[]) {
     this.spriteKey = spriteKey
