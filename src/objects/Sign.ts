@@ -10,7 +10,6 @@ export class Sign implements PositionHaver, Interactable {
 
   private dialogueManager: DialogueManager
   private sprite: Phaser.GameObjects.Sprite
-  private tilePos: Phaser.Math.Vector2
 
   constructor(x: number, y: number, message: string) {
     // TODO: consider: sprites need to be created before being
