@@ -19,16 +19,22 @@ export class GridMover {
     [Direction.LEFT]: Vector2.LEFT,
     [Direction.DOWN]: Vector2.DOWN,
   }
+  private movementCommandMap: { [key: string]: Direction } = {
+    'r': Direction.RIGHT,
+    'u': Direction.UP, 
+    'l': Direction.LEFT,
+    'd': Direction.DOWN,
+  }
 
   private movingDirection: Direction = Direction.NONE
   private movingIntent: Direction = Direction.NONE
   private movePixelsPerSecond: number = 100 * Settings.getZoom()
   private pixelsMovedSinceTile = 0
   private facingDirection: Direction = Direction.NONE
+  private frozen: boolean
 
   private movementCommands: any[]
   private cmdsIndex = 0
-  frozen: boolean
 
   constructor(
     private parent: Movable & { sprite: Phaser.GameObjects.Sprite },
@@ -39,32 +45,9 @@ export class GridMover {
   update(delta: number) {
     if (this.isMoving()) {
       this.updatePosition(delta)
-    }
-    if (this.movementCommands !== undefined) {
-      switch (this.movementCommands[this.cmdsIndex]) {
-        case 'r':
-          if (this.tryMove(Direction.RIGHT)) {
-            this.cmdsIndex++
-          }
-          break
-        case 'u':
-          if (this.tryMove(Direction.UP)) {
-            this.cmdsIndex++
-          }
-          break
-        case 'l':
-          if (this.tryMove(Direction.LEFT)) {
-            this.cmdsIndex++
-          }
-          break
-        case 'd':
-          if (this.tryMove(Direction.DOWN)) {
-            this.cmdsIndex++
-          }
-          break
-        default:
-          break
-      }
+    } else if (this.movementCommands !== undefined) {
+      this.tryMove(this.movementCommandMap[this.movementCommands[this.cmdsIndex]])
+      this.cmdsIndex++
       if (this.cmdsIndex >= this.movementCommands.length) {
         this.cmdsIndex = 0
       }
@@ -85,10 +68,8 @@ export class GridMover {
     }
   }
 
-  move(direction: Direction) {
-    this.startMoving(direction)
-    this.facingDirection = direction
-  }
+  // move alias
+  move = this.startMoving
 
   tryMove(direction: Direction): boolean {
     this.movingIntent = direction
@@ -102,12 +83,11 @@ export class GridMover {
         return false
         break
       case CanMove.COLLIDES:
-        this.stopAnimation(direction) // TODO: assumes animation exists // does this check even have to exist?
+        this.stopMoving(direction)
         this.frozen = true
         setTimeout(() => {
           this.frozen = false
-        }, Math.max(100, 500 - this.movePixelsPerSecond));
-        this.facingDirection = direction
+        }, Math.max(100, 500 - this.movePixelsPerSecond))
         return false
         break
       case CanMove.FROZEN:
@@ -130,29 +110,44 @@ export class GridMover {
     return this.parent.beer.getTilePosition().add(this.directionVectors[dir])
   }
 
-  getFacingDirection(): Direction {  // TODO: this is only public because the player
+  getFacingDirection(): Direction {
     return this.facingDirection
   }
 
-  startAnimation(direction: Direction) {
-    this.parent.sprite.anims.play(`${this.spriteKey}_${direction}`)
+  private startAnimation(direction: Direction) {
+    if (this.hasAnimation(direction)) {
+      this.parent.sprite.anims.play(`${this.spriteKey}_${direction}`)
+    }
   }
 
-  stopAnimation(direction: Direction) {
-    const animForDir = this.parent.sprite.anims.animationManager.get(`${this.spriteKey}_${direction}`)
-    const idleFrame = animForDir.frames[1].frame.name
-    this.parent.sprite.anims.stop()
-    this.parent.sprite.setFrame(idleFrame)
+  private stopAnimation(direction: Direction) {
+    if (this.hasAnimation(direction)) {
+      const animForDir = this.parent.sprite.anims.animationManager.get(`${this.spriteKey}_${direction}`)
+      const idleFrame = animForDir.frames[1].frame.name
+      this.parent.sprite.anims.stop()
+      this.parent.sprite.setFrame(idleFrame)
+    }
+  }
+
+  private hasAnimation(direction: Direction): boolean {
+    const animToPlay = `${this.spriteKey}_${direction}`
+    return this.parent.sprite.anims.animationManager.exists(animToPlay)
   }
 
   private startMoving(direction: Direction) {
-    this.startAnimation(direction) // TODO: assumes animation exists
+    this.facingDirection = direction
     this.movingDirection = direction
-    this.updatePlayerTilePos()
+    this.startAnimation(direction)
+    this.updateMovingTilePos()
   }
 
-  private stopMoving() {
-    this.stopAnimation(this.movingDirection) // TODO: assumes animation exists
+  private stopMoving(direction?: Direction) {
+    if (direction !== undefined) {
+      this.stopAnimation(direction)
+      this.facingDirection = direction
+    } else {
+      this.stopAnimation(this.movingDirection)
+    }
     this.movingDirection = Direction.NONE
   }
 
@@ -164,23 +159,23 @@ export class GridMover {
       this.moveSprite(pixelsToMove)
     } else if (this.shouldContinueMove()) { // has moving intention
       this.moveSprite(pixelsToMove)
-      this.updatePlayerTilePos()
+      this.updateMovingTilePos()
     } else {
       this.moveSprite(Settings.getTileSize() - this.pixelsMovedSinceTile)
       this.stopMoving()
     }
   }
   
-  private willCrossBorder(pixelsToMove: number): boolean {
-    return this.pixelsMovedSinceTile + pixelsToMove >= Settings.getTileSize()
-  }
-
   private moveSprite(pixelsToMove: number) { // should this have a reference to parent?
     const moveVect = this.directionVectors[this.movingDirection].clone()
     const newPos = this.parent.beer.getPosition().add(moveVect.scale(pixelsToMove))
     this.pixelsMovedSinceTile += pixelsToMove
     this.pixelsMovedSinceTile %= Settings.getTileSize()
     this.parent.beer.setPosition(newPos)
+  }
+  
+  private willCrossBorder(pixelsToMove: number): boolean {
+    return this.pixelsMovedSinceTile + pixelsToMove >= Settings.getTileSize()
   }
 
   private shouldContinueMove() {
@@ -190,11 +185,11 @@ export class GridMover {
     )
   }
   
-  private isBlockedInDir(dir: Direction): boolean { // TODO: should be in GridPhysics. Movers should ask if they can move then move with confidence
+  private isBlockedInDir(dir: Direction): boolean {
     return this.physicsSystem.hasCollisionTileAt(this.tilePosInDir(dir))
   }
 
-  private updatePlayerTilePos() {
+  private updateMovingTilePos() {
     this.parent.beer.setTilePosition(
       this.parent.beer.getTilePosition().add(this.directionVectors[this.movingDirection])
     )

@@ -8,6 +8,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - lots of TODOs
   - reconsider approach to composition
   - organize an order of initialization and dependency bind timings
+  - typing interactionCommands & movementCommands
 - Party
   - party members follow you
   - not collidable to you or eachother, but are to everything else
