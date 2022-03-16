@@ -43,21 +43,20 @@ export class TestScene extends Phaser.Scene {
       layer.scale = Settings.getZoom()
     }
 
-    // init player // TODO: maybe shouldn't be here
-    const playerSprite = this.add.sprite(0, 0, 'reaper', 1)
-    playerSprite.setDepth(25)
-    playerSprite.scale = Settings.getZoom()
-    const mapWidth = map.widthInPixels * Settings.getZoom()
-    const mapHeight = map.heightInPixels * Settings.getZoom()
-    this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
-    this.cameras.main.startFollow(playerSprite)
-    this.cameras.main.roundPixels = true // it do bleed.. only sometimes
-    this.player = new Player(3, 3, playerSprite)
+    // create player
+    this.player = new Player(3, 3, 'reaper')
     this.createPlayerAnim(Direction.RIGHT, 6, 8)
     this.createPlayerAnim(Direction.UP, 9, 11)
     this.createPlayerAnim(Direction.LEFT, 3, 5)
     this.createPlayerAnim(Direction.DOWN, 0, 2)
     this.inputManager.setPlayer(this.player)
+
+    // create & set up camera
+    const mapWidth = map.widthInPixels * Settings.getZoom()
+    const mapHeight = map.heightInPixels * Settings.getZoom()
+    this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
+    this.cameras.main.startFollow(this.player.getSprite())
+    this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     
     const interactables: Interactable[] = [
       new Sign(31, 0, 'boja sitkny'),
@@ -119,8 +118,6 @@ export class TestScene extends Phaser.Scene {
       allInteractables, // TODO: this seems wierd to have to do
       [this.player, this.NPCs[0]]
     )
-    // this.gridPhysics.registerMovables([this.player, this.NPCs_MANUAL[0][3]])
-    // this.gridPhysics.registerInteractables(this.interactables_MANUAL)
   }
 
   createPlayerAnim(name: Direction, startFrames: number, endFrame: number) {
