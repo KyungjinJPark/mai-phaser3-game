@@ -80,7 +80,7 @@ export class InputManager {
       const canMove = this.player.mover.canMove(moveDir)
       if (canMove === CanMove.YES) {
         moveSucc = this.player.mover.tryMove(moveDir)
-      } else if (canMove === CanMove.COLLIDES) { // TODO: causes minor flashing
+      } else if (canMove === CanMove.COLLIDES) {
         this.player.mover.tryMove(moveDir)
         moveSucc = true
       }

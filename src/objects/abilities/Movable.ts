@@ -29,6 +29,7 @@ export class GridMover {
 
   private movementCommands: any[]
   private cmdsIndex = 0
+  frozen: boolean
 
   constructor(
     private parent: any, // TODO: this seems like bad practice // any -> GameObject
@@ -77,6 +78,8 @@ export class GridMover {
       return CanMove.IS_MOVING
     } else if (this.isBlockedInDir(direction)) {
       return CanMove.COLLIDES
+    } else if (this.frozen) {
+      return CanMove.FROZEN
     } else {
       return CanMove.YES
     }
@@ -94,12 +97,22 @@ export class GridMover {
       case CanMove.YES:
         this.move(direction)
         return true
+        break
       case CanMove.IS_MOVING:
         return false
+        break
       case CanMove.COLLIDES:
         this.parent.stopAnimation(direction) // TODO: assumes animation exists // does this check even have to exist?
+        this.frozen = true
+        setTimeout(() => {
+          this.frozen = false
+        }, Math.max(100, 500 - this.movePixelsPerSecond));
         this.facingDirection = direction
         return false
+        break
+      case CanMove.FROZEN:
+        return false
+        break
       default:
         throw new Error("Invalid canMove value")
     }
