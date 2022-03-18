@@ -37,7 +37,7 @@ export class GridMover {
   private cmdsIndex = 0
 
   constructor(
-    private parent: Movable & { sprite: Phaser.GameObjects.Sprite },
+    private parent: Movable,
     private physicsSystem: GridPhysics,
     private spriteKey?: string
   ) {}

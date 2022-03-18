@@ -1,19 +1,20 @@
 import { Settings } from "../../settings/Settings"
 
 export interface PositionHaver {
+  sprite: Phaser.GameObjects.Sprite
   beer: Beer // TODO: ... this naming system kinda bad
 }
 
 export class Beer {
-  private parentSprite: any // TODO: this seems like bad practice // any -> GameObject
+  private parentSprite: Phaser.GameObjects.Sprite
   private tilePos: Phaser.Math.Vector2
 
-  constructor(parent: PositionHaver & { sprite: Phaser.GameObjects.Sprite }, tileX: number, tileY: number) {
-    this.parentSprite = parent.sprite // TODO: no guarantee that there is a sprite
+  constructor(parent: PositionHaver, tileX: number, tileY: number) {
+    this.parentSprite = parent.sprite
 
     parent.sprite.setOrigin(0.5, 1)
     const offsetX = Settings.getTileSize() / 2
-    const offsetY = Settings.getTileSize() // TODO: what are these for?
+    const offsetY = Settings.getTileSize()
     parent.sprite.setPosition(
       tileX * Settings.getTileSize() + offsetX,
       tileY * Settings.getTileSize() + offsetY
