@@ -46,10 +46,13 @@ export class GridMover {
     if (this.isMoving()) {
       this.updatePosition(delta)
     } else if (this.movementCommands !== undefined) {
-      this.tryMove(this.movementCommandMap[this.movementCommands[this.cmdsIndex]])
-      this.cmdsIndex++
-      if (this.cmdsIndex >= this.movementCommands.length) {
-        this.cmdsIndex = 0
+      const currMoveDir = this.movementCommandMap[this.movementCommands[this.cmdsIndex]]
+      if (this.canMove(currMoveDir) === CanMove.YES) {
+        this.tryMove(currMoveDir)
+        this.cmdsIndex++
+        if (this.cmdsIndex >= this.movementCommands.length) {
+          this.cmdsIndex = 0
+        } 
       }
     }
     this.movingIntent = Direction.NONE
