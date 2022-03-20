@@ -38,10 +38,10 @@ export class GridPhysics { // custom physics system
       const tile = this.map.getTileAt(tilePos.x, tilePos.y, false, layer.name)
       return (tile && tile.properties.collides)
     })
-    // is there a dude here?
-    this.movables.forEach(movable => { // TODO: assumes all movables are collidable (also that non-movables are not collidable)
-      const personHere = movable.beer.getTilePosition().equals(tilePos) // TODO: assumes all movables have positions, which should be true, but not enforced in code
-      answer = answer || personHere
+    // is there a registered collidable here?
+    const registereds = [].concat(this.interactables, this.movables)
+    answer = answer || registereds.some(obj => {
+      return obj.beer.isCollidable() && obj.beer.getTilePosition().equals(tilePos)
     })
     return answer
   }

@@ -76,11 +76,10 @@ export class TestScene extends Phaser.Scene {
     this.createAnim('npc', Direction.DOWN, 54 + 0, 56 + 0)
 
     // init Grid logic
-    const allInteractables = interactables.concat(this.NPCs)
     this.gridPhysics = new GridPhysics(
       map,
-      allInteractables, // TODO: this seems wierd to have to do
-      [this.player, this.NPCs[0]]
+      [].concat(interactables, this.NPCs),
+      [].concat(this.NPCs, this.player)
     )
   }
 

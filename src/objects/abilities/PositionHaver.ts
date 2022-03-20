@@ -8,8 +8,9 @@ export interface PositionHaver {
 export class Beer {
   private parentSprite: Phaser.GameObjects.Sprite
   private tilePos: Phaser.Math.Vector2
+  private collidable: boolean
 
-  constructor(parent: PositionHaver, tileX: number, tileY: number) {
+  constructor(parent: PositionHaver, tileX: number, tileY: number, collidable: boolean = true) {
     this.parentSprite = parent.sprite
 
     parent.sprite.setOrigin(0.5, 1)
@@ -21,6 +22,7 @@ export class Beer {
     )
 
     this.tilePos = new Phaser.Math.Vector2(tileX, tileY)
+    this.collidable = collidable
   }
   
   getPosition() {
@@ -37,5 +39,9 @@ export class Beer {
 
   setTilePosition(pos: Phaser.Math.Vector2) {
     this.tilePos = pos.clone()
+  }
+
+  isCollidable() {
+    return this.collidable
   }
 }
