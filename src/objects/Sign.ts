@@ -19,7 +19,7 @@ export class Sign implements PositionHaver, Interactable {
     this.beer = new Beer(this, x, y)
     
     this.dialogueManager = DialogueManager.getInstance()
-    this.interactee = {
+    this.interactee = { // TODO: construct interactee based on interactionCmds
       interact: () => {
         this.dialogueManager.showDialogue(message)
       }

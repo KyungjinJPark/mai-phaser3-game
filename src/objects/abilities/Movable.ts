@@ -8,7 +8,9 @@ export interface Movable extends PositionHaver {
   mover: GridMover
   initMover(physics: GridPhysics)
 }
-  
+
+export type MovementCommand = 'r' | 'u' | 'l' | 'd'
+
 const Vector2 = Phaser.Math.Vector2
 
 export class GridMover {
@@ -33,7 +35,7 @@ export class GridMover {
   private facingDirection: Direction = Direction.NONE
   private frozen: boolean
 
-  private movementCommands: any[]
+  private movementCommands: MovementCommand[]
   private cmdsIndex = 0
 
   constructor(
@@ -101,7 +103,7 @@ export class GridMover {
     }
   }
   
-  setMovementCommands(movementCommands: any[]) {
+  setMovementCommands(movementCommands: MovementCommand[]) {
     this.movementCommands = movementCommands
   }
 

@@ -4,8 +4,8 @@ import { GridPhysics } from "../systems/GridPhysics"
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction"
 import { Beer, PositionHaver } from "./abilities/PositionHaver"
-import { Movable, GridMover } from "./abilities/Movable"
-import { Interactable, Interactee } from "./abilities/Interactable"
+import { Movable, GridMover, MovementCommand } from "./abilities/Movable"
+import { Interactable, Interactee, interactionCommand } from "./abilities/Interactable"
 
 export class NPC implements PositionHaver, Movable, Interactable {
   public sprite: Phaser.GameObjects.Sprite
@@ -14,7 +14,7 @@ export class NPC implements PositionHaver, Movable, Interactable {
   public interactee: Interactee
   private spriteKey: string 
   
-  constructor(x: number, y: number, spriteKey: string, interactionCommands?: any[], private movementCommands?: any[]) {
+  constructor(x: number, y: number, spriteKey: string, interactionCommands?: interactionCommand[], private movementCommands?: MovementCommand[]) {
     this.spriteKey = spriteKey
     this.sprite = CurrentSceneManager.getInstance().getCurrentScene().add.sprite(0, 0, spriteKey, 55)
     this.sprite.setDepth(25)
@@ -25,7 +25,7 @@ export class NPC implements PositionHaver, Movable, Interactable {
     const dm = DialogueManager.getInstance()
     this.interactee = {
       interact: () => {
-        interactionCommands.forEach(cmd => {
+        interactionCommands.forEach(cmd => { // TODO: construct interactee based on interactionCmds
           switch (cmd.type) {
             case 'dialogue':
               dm.showDialogue(cmd.msg)
