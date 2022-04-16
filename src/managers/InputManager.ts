@@ -2,6 +2,7 @@ import { GridPhysics } from "../systems/GridPhysics"
 import { Direction } from "../types/Direction"
 import { Player } from "../objects/Player"
 import { CanMove } from "../types/CanMove"
+import { Partier } from "../objects/Partier"
 
 export class InputManager {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -11,6 +12,8 @@ export class InputManager {
   // private lastMove: Direction
   // private newMoves: Direction[]
   private player: Player
+  private partiers: Partier[]
+  private moveQueue: Direction[]
 
   constructor(input: Phaser.Input.InputPlugin) {
     this.cursors = input.keyboard.createCursorKeys()
@@ -18,6 +21,8 @@ export class InputManager {
     this.commandsThisFrame = []
     // this.keysDownLastTick = []
     // this.newMoves = []
+    this.partiers = []
+    this.moveQueue = []
     this.create()
   }
 
@@ -73,30 +78,59 @@ export class InputManager {
 
   update() {
     let moveSucc = false
+    let moveDir
 
     const numCommandsThisFrame = this.commandsThisFrame.length
     if (numCommandsThisFrame !== 0) {
-      const moveDir = this.commandsThisFrame[numCommandsThisFrame - 1]
+      moveDir = this.commandsThisFrame[numCommandsThisFrame - 1]
+    } else {
+      const numAllCommands = this.allCommands.length
+      if (numAllCommands !== 0) {
+        moveDir = this.allCommands[numAllCommands - 1]
+      }
+    }
+    
+    if (moveDir !== undefined) {
       const canMove = this.player.mover.canMove(moveDir)
       if (canMove === CanMove.YES) {
-        moveSucc = this.player.mover.tryMove(moveDir)
+        moveSucc = this.doMove(moveDir) 
       } else if (canMove === CanMove.COLLIDES) {
         this.player.mover.tryMove(moveDir)
         moveSucc = true
       }
-    } else {
-      const numAllCommands = this.allCommands.length
-      if (numAllCommands !== 0) {
-        moveSucc = this.player.mover.tryMove(this.allCommands[numAllCommands - 1])
-      }
     }
-
+      
     if (moveSucc) {
       this.commandsThisFrame = []
     }
   }
 
+  private doMove(moveDir: Direction) {
+    const moveSucc = this.player.mover.tryMove(moveDir)
+    this.moveQueue.forEach((dir, i) => {
+      this.partiers.at(i).mover.tryMove(dir)
+    })
+
+    if (moveSucc) {
+      console.log(this.moveQueue.toString())
+
+      this.moveQueue.splice(0, 0, moveDir)
+      if (this.moveQueue.length > this.partiers.length) {
+        this.moveQueue.pop()
+      }
+    }
+    return moveSucc
+  }
+
   setPlayer(player: Player) {
     this.player = player
+  }
+
+  setPartier(partier: Partier, index?: number) {
+    if (index !== undefined) {
+      this.partiers.splice(index, 0, partier)
+    } else {
+      this.partiers.push(partier)
+    }
   }
 }

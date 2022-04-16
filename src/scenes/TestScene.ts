@@ -13,6 +13,7 @@ import { Player } from '../objects/Player'
 import { NPC } from "../objects/NPC"
 import { Sign } from "../objects/Sign"
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
+import { Partier } from "../objects/Partier"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene'
@@ -22,8 +23,9 @@ export class TestScene extends Phaser.Scene {
   private inputManager: InputManager
   private gridPhysics: GridPhysics
   private player: Player
+  private partiers: Partier[]
   private NPCs: NPC[]
-
+  
   constructor () {
     super(testSceneConfig)
   }
@@ -42,6 +44,12 @@ export class TestScene extends Phaser.Scene {
       layer.setDepth(i*10)
       layer.scale = Settings.getZoom()
     }
+
+
+    // create partier
+    this.partiers = [new Partier(3, 3, 'reaper'), new Partier(3, 3, 'reaper')]
+    this.inputManager.setPartier(this.partiers[0], 0)
+    this.inputManager.setPartier(this.partiers[1], 1)
 
     // create player
     this.player = new Player(3, 3, 'reaper')
@@ -79,7 +87,7 @@ export class TestScene extends Phaser.Scene {
     this.gridPhysics = new GridPhysics(
       map,
       [].concat(interactables, this.NPCs),
-      [].concat(this.NPCs, this.player)
+      [].concat(this.player, this.partiers, this.NPCs)
     )
   }
 
@@ -99,6 +107,9 @@ export class TestScene extends Phaser.Scene {
   public update (_time: number, delta: number) {
     this.inputManager.update()
     this.player.update(delta)
+    this.partiers.forEach((partier) => {
+      partier.update(delta)
+    })
     this.NPCs.forEach((npc) => {
       npc.update(delta)
     })
