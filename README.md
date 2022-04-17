@@ -4,9 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Party
-  - ✔️ party members follow you
-  - not collidable to you or eachother, but are to everything else
 - Scene transitions
   - saving scene state
 - Different interactions
@@ -67,6 +64,9 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
     - *Couldn't get TS mixins to enforce the proper constructor for chained mixins*
   - organize an order of initialization and dependency bind timings
   - typing interactionCommands & movementCommands
+- Party
+  - party members follow you
+  - not collidable to you or eachother, but are to everything else
 
 ---
 

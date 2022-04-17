@@ -25,7 +25,7 @@ export class Player implements PositionHaver, Movable {
   }
 
   initMover(gridPhysics: GridPhysics) {
-    this.mover = new GridMover(this, gridPhysics, this.spriteKey)
+    this.mover = new GridMover(this, gridPhysics, this.spriteKey, true)
     this.gridPhysics = gridPhysics
   }
 

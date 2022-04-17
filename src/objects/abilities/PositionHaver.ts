@@ -1,4 +1,5 @@
 import { Settings } from "../../settings/Settings"
+import { Collidable } from "../../types/Collidable"
 
 export interface PositionHaver {
   sprite: Phaser.GameObjects.Sprite
@@ -8,9 +9,9 @@ export interface PositionHaver {
 export class Beer {
   private parentSprite: Phaser.GameObjects.Sprite
   private tilePos: Phaser.Math.Vector2
-  private collidable: boolean
+  private collidable: Collidable
 
-  constructor(parent: PositionHaver, tileX: number, tileY: number, collidable: boolean = true) {
+  constructor(parent: PositionHaver, tileX: number, tileY: number, collidable: Collidable = Collidable.YES) {
     this.parentSprite = parent.sprite
 
     parent.sprite.setOrigin(0.5, 1)
@@ -41,7 +42,7 @@ export class Beer {
     this.tilePos = pos.clone()
   }
 
-  isCollidable() {
+  getCollidableType(): Collidable {
     return this.collidable
   }
 }

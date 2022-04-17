@@ -89,7 +89,7 @@ export class InputManager {
         moveDir = this.allCommands[numAllCommands - 1]
       }
     }
-    
+
     if (moveDir !== undefined) {
       const canMove = this.player.mover.canMove(moveDir)
       if (canMove === CanMove.YES) {
@@ -108,7 +108,7 @@ export class InputManager {
   private doMove(moveDir: Direction) {
     const moveSucc = this.player.mover.tryMove(moveDir)
     this.moveQueue.forEach((dir, i) => {
-      this.partiers.at(i).mover.tryMove(dir)
+      this.partiers.at(i).mover.move(dir)
     })
 
     if (moveSucc) {

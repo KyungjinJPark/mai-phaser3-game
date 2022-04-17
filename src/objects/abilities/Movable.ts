@@ -3,6 +3,7 @@ import { Settings } from "../../settings/Settings"
 import { Direction } from "../../types/Direction"
 import { PositionHaver } from "./PositionHaver"
 import { CanMove } from "../../types/CanMove"
+import { Collidable } from "../../types/Collidable"
 
 export interface Movable extends PositionHaver {
   mover: GridMover
@@ -41,7 +42,8 @@ export class GridMover {
   constructor(
     private parent: Movable,
     private physicsSystem: GridPhysics,
-    private spriteKey?: string
+    private spriteKey?: string,
+    private isPlayer: boolean = false,
   ) {}
 
   update(delta: number) {
@@ -64,7 +66,7 @@ export class GridMover {
   canMove(direction: Direction): CanMove {
     if (this.isMoving()) {
       return CanMove.IS_MOVING
-    } else if (this.isBlockedInDir(direction)) {
+    } else if (this.isCollidableInDir(direction)) {
       return CanMove.COLLIDES
     } else if (this.frozen) {
       return CanMove.FROZEN
@@ -186,12 +188,25 @@ export class GridMover {
   private shouldContinueMove() {
     return (
       this.movingIntent === this.movingDirection &&
-      !this.isBlockedInDir(this.movingDirection)
+      !this.isCollidableInDir(this.movingDirection)
     )
   }
   
-  private isBlockedInDir(dir: Direction): boolean {
-    return this.physicsSystem.hasCollisionTileAt(this.tilePosInDir(dir))
+  private isCollidableInDir(dir: Direction): boolean {
+    const types = this.physicsSystem.getCollisionTypesAt(this.tilePosInDir(dir))
+    if (types.includes(Collidable.YES)) {
+      return true
+    }
+    if (this.isPlayer) {
+      if (types.includes(Collidable.TO_PLAYERS)) {
+        return true
+      }
+    } else {
+      if (types.includes(Collidable.TO_NON_PLAYERS)) {
+        return true
+      }
+    }
+    return false
   }
 
   private updateMovingTilePos() {

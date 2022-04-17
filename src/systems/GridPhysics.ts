@@ -3,6 +3,8 @@ import { Direction } from "../types/Direction"
 import { Movable, GridMover } from "../objects/abilities/Movable"
 import { Interactable } from "../objects/abilities/Interactable"
 import { Player } from '../objects/Player'
+import { Collidable } from "../types/Collidable"
+import { PositionHaver } from "../objects/abilities/PositionHaver"
 
 // aliases
 
@@ -30,20 +32,25 @@ export class GridPhysics { // custom physics system
   //   // }
   // }
 
-  hasCollisionTileAt(tilePos: Phaser.Math.Vector2): boolean {
+  getCollisionTypesAt(tilePos: Phaser.Math.Vector2): Collidable[] {
     let answer = false
     // does map collision tile here?
-    if (!this.mapHasTileAt(tilePos)) return true
-    answer = answer || this.map.layers.some((layer) => {
+    if (!this.mapHasTileAt(tilePos)) return [Collidable.YES]
+    answer = this.map.layers.some((layer) => {
       const tile = this.map.getTileAt(tilePos.x, tilePos.y, false, layer.name)
       return (tile && tile.properties.collides)
     })
+    if (answer) return [Collidable.YES]
     // is there a registered collidable here?
-    const registereds = [].concat(this.interactables, this.movables)
-    answer = answer || registereds.some(obj => {
-      return obj.beer.isCollidable() && obj.beer.getTilePosition().equals(tilePos)
+    const collideTypes = new Set()
+    const registereds: PositionHaver[] = [].concat(this.interactables, this.movables)
+    registereds.forEach(obj => {
+      if (obj.beer.getTilePosition().equals(tilePos)) {
+        collideTypes.add(obj.beer.getCollidableType())
+      }
     })
-    return answer
+    const types: Collidable[] = Array.from(collideTypes) as any
+    return types
   }
 
   private mapHasTileAt(tilePos: Phaser.Math.Vector2) {
