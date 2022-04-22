@@ -36,7 +36,7 @@ export class NPC implements PositionHaver, Movable, Interactable {
           case 'animation':
             this.sprite.anims.play(cmd.animation)
             this.sprite.on('animationcomplete', () => {
-              this.sprite.on('animationcomplete', () => {})
+              this.sprite.removeListener('animationcomplete')
               doInteractionStep(step + 1)
             })
             break

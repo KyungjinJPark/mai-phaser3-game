@@ -82,9 +82,13 @@ export class TestScene extends Phaser.Scene {
       new NPC(1, 5, 'npc', [
         {type: 'dialogue', dialogue: 'Why am I alive'},
         {type: 'animation', animation: 'npc_spin'},
-        {type: 'transition', transition: 'TestScene2'},
         {type: 'function', function: () => {console.log('function0')}},
         {type: 'function', function: () => {setTimeout(() => {console.log('function1')}, 1000)}},
+        
+        {type: 'animation', animation: 'npc_spin'},
+        {type: 'function', function: () => {console.log('function0')}},
+        {type: 'animation', animation: 'npc_spin'},
+        {type: 'transition', transition: 'TestScene2'},
       ]),
     ]
     this.anims.create({
