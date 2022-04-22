@@ -14,6 +14,7 @@ import { Player } from '../objects/Player'
 import { NPC } from "../objects/NPC"
 import { Sign } from "../objects/Sign"
 import { Partier } from "../objects/Partier"
+import { Door } from "../objects/Door"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene2'
@@ -70,7 +71,7 @@ export class TestScene2 extends Phaser.Scene {
       // new Sign(31, 0, 'boja sitkny'),
       // new Sign(5, 1, 'RIP our dog\nHEE HEE HOO HOO'),
       // new Sign(10, 7, 'our house'),
-      new Sign(18, 21, '<-- somewhere\n--> somewhere else'),
+      new Door(18, 6, 'TestScene'),
     ]
 
     this.NPCs = [

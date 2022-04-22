@@ -19,7 +19,7 @@ export class Door implements PositionHaver, Interactable {
 
     this.interactee = { // TODO: construct interactee based on interactionCmds
       interact: () => {
-        currScene.scene.start(sceneName) // TODO: should scene changing be here
+        currScene.scene.switch(sceneName) // TODO: should scene changing be here
       }
     }
   }

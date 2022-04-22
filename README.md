@@ -4,8 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Scene transitions
-  - saving scene state
 - Different interactions
   - ✔️ enter dialogue
   - cause animation
@@ -67,6 +65,8 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 - Party
   - party members follow you
   - not collidable to you or eachother, but are to everything else
+- Scene transitions
+  - saving scene state
 
 ---
 
