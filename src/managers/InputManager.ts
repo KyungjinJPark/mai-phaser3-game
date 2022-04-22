@@ -112,8 +112,6 @@ export class InputManager {
     })
 
     if (moveSucc) {
-      console.log(this.moveQueue.toString())
-
       this.moveQueue.splice(0, 0, moveDir)
       if (this.moveQueue.length > this.partiers.length) {
         this.moveQueue.pop()

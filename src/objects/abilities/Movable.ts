@@ -51,13 +51,14 @@ export class GridMover {
       this.updatePosition(delta)
     } else if (this.movementCommands !== undefined) {
       const currMoveDir = this.movementCommandMap[this.movementCommands[this.cmdsIndex]]
-      if (this.canMove(currMoveDir) === CanMove.YES) {
-        this.tryMove(currMoveDir)
-        this.cmdsIndex++
-        if (this.cmdsIndex >= this.movementCommands.length) {
-          this.cmdsIndex = 0
-        } 
-      }
+      // if (this.canMove(currMoveDir) === CanMove.YES) {
+        if (this.tryMove(currMoveDir)) {
+          this.cmdsIndex++
+          if (this.cmdsIndex >= this.movementCommands.length) {
+            this.cmdsIndex = 0
+          } 
+        }
+      // }
     }
     this.movingIntent = Direction.NONE
   }

@@ -11,7 +11,8 @@ export class BootScene extends Phaser.Scene {
 
   public preload () {
     this.load.image('green_tiles', 'assets/map/ss_green_tiles.png')
-    this.load.tilemapTiledJSON('green_map', 'assets/map/tiled_test.json')
+    this.load.tilemapTiledJSON('green_map_0', 'assets/map/tiled_test_0.json')
+    this.load.tilemapTiledJSON('green_map_1', 'assets/map/tiled_test_1.json')
     this.load.spritesheet('reaper', 'assets/ss_reaper_blade.png', {
       frameWidth: 32,
       frameHeight: 36

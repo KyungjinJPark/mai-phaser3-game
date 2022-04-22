@@ -3,6 +3,7 @@ import * as Phaser from 'phaser'
 import { BootScene } from './scenes/BootScene'
 import { HUDScene } from './scenes/HUDScene'
 import { TestScene } from './scenes/TestScene'
+import { TestScene2 } from './scenes/TestScene2'
 
 import { DialogueModalPlugin } from './plugins/DialogueModal'
 
@@ -26,6 +27,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     BootScene,
     HUDScene, // brought to the top in its create()
     TestScene,
+    TestScene2,
   ],
 
   parent: 'game',

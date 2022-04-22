@@ -14,13 +14,12 @@ import { Player } from '../objects/Player'
 import { NPC } from "../objects/NPC"
 import { Sign } from "../objects/Sign"
 import { Partier } from "../objects/Partier"
-import { Door } from "../objects/Door"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
-  key: 'TestScene'
+  key: 'TestScene2'
 }
 
-export class TestScene extends Phaser.Scene {
+export class TestScene2 extends Phaser.Scene {
   private inputManager: InputManager
   private gridPhysics: GridPhysics
   private player: Player
@@ -38,7 +37,7 @@ export class TestScene extends Phaser.Scene {
     this.inputManager = new InputManager(this.input)
 
     // make map
-    let map = this.make.tilemap({ key: 'green_map_0' })
+    let map = this.make.tilemap({ key: 'green_map_1' })
     let tiles = map.addTilesetImage('green_tiles', 'green_tiles')
     for (let i = 0; i < map.layers.length; i++) {
       const layer = map.createLayer(i, tiles)
@@ -68,16 +67,15 @@ export class TestScene extends Phaser.Scene {
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     
     const interactables: Interactable[] = [
-      new Sign(31, 0, 'boja sitkny'),
-      new Sign(5, 1, 'RIP our dog\nHEE HEE HOO HOO'),
-      new Door(9, 7, 'TestScene2'),
-      new Sign(10, 7, 'our house'),
-      // new Sign(18, 21, '<-- somewhere\n--> somewhere else'),
+      // new Sign(31, 0, 'boja sitkny'),
+      // new Sign(5, 1, 'RIP our dog\nHEE HEE HOO HOO'),
+      // new Sign(10, 7, 'our house'),
+      new Sign(18, 21, '<-- somewhere\n--> somewhere else'),
     ]
 
     this.NPCs = [
-      new NPC(5, 4, 'npc', [{type: 'dialogue', msg: '2 fast 2 quick'}], ['l','u','u','r','r','d','d','l']),
-      new NPC(1, 5, 'npc', [{type: 'dialogue', msg: 'Why am I alive'}])
+      new NPC(7, 10, 'npc', [{type: 'dialogue', msg: '2 fast 2 quick'}], ['l','u','u','r','r','d','d','l']),
+      // new NPC(1, 5, 'npc', [{type: 'dialogue', msg: 'Why am I alive'}])
     ]
     // TOmaybeDO: make NPC animations in class. something to think about: recreating NPCs w same animations
     this.createAnim('npc', Direction.RIGHT, 54 + 24, 56 + 24)
