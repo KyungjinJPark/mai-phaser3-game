@@ -3,8 +3,10 @@ import { Direction } from "../types/Direction"
 import { Player } from "../objects/Player"
 import { CanMove } from "../types/CanMove"
 import { Partier } from "../objects/Partier"
+import { CurrentSceneManager } from "./CurrentSceneManager"
 
 export class InputManager {
+  private input: Phaser.Input.InputPlugin
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
   private allCommands: Direction[]
   private commandsThisFrame: Direction[]
@@ -16,6 +18,7 @@ export class InputManager {
   private moveQueue: Direction[]
 
   constructor(input: Phaser.Input.InputPlugin) {
+    this.input = input
     this.cursors = input.keyboard.createCursorKeys()
     this.allCommands = []
     this.commandsThisFrame = []
@@ -27,10 +30,21 @@ export class InputManager {
   }
 
   create() {
+    // TODO: Input manager getting a bit too coupled with other systems
+
+    // Pause game
+    const escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
+    escKey.on('down', () => {
+      // new Phaser.Events.EventEmitter()
+      CurrentSceneManager.getInstance().getCurrentScene().scene.pause()
+    })
+
+    // Interact controls
     this.cursors.space.on('down', () => {
       this.player.tryInteract()
     })
 
+    // Movement controls
     this.cursors.right.on('down', () => {
       this.allCommands.push(Direction.RIGHT)
       this.commandsThisFrame.push(Direction.RIGHT)
