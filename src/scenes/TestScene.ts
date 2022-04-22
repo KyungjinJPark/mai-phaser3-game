@@ -78,9 +78,23 @@ export class TestScene extends Phaser.Scene {
     ]
 
     this.NPCs = [
-      new NPC(5, 4, 'npc', [{type: 'dialogue', msg: '2 fast 2 quick'}], ['l','u','u','r','r','d','d','l']),
-      new NPC(1, 5, 'npc', [{type: 'dialogue', msg: 'Why am I alive'}])
+      new NPC(5, 4, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}, {type: 'animation', animation: 'npc_spin'}], ['l','u','u','r','r','d','d','l']),
+      new NPC(1, 5, 'npc', [
+        {type: 'dialogue', dialogue: 'Why am I alive'},
+        {type: 'animation', animation: 'npc_spin'},
+        {type: 'transition', transition: 'TestScene2'},
+        {type: 'function', function: () => {console.log('function0')}},
+        {type: 'function', function: () => {setTimeout(() => {console.log('function1')}, 1000)}},
+      ]),
     ]
+    this.anims.create({
+      key: `npc_spin`,
+      frames: this.anims.generateFrameNumbers('npc', {
+        frames: [55, 54, 54, 54, 56, 54+24, 56+36, 54+12, 56, 56, 55]
+      }),
+      frameRate: 10,
+    })
+
     // TOmaybeDO: make NPC animations in class. something to think about: recreating NPCs w same animations
     this.createAnim('npc', Direction.RIGHT, 54 + 24, 56 + 24)
     this.createAnim('npc', Direction.UP, 54 + 36, 56 + 36)

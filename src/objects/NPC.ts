@@ -16,27 +16,52 @@ export class NPC implements PositionHaver, Movable, Interactable {
   
   constructor(x: number, y: number, spriteKey: string, interactionCommands?: interactionCommand[], private movementCommands?: MovementCommand[]) {
     this.spriteKey = spriteKey
-    this.sprite = CurrentSceneManager.getInstance().getCurrentScene().add.sprite(0, 0, spriteKey, 55)
+    const thisScene = CurrentSceneManager.getInstance().getCurrentScene()
+    this.sprite = thisScene.add.sprite(0, 0, spriteKey, 55)
     this.sprite.setDepth(25)
     this.sprite.scale = Settings.getZoom()
     this.beer = new Beer(this, x, y)
     
     // Implement these interaction Commands and Movement Commands
     const dm = DialogueManager.getInstance()
+
+    const doInteractionStep =  async (step: number) => {
+      if (step < interactionCommands.length) {
+        const cmd = interactionCommands[step]
+        switch (cmd.type) {
+          case 'dialogue':
+            dm.showDialogue(cmd.dialogue)
+            doInteractionStep(step + 1)
+            break
+          case 'animation':
+            this.sprite.anims.play(cmd.animation)
+            this.sprite.on('animationcomplete', () => {
+              this.sprite.on('animationcomplete', () => {})
+              doInteractionStep(step + 1)
+            })
+            break
+          case 'transition':
+            thisScene.scene.switch(cmd.transition)
+            doInteractionStep(step + 1)
+            break
+          case 'function':
+            cmd.function()
+            doInteractionStep(step + 1)
+            break
+          default:
+            break
+        }
+      }
+    }
+
     this.interactee = {
       interact: () => {
-        interactionCommands.forEach(cmd => { // TODO: construct interactee based on interactionCmds
-          switch (cmd.type) {
-            case 'dialogue':
-              dm.showDialogue(cmd.msg)
-              break
-            default:
-              break
-          }
-        })
+        doInteractionStep(0)
       }
     }
   }
+
+  
 
   update(delta: number) {
     if (this.mover !== undefined) {

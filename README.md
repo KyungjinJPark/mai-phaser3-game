@@ -4,13 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Different interactions
-  - ✔️ enter dialogue
-  - cause animation
-  - transition scene
-  - trigger other objects to do something
-    - e.g. move the player
-  - do muiltiple above actions
 - Pause menu
   - inventory
 - Dialogue system
@@ -23,7 +16,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ### Known Issues 🦗
 
-- my game is perfect ;]
+- NPCs with movementCommands won't play interact animations
 
 ### The Done ✅
 
@@ -67,6 +60,13 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - not collidable to you or eachother, but are to everything else
 - Scene transitions
   - saving scene state
+- Different interactions
+  - enter dialogue
+  - cause animation
+  - transition scene
+  - trigger other objects to do something
+    - e.g. move the player
+  - do muiltiple above actions
 
 ---
 

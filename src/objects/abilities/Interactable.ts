@@ -5,8 +5,11 @@ export interface Interactable extends PositionHaver{
 }
 
 export type interactionCommand = {
-  type: 'dialogue' | 'TODO',
-  msg?: string
+  type: 'dialogue' | 'animation' | 'transition' | 'function',
+  dialogue?: string,
+  animation?: string,
+  transition?: string,
+  function?: () => void
 }
 
 export interface Interactee {

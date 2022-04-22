@@ -70,15 +70,11 @@ export class TestScene2 extends Phaser.Scene {
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     
     const interactables: Interactable[] = [
-      // new Sign(31, 0, 'boja sitkny'),
-      // new Sign(5, 1, 'RIP our dog\nHEE HEE HOO HOO'),
-      // new Sign(10, 7, 'our house'),
       new Door(18, 6, 'TestScene'),
     ]
 
     this.NPCs = [
-      new NPC(7, 10, 'npc', [{type: 'dialogue', msg: '2 fast 2 quick'}], ['l','u','u','r','r','d','d','l']),
-      // new NPC(1, 5, 'npc', [{type: 'dialogue', msg: 'Why am I alive'}])
+      new NPC(7, 10, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}], ['l','u','u','r','r','d','d','l']),
     ]
     // TOmaybeDO: make NPC animations in class. something to think about: recreating NPCs w same animations
     this.createAnim('npc', Direction.RIGHT, 54 + 24, 56 + 24)
