@@ -49,6 +49,8 @@ export class TestScene extends Phaser.Scene {
 
     // create partier
     this.partiers = [new Partier(3, 3, 'reaper'), new Partier(3, 3, 'reaper')]
+    this.partiers[0].sprite.setDepth(24.9)
+    this.partiers[1].sprite.setDepth(24.8)
     this.inputManager.setPartier(this.partiers[0], 0)
     this.inputManager.setPartier(this.partiers[1], 1)
 
