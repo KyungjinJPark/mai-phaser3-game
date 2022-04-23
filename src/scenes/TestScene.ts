@@ -34,7 +34,6 @@ export class TestScene extends Phaser.Scene {
   public create () {
     // Initialize managers
     CurrentSceneManager.getInstance().setCurrentScene(this)
-    DialogueManager.getInstance().init(this)
     this.inputManager = new InputManager(this.input)
 
     // make map

@@ -4,7 +4,7 @@ import { Settings } from "../settings/Settings"
 import { Beer, PositionHaver } from "./abilities/PositionHaver"
 import { Interactable, Interactee } from "./abilities/Interactable"
 
-export class Sign implements PositionHaver, Interactable {
+export class Sign  implements PositionHaver, Interactable { // TODO: `extends Phaser.GameObjects.Sprite`
   public sprite: Phaser.GameObjects.Sprite
   public beer: Beer
   public interactee: Interactee

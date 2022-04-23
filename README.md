@@ -4,8 +4,27 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
+- Party
+  - ✔️ party members follow you
+  - ✔️ not collidable to you or eachother, but are to everything else
+  - Party class to abstract party logic from game input manager
+- Scene transitions
+  - ✔️ saving scene state
+  - load scene diffs based on save file
+- Different interactions
+  - enter dialogue
+    - stops your movement
+  - cause animation
+  - transition scene
+  - trigger other objects to do something
+    - e.g.
+      - move self
+      - move the player
+      - make other play animation
+  - do muiltiple above actions
 - Pause menu
   - inventory
+- GameManager
 - Dialogue system
   - can go through dialogue without mouse
   - can respond
@@ -51,22 +70,10 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - make NPCs not all the same
 - Many things to consider.
   - lots of TODOs
-  - ☑️ reconsider approach to composition
-    - *Couldn't get TS mixins to enforce the proper constructor for chained mixins*
+  - reconsider approach to composition
+    - ❌ *Couldn't get TS mixins to enforce the proper constructor for chained mixins*
   - organize an order of initialization and dependency bind timings
   - typing interactionCommands & movementCommands
-- Party
-  - party members follow you
-  - not collidable to you or eachother, but are to everything else
-- Scene transitions
-  - saving scene state
-- Different interactions
-  - enter dialogue
-  - cause animation
-  - transition scene
-  - trigger other objects to do something
-    - e.g. move the player
-  - do muiltiple above actions
 
 ---
 
