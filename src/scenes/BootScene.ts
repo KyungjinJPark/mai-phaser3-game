@@ -22,6 +22,15 @@ export class BootScene extends Phaser.Scene {
       frameWidth: 26,
       frameHeight: 36
     })
+
+    // Save file
+    const saveJSONString = localStorage.getItem('saveFile')
+    if (saveJSONString) {
+      const saveFile = JSON.parse(saveJSONString)
+      this.load.json('saveFile', saveFile)
+    } else {
+      this.load.json('saveFile', 'assets/saveFile.json')
+    }
   }
 
   public create () {

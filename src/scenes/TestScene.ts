@@ -88,6 +88,12 @@ export class TestScene extends Phaser.Scene {
         {type: 'animation', animation: 'npc_spin'},
         {type: 'function', function: () => {console.log('function0')}},
         {type: 'animation', animation: 'npc_spin'},
+        
+        {type: 'function', function: () => {
+          const sf = this.cache.json.get('saveFile')
+          sf.inventory.push('sword')
+          this.cache.json.add('saveFile', sf)
+        }},
         {type: 'transition', transition: 'TestScene2'},
       ]),
     ]
