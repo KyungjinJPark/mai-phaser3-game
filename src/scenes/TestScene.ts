@@ -10,10 +10,11 @@ import { GridPhysics } from "../systems/GridPhysics"
 import { Direction } from "../types/Direction"
 // objects
 import { Interactable } from "../objects/abilities/Interactable"
+import { Party } from "../objects/Party"
 import { Player } from '../objects/Player'
+import { Partier } from "../objects/Partier"
 import { NPC } from "../objects/NPC"
 import { Sign } from "../objects/Sign"
-import { Partier } from "../objects/Partier"
 import { Door } from "../objects/Door"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -23,8 +24,7 @@ const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export class TestScene extends Phaser.Scene {
   private inputManager: InputManager
   private gridPhysics: GridPhysics
-  private player: Player
-  private partiers: Partier[]
+  private party: Party
   private NPCs: NPC[]
   
   constructor () {
@@ -45,27 +45,44 @@ export class TestScene extends Phaser.Scene {
       layer.scale = Settings.zoom
     }
 
+    // create party
+    const player = new Player(3, 3, 'reaper')
+    const partiers = [new Partier(3, 3, 'reaper'), new Partier(3, 3, 'reaper')]
+    this.party = new Party(player, partiers)
+    partiers[0].sprite.setDepth(24.9) // TODO: stopgap bc no depth sorting
+    partiers[1].sprite.setDepth(24.8)
 
-    // create partier
-    this.partiers = [new Partier(3, 3, 'reaper'), new Partier(3, 3, 'reaper')]
-    this.partiers[0].sprite.setDepth(24.9)
-    this.partiers[1].sprite.setDepth(24.8)
-    this.inputManager.setPartier(this.partiers[0], 0)
-    this.inputManager.setPartier(this.partiers[1], 1)
+    this.inputManager.setParty(this.party)
 
-    // create player
-    this.player = new Player(3, 3, 'reaper')
+    // ====================== ANIMATIONS ======================
+    // TODO: when is the best time to make these animations
+    // create player animations
     this.createAnim('reaper', Direction.RIGHT, 6, 8)
     this.createAnim('reaper', Direction.UP, 9, 11)
     this.createAnim('reaper', Direction.LEFT, 3, 5)
     this.createAnim('reaper', Direction.DOWN, 0, 2)
-    this.inputManager.setPlayer(this.player)
+    
+    this.anims.create({
+      key: `npc_spin`,
+      frames: this.anims.generateFrameNumbers('npc', {
+        frames: [55, 54, 54, 54, 56, 54+24, 56+36, 54+12, 56, 56, 55]
+      }),
+      frameRate: 10,
+    })
+    
+    // TOmaybeDO: make NPC animations in class. something to think about: recreating NPCs w same animations
+    this.createAnim('npc', Direction.RIGHT, 54 + 24, 56 + 24)
+    this.createAnim('npc', Direction.UP, 54 + 36, 56 + 36)
+    this.createAnim('npc', Direction.LEFT, 54 + 12, 56 + 12)
+    this.createAnim('npc', Direction.DOWN, 54 + 0, 56 + 0)
+    // ========================================================
+
 
     // create & set up camera
     const mapWidth = map.widthInPixels * Settings.zoom
     const mapHeight = map.heightInPixels * Settings.zoom
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
-    this.cameras.main.startFollow(this.player.getSprite())
+    this.cameras.main.startFollow(this.party.player.sprite) // TODO: won't need this
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     
     const interactables: Interactable[] = [
@@ -96,25 +113,12 @@ export class TestScene extends Phaser.Scene {
         {type: 'transition', transition: 'TestScene2'},
       ]),
     ]
-    this.anims.create({
-      key: `npc_spin`,
-      frames: this.anims.generateFrameNumbers('npc', {
-        frames: [55, 54, 54, 54, 56, 54+24, 56+36, 54+12, 56, 56, 55]
-      }),
-      frameRate: 10,
-    })
-
-    // TOmaybeDO: make NPC animations in class. something to think about: recreating NPCs w same animations
-    this.createAnim('npc', Direction.RIGHT, 54 + 24, 56 + 24)
-    this.createAnim('npc', Direction.UP, 54 + 36, 56 + 36)
-    this.createAnim('npc', Direction.LEFT, 54 + 12, 56 + 12)
-    this.createAnim('npc', Direction.DOWN, 54 + 0, 56 + 0)
 
     // init Grid logic
     this.gridPhysics = new GridPhysics(
       map,
       [].concat(interactables, this.NPCs),
-      [].concat(this.player, this.partiers, this.NPCs)
+      [].concat(this.party.player, this.party.partiers, this.NPCs)
     )
   }
 
@@ -133,10 +137,7 @@ export class TestScene extends Phaser.Scene {
 
   public update (_time: number, delta: number) {
     this.inputManager.update()
-    this.player.update(delta)
-    this.partiers.forEach((partier) => {
-      partier.update(delta)
-    })
+    this.party.update(delta)
     this.NPCs.forEach((npc) => {
       npc.update(delta)
     })

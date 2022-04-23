@@ -10,7 +10,6 @@ export class Partier implements PositionHaver, Movable {
   public beer: Beer
   public mover: GridMover
   private spriteKey: string
-  // private gridPhysics: GridPhysics
 
   constructor(x: number, y: number, spriteKey: string) {
     this.spriteKey = spriteKey
@@ -26,10 +25,5 @@ export class Partier implements PositionHaver, Movable {
 
   initMover(gridPhysics: GridPhysics) {
     this.mover = new GridMover(this, gridPhysics, this.spriteKey)
-    // this.gridPhysics = gridPhysics
-  }
-
-  getSprite() {
-    return this.sprite
   }
 }

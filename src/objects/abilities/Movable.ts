@@ -7,7 +7,7 @@ import { Collidable } from "../../types/Collidable"
 
 export interface Movable extends PositionHaver {
   mover: GridMover
-  initMover(physics: GridPhysics)
+  initMover(physics: GridPhysics) //TODO: canI reorder construction to avoid needing this?
 }
 
 export type MovementCommand = 'r' | 'u' | 'l' | 'd'
@@ -75,9 +75,13 @@ export class GridMover {
       return CanMove.YES
     }
   }
-
-  // move alias
-  move = this.startMoving
+  
+  public move(direction: Direction) {
+    this.facingDirection = direction
+    this.movingDirection = direction
+    this.startAnimation(direction)
+    this.updateMovingTilePos()
+  }
 
   tryMove(direction: Direction): boolean {
     this.movingIntent = direction
@@ -140,13 +144,6 @@ export class GridMover {
   private hasAnimation(direction: Direction): boolean {
     const animToPlay = `${this.spriteKey}_${direction}`
     return this.parent.sprite.anims.animationManager.exists(animToPlay)
-  }
-
-  private startMoving(direction: Direction) {
-    this.facingDirection = direction
-    this.movingDirection = direction
-    this.startAnimation(direction)
-    this.updateMovingTilePos()
   }
 
   private stopMoving(direction?: Direction) {

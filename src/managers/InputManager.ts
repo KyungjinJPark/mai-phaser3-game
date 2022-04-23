@@ -1,31 +1,19 @@
-import { GridPhysics } from "../systems/GridPhysics"
 import { Direction } from "../types/Direction"
-import { Player } from "../objects/Player"
-import { CanMove } from "../types/CanMove"
-import { Partier } from "../objects/Partier"
 import { CurrentSceneManager } from "./CurrentSceneManager"
+import { Party } from "../objects/Party"
 
 export class InputManager {
   private input: Phaser.Input.InputPlugin
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
   private allCommands: Direction[]
   private commandsThisFrame: Direction[]
-  // private keysDownLastTick: Direction[]
-  // private lastMove: Direction
-  // private newMoves: Direction[]
-  private player: Player
-  private partiers: Partier[]
-  private moveQueue: Direction[]
+  private party: Party
 
   constructor(input: Phaser.Input.InputPlugin) {
     this.input = input
     this.cursors = input.keyboard.createCursorKeys()
     this.allCommands = []
     this.commandsThisFrame = []
-    // this.keysDownLastTick = []
-    // this.newMoves = []
-    this.partiers = []
-    this.moveQueue = []
     this.create()
   }
 
@@ -41,7 +29,7 @@ export class InputManager {
 
     // Interact controls
     this.cursors.space.on('down', () => {
-      this.player.tryInteract()
+      this.party.player.tryInteract()
     })
 
     // Movement controls
@@ -91,9 +79,16 @@ export class InputManager {
   }
 
   update() {
-    let moveSucc = false
-    let moveDir
+    const moveDir = this.getCurrentMove()
+    if (moveDir !== undefined) {
+      if (this.party.tryMove(moveDir)) {
+        this.commandsThisFrame = []
+      }
+    }
+  }
 
+  private getCurrentMove() {
+    let moveDir: Direction = undefined
     const numCommandsThisFrame = this.commandsThisFrame.length
     if (numCommandsThisFrame !== 0) {
       moveDir = this.commandsThisFrame[numCommandsThisFrame - 1]
@@ -103,46 +98,10 @@ export class InputManager {
         moveDir = this.allCommands[numAllCommands - 1]
       }
     }
-
-    if (moveDir !== undefined) {
-      const canMove = this.player.mover.canMove(moveDir)
-      if (canMove === CanMove.YES) {
-        moveSucc = this.doMove(moveDir) 
-      } else if (canMove === CanMove.COLLIDES) {
-        this.player.mover.tryMove(moveDir)
-        moveSucc = true
-      }
-    }
-      
-    if (moveSucc) {
-      this.commandsThisFrame = []
-    }
+    return moveDir
   }
 
-  private doMove(moveDir: Direction) {
-    const moveSucc = this.player.mover.tryMove(moveDir)
-    this.moveQueue.forEach((dir, i) => {
-      this.partiers.at(i).mover.move(dir)
-    })
-
-    if (moveSucc) {
-      this.moveQueue.splice(0, 0, moveDir)
-      if (this.moveQueue.length > this.partiers.length) {
-        this.moveQueue.pop()
-      }
-    }
-    return moveSucc
-  }
-
-  setPlayer(player: Player) {
-    this.player = player
-  }
-
-  setPartier(partier: Partier, index?: number) {
-    if (index !== undefined) {
-      this.partiers.splice(index, 0, partier)
-    } else {
-      this.partiers.push(partier)
-    }
+  setParty(party: Party) {
+    this.party = party
   }
 }

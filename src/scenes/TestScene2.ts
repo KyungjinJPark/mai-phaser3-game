@@ -15,6 +15,7 @@ import { NPC } from "../objects/NPC"
 import { Sign } from "../objects/Sign"
 import { Partier } from "../objects/Partier"
 import { Door } from "../objects/Door"
+import { Party } from "../objects/Party"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene2'
@@ -23,8 +24,7 @@ const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export class TestScene2 extends Phaser.Scene {
   private inputManager: InputManager
   private gridPhysics: GridPhysics
-  private player: Player
-  private partiers: Partier[]
+  private party: Party
   private NPCs: NPC[]
   
   constructor () {
@@ -46,27 +46,18 @@ export class TestScene2 extends Phaser.Scene {
       layer.scale = Settings.zoom
     }
 
-
-    // create partier
-    this.partiers = [new Partier(3, 3, 'reaper'), new Partier(3, 3, 'reaper')]
-    this.partiers[0].sprite.setDepth(24.9)
-    this.partiers[1].sprite.setDepth(24.8)
-    this.inputManager.setPartier(this.partiers[0], 0)
-    this.inputManager.setPartier(this.partiers[1], 1)
-
-    // create player
-    this.player = new Player(3, 3, 'reaper')
-    this.createAnim('reaper', Direction.RIGHT, 6, 8)
-    this.createAnim('reaper', Direction.UP, 9, 11)
-    this.createAnim('reaper', Direction.LEFT, 3, 5)
-    this.createAnim('reaper', Direction.DOWN, 0, 2)
-    this.inputManager.setPlayer(this.player)
+    // create party
+    const player = new Player(3, 3, 'reaper')
+    const partiers = [new Partier(3, 3, 'reaper'), new Partier(3, 3, 'reaper')]
+    this.party = new Party(player, partiers)
+    partiers[0].sprite.setDepth(24.9) // TODO: stopgap bc no depth sorting
+    partiers[1].sprite.setDepth(24.8)
 
     // create & set up camera
     const mapWidth = map.widthInPixels * Settings.zoom
     const mapHeight = map.heightInPixels * Settings.zoom
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
-    this.cameras.main.startFollow(this.player.getSprite())
+    this.cameras.main.startFollow(this.party.player.getSprite())
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     
     const interactables: Interactable[] = [
@@ -86,7 +77,7 @@ export class TestScene2 extends Phaser.Scene {
     this.gridPhysics = new GridPhysics(
       map,
       [].concat(interactables, this.NPCs),
-      [].concat(this.player, this.partiers, this.NPCs)
+      [].concat(this.party.player, this.party.partiers, this.NPCs)
     )
   }
 
@@ -105,10 +96,7 @@ export class TestScene2 extends Phaser.Scene {
 
   public update (_time: number, delta: number) {
     this.inputManager.update()
-    this.player.update(delta)
-    this.partiers.forEach((partier) => {
-      partier.update(delta)
-    })
+    this.party.update(delta)
     this.NPCs.forEach((npc) => {
       npc.update(delta)
     })

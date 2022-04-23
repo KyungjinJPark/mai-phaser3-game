@@ -1,6 +1,5 @@
 import { GridPhysics } from "../systems/GridPhysics"
 import { Settings } from "../settings/Settings"
-import { Direction } from "../types/Direction"
 import { Beer, PositionHaver } from "./abilities/PositionHaver"
 import { Movable, GridMover } from "./abilities/Movable"
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
@@ -39,7 +38,7 @@ export class Player implements PositionHaver, Movable {
     }
   }
 
-  getSprite() {
+  getSprite() { // TODO: remove this
     return this.sprite
   }
 }
