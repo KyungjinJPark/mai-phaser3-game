@@ -16,7 +16,7 @@ export class Partier implements PositionHaver, Movable {
     this.spriteKey = spriteKey
     this.sprite = CurrentSceneManager.getInstance().getCurrentScene().add.sprite(0, 0, spriteKey, 1)
     this.sprite.setDepth(25)
-    this.sprite.scale = Settings.getZoom()
+    this.sprite.scale = Settings.zoom
     this.beer = new Beer(this, x, y, Collidable.TO_NON_PLAYERS)
   }
 

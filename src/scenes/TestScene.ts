@@ -43,7 +43,7 @@ export class TestScene extends Phaser.Scene {
     for (let i = 0; i < map.layers.length; i++) {
       const layer = map.createLayer(i, tiles)
       layer.setDepth(i*10)
-      layer.scale = Settings.getZoom()
+      layer.scale = Settings.zoom
     }
 
 
@@ -63,8 +63,8 @@ export class TestScene extends Phaser.Scene {
     this.inputManager.setPlayer(this.player)
 
     // create & set up camera
-    const mapWidth = map.widthInPixels * Settings.getZoom()
-    const mapHeight = map.heightInPixels * Settings.getZoom()
+    const mapWidth = map.widthInPixels * Settings.zoom
+    const mapHeight = map.heightInPixels * Settings.zoom
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
     this.cameras.main.startFollow(this.player.getSprite())
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes

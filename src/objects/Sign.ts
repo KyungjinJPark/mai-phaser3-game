@@ -15,7 +15,7 @@ export class Sign implements PositionHaver, Interactable {
     this.sprite = currScene.add.sprite(0, 0, '') // no image
     this.sprite.setAlpha(0)
     this.sprite.setDepth(20)
-    this.sprite.scale = Settings.getZoom()
+    this.sprite.scale = Settings.zoom
     this.beer = new Beer(this, x, y)
     
     this.dialogueManager = DialogueManager.getInstance()

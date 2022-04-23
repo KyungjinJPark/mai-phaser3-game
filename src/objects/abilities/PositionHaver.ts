@@ -15,11 +15,11 @@ export class Beer {
     this.parentSprite = parent.sprite
 
     parent.sprite.setOrigin(0.5, 1)
-    const offsetX = Settings.getTileSize() / 2
-    const offsetY = Settings.getTileSize()
+    const offsetX = Settings.tileSize / 2
+    const offsetY = Settings.tileSize
     parent.sprite.setPosition(
-      tileX * Settings.getTileSize() + offsetX,
-      tileY * Settings.getTileSize() + offsetY
+      tileX * Settings.tileSize + offsetX,
+      tileY * Settings.tileSize + offsetY
     )
 
     this.tilePos = new Phaser.Math.Vector2(tileX, tileY)

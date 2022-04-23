@@ -31,7 +31,7 @@ export class GridMover {
 
   private movingDirection: Direction = Direction.NONE
   private movingIntent: Direction = Direction.NONE
-  private movePixelsPerSecond: number = 100 * Settings.getZoom()
+  private movePixelsPerSecond: number = 100 * Settings.zoom
   private pixelsMovedSinceTile = 0
   private facingDirection: Direction = Direction.NONE
   private frozen: boolean
@@ -169,7 +169,7 @@ export class GridMover {
       this.moveSprite(pixelsToMove)
       this.updateMovingTilePos()
     } else {
-      this.moveSprite(Settings.getTileSize() - this.pixelsMovedSinceTile)
+      this.moveSprite(Settings.tileSize - this.pixelsMovedSinceTile)
       this.stopMoving()
     }
   }
@@ -178,12 +178,12 @@ export class GridMover {
     const moveVect = this.directionVectors[this.movingDirection].clone()
     const newPos = this.parent.beer.getPosition().add(moveVect.scale(pixelsToMove))
     this.pixelsMovedSinceTile += pixelsToMove
-    this.pixelsMovedSinceTile %= Settings.getTileSize()
+    this.pixelsMovedSinceTile %= Settings.tileSize
     this.parent.beer.setPosition(newPos)
   }
   
   private willCrossBorder(pixelsToMove: number): boolean {
-    return this.pixelsMovedSinceTile + pixelsToMove >= Settings.getTileSize()
+    return this.pixelsMovedSinceTile + pixelsToMove >= Settings.tileSize
   }
 
   private shouldContinueMove() {

@@ -19,7 +19,7 @@ export class NPC implements PositionHaver, Movable, Interactable {
     const thisScene = CurrentSceneManager.getInstance().getCurrentScene()
     this.sprite = thisScene.add.sprite(0, 0, spriteKey, 55)
     this.sprite.setDepth(25)
-    this.sprite.scale = Settings.getZoom()
+    this.sprite.scale = Settings.zoom
     this.beer = new Beer(this, x, y)
     
     // Implement these interaction Commands and Movement Commands
