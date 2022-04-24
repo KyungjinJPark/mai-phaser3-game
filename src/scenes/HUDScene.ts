@@ -18,11 +18,11 @@ export class HUDScene extends Phaser.Scene {
     const w = this.game.scale.width
     const h = this.game.scale.height
     this.graphics.push(this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.5))
-    this.graphics.push(this.add.text(w / 2, h / 2, 'Paused', { fontSize: '32px' }))
+    this.graphics.push(this.add.text(10, h / 2, 'Paused', { fontSize: '32px' }))
 
     // add inventory items to pause menu
     const saveFile: Object = this.cache.json.get('saveFile')
-    this.graphics.push(this.add.text(w / 2, h / 2 + 32, JSON.stringify(saveFile), { fontSize: '16px' }))
+    this.graphics.push(this.add.text(10, h / 2 + 32, JSON.stringify(saveFile), { fontSize: '16px' }))
 
     // set all graphics to invisible
     this.graphics.forEach(g => g.setVisible(false))

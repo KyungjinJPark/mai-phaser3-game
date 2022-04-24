@@ -22,6 +22,10 @@ export class Photo implements PositionHaver, Interactable {
         this.sprite.destroy()
         this.beer.destroy() // makes an assumption that all things with positions will be registered with the ObjectManager
         // change save file json
+        const sf = currScene.cache.json.get('saveFile')
+        sf.TestScene_hasPhoto = false
+        sf.inventory.push('photo')
+        currScene.cache.json.add('saveFile', sf)
       }
     }
   }

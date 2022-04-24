@@ -4,9 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Scene transitions
-  - ✔️ saving scene state
-  - load scene diffs based on save file
 - Different interactions
   - enter dialogue
     - stops your movement
@@ -74,6 +71,9 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - narty members follow you
   - not collidable to you or eachother, but are to everything else
   - Party class to abstract party logic from game input manager
+- Scene transitions
+  - saving scene state
+  - load scene diffs based on save file
 
 ---
 

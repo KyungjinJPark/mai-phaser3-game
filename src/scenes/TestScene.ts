@@ -91,8 +91,13 @@ export class TestScene extends Phaser.Scene {
       new Sign(5, 1, 'RIP our dog\nHEE HEE HOO HOO'),
       new Door(9, 7, 'TestScene2'),
       new Sign(10, 7, 'our house'),
-      new Photo(3, 1),
+      
     ]
+
+    const sf = this.cache.json.get('saveFile')
+    if (sf.TestScene_hasPhoto) {
+      interactables.push(new Photo(3, 1))
+    }
 
     this.NPCs = [
       new NPC(5, 4, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}, {type: 'animation', animation: 'npc_spin'}], ['l','u','u','r','r','d','d','l']),
