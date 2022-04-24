@@ -32,9 +32,8 @@ export class DialogueManager {
     const currScene = CurrentSceneManager.getInstance().getCurrentScene() as (TestScene | TestScene2) // TODO: ASSUMES SCENE TYPE FOR NOW
     currScene.inputManager.disableControls()
     // show dialogue
-    const promise = this.dialoguePlugin.startDialogue(dialogue)
+    await this.dialoguePlugin.startDialogue(dialogue)
     // setup callback on dialogue close
-    await promise
     currScene.inputManager.enableControls()
     // TODO: other callbacks for other events
   }

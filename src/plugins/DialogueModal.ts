@@ -75,25 +75,17 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.setVisible(false)
   }
 
-  public async startDialogue(dialogue: string[], animate = true): Promise<void> {
+  public async startDialogue(dialogue: string[], animate = true) {
     // remove dialogue exit if it exists
     this.cursors.space.removeListener('down')
 
     this.setVisible(true)
     for (let i = 0; i < dialogue.length; i++) {
-      await this.setDialogueText(dialogue[i], animate)
+      await this.setDialogueText(dialogue[i], true)
     }
 
-    // Once dialogue is finished, set up exit dialogue callback for promise
-    return new Promise<void>(resolve => {
-      this.cursors.space.removeListener('down')
-      this.cursors.space.on('down', () => {
-        this.setVisible(false)
-
-        if (this.timedEvent) this.timedEvent.remove()
-        resolve()
-      })
-    })
+    this.setVisible(false)
+    if (this.timedEvent) this.timedEvent.remove()
   }
   
   private get GAME_WIDTH(): number {
@@ -111,7 +103,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   private setDialogueText(text: string, animate: boolean): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>(resolveSlide => {
       if (animate) {
         this.eventCounter = 0
         this.displayText.setText('')
@@ -121,26 +113,33 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
         Phaser.Time.TimerEvent
         this.timedEvent = this.HUD_SCENE.time.addEvent({
           delay: this.dialogueStepDelay,
-          callback: this.animateNextTextStep(resolve),
+          callback: this.animateNextTextStep(resolveSlide),
           callbackScope: this,
           loop: true
         })
       } else { 
         this.displayText.setText(text)
-        resolve()
+        this.enableNextSlideOption(resolveSlide)
       }
     })
   }
 
-  private animateNextTextStep(resolvePromise) {
+  private animateNextTextStep(resolveSlide) {
     return () => {
       this.displayText.setText(this.displayText.text + this.fullText[this.eventCounter])
       this.eventCounter++
       if (this.eventCounter >= this.fullText.length) {
         this.timedEvent.remove()
-        resolvePromise()
+        this.enableNextSlideOption(resolveSlide)
       }
     }
+  }
+
+  private enableNextSlideOption(resolveSlide) {
+    this.cursors.space.on('down', () => {
+      resolveSlide()
+      this.cursors.space.removeListener('down')
+    })
   }
 
   private setUpDialogueBox(): void {
