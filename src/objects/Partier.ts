@@ -1,4 +1,4 @@
-import { GridPhysics } from "../systems/GridPhysics"
+import { ObjectManager } from "../managers/ObjectManager"
 import { Settings } from "../settings/Settings"
 import { Beer, PositionHaver } from "./abilities/PositionHaver"
 import { Movable, GridMover } from "./abilities/Movable"

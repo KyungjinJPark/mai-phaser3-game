@@ -1,4 +1,4 @@
-import { GridPhysics } from "../systems/GridPhysics"
+import { ObjectManager } from "../managers/ObjectManager"
 import { Settings } from "../settings/Settings"
 import { Beer, PositionHaver } from "./abilities/PositionHaver"
 import { Movable, GridMover } from "./abilities/Movable"
@@ -9,7 +9,7 @@ export class Player implements PositionHaver, Movable {
   public beer: Beer
   public mover: GridMover
   private spriteKey: string
-  private gridPhysics: GridPhysics
+  private objectManager: ObjectManager
 
   constructor(x: number, y: number, spriteKey: string) {
     this.spriteKey = spriteKey

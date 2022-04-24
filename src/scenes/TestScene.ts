@@ -5,7 +5,7 @@ import { InputManager } from "../managers/InputManager"
 import { DialogueManager } from "../managers/DialogueManager"
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
 // systems
-import { GridPhysics } from "../systems/GridPhysics"
+import { ObjectManager } from "../managers/ObjectManager"
 // types
 import { Direction } from "../types/Direction"
 // objects
@@ -24,7 +24,7 @@ const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class TestScene extends Phaser.Scene {
   private inputManager: InputManager
-  private gridPhysics: GridPhysics
+  private objectManager: ObjectManager
   private party: Party
   private NPCs: NPC[]
   
@@ -116,7 +116,7 @@ export class TestScene extends Phaser.Scene {
     ]
 
     // init Grid logic
-    this.gridPhysics = new GridPhysics(
+    this.objectManager = new ObjectManager(
       map,
       [].concat(interactables, this.NPCs),
       [].concat(this.party.player, this.party.partiers, this.NPCs)

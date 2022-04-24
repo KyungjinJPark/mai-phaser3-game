@@ -5,7 +5,7 @@ import { InputManager } from "../managers/InputManager"
 import { DialogueManager } from "../managers/DialogueManager"
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
 // systems
-import { GridPhysics } from "../systems/GridPhysics"
+import { ObjectManager } from "../managers/ObjectManager"
 // types
 import { Direction } from "../types/Direction"
 // objects
@@ -23,7 +23,7 @@ const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class TestScene2 extends Phaser.Scene {
   private inputManager: InputManager
-  private gridPhysics: GridPhysics
+  private objectManager: ObjectManager
   private party: Party
   private NPCs: NPC[]
   
@@ -53,6 +53,8 @@ export class TestScene2 extends Phaser.Scene {
     partiers[0].sprite.setDepth(24.9) // TODO: stopgap bc no depth sorting
     partiers[1].sprite.setDepth(24.8)
 
+    this.inputManager.setParty(this.party)
+
     // create & set up camera
     const mapWidth = map.widthInPixels * Settings.zoom
     const mapHeight = map.heightInPixels * Settings.zoom
@@ -67,14 +69,9 @@ export class TestScene2 extends Phaser.Scene {
     this.NPCs = [
       new NPC(7, 10, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}], ['l','u','u','r','r','d','d','l']),
     ]
-    // TOmaybeDO: make NPC animations in class. something to think about: recreating NPCs w same animations
-    this.createAnim('npc', Direction.RIGHT, 54 + 24, 56 + 24)
-    this.createAnim('npc', Direction.UP, 54 + 36, 56 + 36)
-    this.createAnim('npc', Direction.LEFT, 54 + 12, 56 + 12)
-    this.createAnim('npc', Direction.DOWN, 54 + 0, 56 + 0)
 
     // init Grid logic
-    this.gridPhysics = new GridPhysics(
+    this.objectManager = new ObjectManager(
       map,
       [].concat(interactables, this.NPCs),
       [].concat(this.party.player, this.party.partiers, this.NPCs)

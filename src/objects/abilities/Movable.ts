@@ -1,4 +1,4 @@
-import { GridPhysics } from "../../systems/GridPhysics"
+import { ObjectManager } from "../../managers/ObjectManager"
 import { Settings } from "../../settings/Settings"
 import { Direction } from "../../types/Direction"
 import { PositionHaver } from "./PositionHaver"

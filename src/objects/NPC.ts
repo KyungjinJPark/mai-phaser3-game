@@ -1,6 +1,6 @@
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
 import { DialogueManager } from "../managers/DialogueManager"
-import { GridPhysics } from "../systems/GridPhysics"
+import { ObjectManager } from "../managers/ObjectManager"
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction"
 import { Beer, PositionHaver } from "./abilities/PositionHaver"

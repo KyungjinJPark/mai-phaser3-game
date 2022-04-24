@@ -1,5 +1,5 @@
 import { Settings } from "../../settings/Settings"
-import { GridPhysics } from "../../systems/GridPhysics"
+import { ObjectManager } from "../../managers/ObjectManager"
 import { Collidable } from "../../types/Collidable"
 
 export interface PositionHaver {
@@ -8,7 +8,7 @@ export interface PositionHaver {
 }
 
 export class Beer {
-  private objManager: GridPhysics
+  private objManager: ObjectManager
   private parentSprite: Phaser.GameObjects.Sprite
   private tilePos: Phaser.Math.Vector2
   private collidable: Collidable
@@ -48,7 +48,7 @@ export class Beer {
     return this.collidable
   }
 
-  assignObjManager(objManager: GridPhysics) { // TODO: can I reorder construction to avoid needing this?
+  assignObjManager(objManager: ObjectManager) { // TODO: can I reorder construction to avoid needing this?
     this.objManager = objManager
   }
 

@@ -20,7 +20,7 @@ export class Photo implements PositionHaver, Interactable {
       interact: () => {
         // destroy self and beer
         this.sprite.destroy()
-        this.beer.destroy() // makes an assumption that all things with positions will be registered with the gridPhysics
+        this.beer.destroy() // makes an assumption that all things with positions will be registered with the ObjectManager
         // change save file json
       }
     }

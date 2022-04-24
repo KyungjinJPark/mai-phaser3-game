@@ -1,14 +1,9 @@
-import { Settings } from "../settings/Settings"
-import { Direction } from "../types/Direction"
-import { Movable, GridMover } from "../objects/abilities/Movable"
+import { Movable } from "../objects/abilities/Movable"
 import { Interactable } from "../objects/abilities/Interactable"
-import { Player } from '../objects/Player'
 import { Collidable } from "../types/Collidable"
 import { Beer, PositionHaver } from "../objects/abilities/PositionHaver"
 
-// aliases
-
-export class GridPhysics { // custom physics system
+export class ObjectManager { // world state manager for physics system
   constructor(
     private map: Phaser.Tilemaps.Tilemap,
     private interactables: Interactable[],
