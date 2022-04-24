@@ -6,7 +6,6 @@ type optionalParameters = {
   windowColor?: number,
   windowHeight?: number,
   padding?: number,
-  closeBtnColor?: number,
   dialogSpeed?: number,
 }
 
@@ -20,13 +19,11 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     windowColor: 0x303030,
     windowHeight: 200,
     padding: 16,
-    closeBtnColor: 0x907748,
     dialogSpeed: 3
   }
   private graphics: Phaser.GameObjects.Graphics
   private visible: boolean
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  private closeBtn: Phaser.GameObjects.Text
   private timedEvent: Phaser.Time.TimerEvent
   private dialogueStepDelay: number = 30
   private displayText
@@ -79,31 +76,23 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   public async startDialogue(dialogue: string[], animate = true): Promise<void> {
+    // remove dialogue exit if it exists
+    this.cursors.space.removeListener('down')
+
     this.setVisible(true)
     for (let i = 0; i < dialogue.length; i++) {
       await this.setDialogueText(dialogue[i], animate)
     }
 
-    // TODO: close button breaks dialogue if its not the last message
-    // set up X button callback for promise
-    const setXButtonCallback = (callback) => {
-      this.closeBtn.removeListener('pointerdown')
-      this.closeBtn.on('pointerdown', () => {
-        this.setVisible(false)
-
-        if (this.timedEvent) this.timedEvent.remove()
-        callback()
-      })
+    // Once dialogue is finished, set up exit dialogue callback for promise
+    return new Promise<void>(resolve => {
       this.cursors.space.removeListener('down')
       this.cursors.space.on('down', () => {
         this.setVisible(false)
 
         if (this.timedEvent) this.timedEvent.remove()
-        callback()
+        resolve()
       })
-    }
-    return new Promise<void>(resolve => {
-      setXButtonCallback(resolve)
     })
   }
   
@@ -119,7 +108,6 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     
     this.graphics.setVisible(visibility)
     this.displayText.setVisible(visibility)
-    this.closeBtn.setVisible(visibility)
   }
 
   private setDialogueText(text: string, animate: boolean): Promise<void> {
@@ -159,8 +147,6 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.graphics = this.HUD_SCENE.add.graphics()
     const {x, y, boxWidth, boxHeight} = this.calculateWindowDimensions()
     this.createWindowBox(x, y, boxWidth, boxHeight)
-    this.createCloseBtn(this.GAME_WIDTH, this.GAME_HEIGHT)
-    this.createCloseBtnBorder(this.GAME_WIDTH, this.GAME_HEIGHT)
   }
 
   private calculateWindowDimensions() {
@@ -180,40 +166,5 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       this.options.borderAlpha
     )
     this.graphics.strokeRect(x, y, boxWidth, boxHeight)
-  }
-
-  private createCloseBtn(width: number, height: number) {
-    const self = this
-    this.closeBtn = this.HUD_SCENE.make.text({
-      x: width - this.options.padding - 18,
-      y: height - this.options.padding - this.options.windowHeight + 6,
-      text: 'X',
-      style: {
-        font: 'bold 16px Arial',
-        color: this.options.closeBtnColor.toString(),
-      }
-    })
-
-    this.closeBtn.setInteractive()
-    this.closeBtn.on('pointerover', function () {
-      self.closeBtn.setColor('#ff0000')
-    })
-    this.closeBtn.on('pointerout', function () {
-      self.closeBtn.setColor(self.options.closeBtnColor.toString())
-    })
-    this.closeBtn.on('pointerdown', () => {
-      self.setVisible(false)
-      if (this.timedEvent) this.timedEvent.remove()
-    })
-    this.cursors.space.on('down', () => {
-      self.setVisible(false)
-      if (this.timedEvent) this.timedEvent.remove()
-    })
-  }
-
-  private createCloseBtnBorder(width: number, height: number) {
-    const x = width - this.options.padding - 18
-    const y = height - this.options.padding - this.options.windowHeight
-    this.graphics.strokeRect(x, y, 18, 18)
   }
 }
