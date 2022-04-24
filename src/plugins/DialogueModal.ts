@@ -78,10 +78,13 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.setVisible(false)
   }
 
-  public startDialogue(text: string, animate = true): Promise<void> {
+  public async startDialogue(dialogue: string[], animate = true): Promise<void> {
     this.setVisible(true)
-    this.setDialogueText(text, animate)
+    for (let i = 0; i < dialogue.length; i++) {
+      await this.setDialogueText(dialogue[i], animate)
+    }
 
+    // TODO: close button breaks dialogue if its not the last message
     // set up X button callback for promise
     const setXButtonCallback = (callback) => {
       this.closeBtn.removeListener('pointerdown')
@@ -119,29 +122,36 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.closeBtn.setVisible(visibility)
   }
 
-  private setDialogueText(text: string, animate: boolean) {
-    if (animate) {
-      this.eventCounter = 0
-      this.displayText.setText('')
-      this.fullText = Array.from(text)
-      
-      if (this.timedEvent) this.timedEvent.destroy()
-      this.timedEvent = this.HUD_SCENE.time.addEvent({
-        delay: this.dialogueStepDelay,
-        callback: this.animateNextTextStep,
-        callbackScope: this,
-        loop: true
-      })
-    } else { 
-      this.displayText.setText(text)
-    }
+  private setDialogueText(text: string, animate: boolean): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (animate) {
+        this.eventCounter = 0
+        this.displayText.setText('')
+        this.fullText = Array.from(text)
+        
+        if (this.timedEvent) this.timedEvent.destroy()
+        Phaser.Time.TimerEvent
+        this.timedEvent = this.HUD_SCENE.time.addEvent({
+          delay: this.dialogueStepDelay,
+          callback: this.animateNextTextStep(resolve),
+          callbackScope: this,
+          loop: true
+        })
+      } else { 
+        this.displayText.setText(text)
+        resolve()
+      }
+    })
   }
 
-  private animateNextTextStep() {
-    this.displayText.setText(this.displayText.text + this.fullText[this.eventCounter])
-    this.eventCounter++
-    if (this.eventCounter >= this.fullText.length) {
-      this.timedEvent.remove()
+  private animateNextTextStep(resolvePromise) {
+    return () => {
+      this.displayText.setText(this.displayText.text + this.fullText[this.eventCounter])
+      this.eventCounter++
+      if (this.eventCounter >= this.fullText.length) {
+        this.timedEvent.remove()
+        resolvePromise()
+      }
     }
   }
 

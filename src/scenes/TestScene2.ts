@@ -66,7 +66,7 @@ export class TestScene2 extends Phaser.Scene {
     ]
 
     this.NPCs = [
-      new NPC(7, 10, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}], {loop: true, instructions: ['l','u','u','r','r','d','d','l']}),
+      // new NPC(7, 10, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}], {loop: true, instructions: ['l','u','u','r','r','d','d','l']}),
     ]
 
     // init Grid logic

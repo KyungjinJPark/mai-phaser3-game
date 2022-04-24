@@ -21,7 +21,7 @@ export class Sign  implements PositionHaver, Interactable { // TODO: `extends Ph
     this.dialogueManager = DialogueManager.getInstance()
     this.interactee = { // TODO: construct interactee based on interactionCmds
       interact: () => {
-        this.dialogueManager.showDialogue(message)
+        this.dialogueManager.startDialogue([message])
       }
     }
   }

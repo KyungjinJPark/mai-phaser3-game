@@ -100,19 +100,19 @@ export class TestScene extends Phaser.Scene {
 
     this.NPCs = [
       new NPC(5, 4, 'npc', [
-        {type: 'dialogue', dialogue: '2 fast 2 quick'},
+        {type: 'dialogue', dialogue: ['2 fast 2 quick']},
         {type: 'animation', animation: 'npc_spin'}, // TODO: 🐞
         {type: 'move', move: {loop: false, instructions: ['l','u','r','d']}},
       ], {loop: true, instructions: ['l','u','u','r','r','d','d','l']}),
       new NPC(1, 5, 'npc', [
-        {type: 'dialogue', dialogue: 'Why am I alive'},
+        {type: 'dialogue', dialogue: ['Why am I alive']},
         {type: 'animation', animation: 'npc_spin'},
         {type: 'function', function: () => {
           const sf = this.cache.json.get('saveFile')
           sf.inventory.push('sword')
           this.cache.json.add('saveFile', sf)
         }},
-        {type: 'dialogue', dialogue: 'I just gave you a sword'},
+        {type: 'dialogue', dialogue: ['I just gave you a sword']},
         {type: 'move', move: {loop: false, instructions: ['l','u','r','d']}},
         {type: 'function', function: () => {
           this.party.tryMove(Direction.UP)
@@ -121,7 +121,9 @@ export class TestScene extends Phaser.Scene {
           this.NPCs[2].sprite.play('npc_spin')
         }},
       ]),
-      new NPC(12, 8, 'npc'),
+      new NPC(12, 8, 'npc', [
+        {type: 'dialogue', dialogue: ['This is a test.', 'for multiple slides of dialogue']},
+      ]),
     ]
 
     // init Grid logic

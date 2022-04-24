@@ -27,12 +27,12 @@ export class DialogueManager {
     this.dialoguePlugin.assignHUDScene(hudScene)
   }
 
-  public async showDialogue(message: string) {
+  public async startDialogue(dialogue: string[]) {
     // stop player movement
     const currScene = CurrentSceneManager.getInstance().getCurrentScene() as (TestScene | TestScene2) // TODO: ASSUMES SCENE TYPE FOR NOW
     currScene.inputManager.disableControls()
     // show dialogue
-    const promise = this.dialoguePlugin.startDialogue(message)
+    const promise = this.dialoguePlugin.startDialogue(dialogue)
     // setup callback on dialogue close
     await promise
     currScene.inputManager.enableControls()
