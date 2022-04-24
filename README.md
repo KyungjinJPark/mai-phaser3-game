@@ -4,17 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Different interactions
-  - ✔️ enter dialogue
-    - ✔️ stops your movement
-  - ✔️ cause animation
-  - ✔️ transition scene
-  - ✔️ move self
-  - trigger other objects to do something
-    - e.g.
-      - move the player
-      - make other play animation
-  - do muiltiple above actions
 - Pause menu
   - inventory
 - GameManager
@@ -84,6 +73,17 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
     - *space keyup wasn't registering when inputs were disabled*
   - thrice works but breaks your controls
     - *the end dialogue callback was never updated to the proper one past the first*
+- Different interactions
+  - enter dialogue
+    - stops your movement
+  - cause animation
+  - transition scene
+  - move self
+  - trigger other objects to do something
+    - e.g.
+      - move the player
+      - make other play animation
+  - do muiltiple above actions
 
 ---
 
