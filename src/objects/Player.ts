@@ -17,21 +17,17 @@ export class Player implements PositionHaver, Movable {
     this.sprite.setDepth(25)
     this.sprite.scale = Settings.zoom
     this.beer = new Beer(this, x, y)
+    this.mover = new GridMover(this, this.spriteKey, true)
   }
 
   update(delta: number) {
     this.mover.update(delta)
   }
 
-  initMover(gridPhysics: GridPhysics) {
-    this.mover = new GridMover(this, gridPhysics, this.spriteKey, true)
-    this.gridPhysics = gridPhysics
-  }
-
   tryInteract() {
     if (!this.mover.isMoving()) {
       const interactSpot = this.mover.tilePosInDir(this.mover.getFacingDirection())
-      const interactable = this.gridPhysics.getInteractableAt(interactSpot)
+      const interactable = this.beer.getObjManager().getInteractableAt(interactSpot)
       if (interactable !== undefined) {
         interactable.interactee.interact()
       }

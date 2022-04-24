@@ -4,7 +4,7 @@ import { Movable, GridMover } from "../objects/abilities/Movable"
 import { Interactable } from "../objects/abilities/Interactable"
 import { Player } from '../objects/Player'
 import { Collidable } from "../types/Collidable"
-import { PositionHaver } from "../objects/abilities/PositionHaver"
+import { Beer, PositionHaver } from "../objects/abilities/PositionHaver"
 
 // aliases
 
@@ -14,9 +14,21 @@ export class GridPhysics { // custom physics system
     private interactables: Interactable[],
     private movables: Movable[]
   ) {
-    this.movables.forEach(movable => {
-      movable.initMover(this)
+    const all: PositionHaver[] = [].concat(this.interactables, this.movables)
+    all.forEach(obj => {
+      obj.beer.assignObjManager(this)
     })
+  }
+
+  remove(beer: Beer) {
+    const ii = this.interactables.findIndex(obj => obj.beer === beer) // assumes unique beers for diffferent objects
+    if (ii != -1) {
+      this.interactables.splice(ii, 1)
+    }
+    const mi = this.movables.findIndex(obj => obj.beer === beer)
+    if (mi != -1) {
+      this.movables.splice(mi, 1)
+    }
   }
 
   // Movables

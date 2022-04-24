@@ -7,7 +7,6 @@ import { Collidable } from "../../types/Collidable"
 
 export interface Movable extends PositionHaver {
   mover: GridMover
-  initMover(physics: GridPhysics) //TODO: canI reorder construction to avoid needing this?
 }
 
 export type MovementCommand = 'r' | 'u' | 'l' | 'd'
@@ -41,7 +40,6 @@ export class GridMover {
 
   constructor(
     private parent: Movable,
-    private physicsSystem: GridPhysics,
     private spriteKey?: string,
     private isPlayer: boolean = false,
   ) {}
@@ -191,7 +189,7 @@ export class GridMover {
   }
   
   private isCollidableInDir(dir: Direction): boolean {
-    const types = this.physicsSystem.getCollisionTypesAt(this.tilePosInDir(dir))
+    const types = this.parent.beer.getObjManager().getCollisionTypesAt(this.tilePosInDir(dir))
     if (types.includes(Collidable.YES)) {
       return true
     }

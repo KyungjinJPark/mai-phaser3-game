@@ -1,3 +1,4 @@
 {
-  "inventory": ["hehe", "haha", "hihi"]
+  "inventory": ["hehe", "haha", "hihi"],
+  "TestScene_hasPhoto": true
 }

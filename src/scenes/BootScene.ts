@@ -23,6 +23,8 @@ export class BootScene extends Phaser.Scene {
       frameHeight: 36
     })
 
+    this.load.image('photo', 'assets/photo.png')
+
     // Save file
     const saveJSONString = localStorage.getItem('saveFile')
     if (saveJSONString) {

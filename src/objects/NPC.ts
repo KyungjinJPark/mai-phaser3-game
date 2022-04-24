@@ -21,11 +21,13 @@ export class NPC implements PositionHaver, Movable, Interactable {
     this.sprite.setDepth(25)
     this.sprite.scale = Settings.zoom
     this.beer = new Beer(this, x, y)
+    this.mover = new GridMover(this, this.spriteKey)
+    this.mover.setMovementCommands(this.movementCommands)
     
     // Implement these interaction Commands and Movement Commands
     const dm = DialogueManager.getInstance()
 
-    const doInteractionStep =  async (step: number) => {
+    const doInteractionStep = (step: number) => {
       if (step < interactionCommands.length) {
         const cmd = interactionCommands[step]
         switch (cmd.type) {
@@ -61,16 +63,9 @@ export class NPC implements PositionHaver, Movable, Interactable {
     }
   }
 
-  
-
   update(delta: number) {
     if (this.mover !== undefined) {
       this.mover.update(delta)
     }
-  }
-
-  initMover(gridPhysics: GridPhysics) {
-    this.mover = new GridMover(this, gridPhysics, this.spriteKey)
-    this.mover.setMovementCommands(this.movementCommands)
   }
 }

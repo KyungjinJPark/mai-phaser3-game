@@ -17,13 +17,10 @@ export class Partier implements PositionHaver, Movable {
     this.sprite.setDepth(25)
     this.sprite.scale = Settings.zoom
     this.beer = new Beer(this, x, y, Collidable.TO_NON_PLAYERS)
+    this.mover = new GridMover(this, this.spriteKey)
   }
 
   update(delta: number) {
     this.mover.update(delta)
-  }
-
-  initMover(gridPhysics: GridPhysics) {
-    this.mover = new GridMover(this, gridPhysics, this.spriteKey)
   }
 }
