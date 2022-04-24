@@ -4,7 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- GameManager
 - Dialogue system
   - can go through dialogue without mouse
   - can respond
@@ -84,6 +83,8 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - do muiltiple above actions
 - Pause menu
   - inventory
+- GameManager
+  - ❌ *I don't remember what this was about*
 
 ---
 
