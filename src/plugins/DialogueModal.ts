@@ -11,7 +11,7 @@ type optionalParameters = {
 }
 
 export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
-  private _HUD_SCENE: Phaser.Scene
+  private HUD_SCENE: Phaser.Scene
   private options: optionalParameters = {
     borderThickness: 3,
     borderColor: 0x907748,
@@ -29,7 +29,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   private closeBtn: Phaser.GameObjects.Text
   private timedEvent: Phaser.Time.TimerEvent
   private dialogueStepDelay: number = 30
-  private currentText
+  private displayText
   private fullText: string[]
   private eventCounter
 
@@ -48,32 +48,41 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   public destroy(): void {} // TOmaybeDO: do I need to destroy all the things?
   public stop(): void {
     if (this.timedEvent) this.timedEvent.remove()
-    if (this.currentText) this.currentText.destroy()
+    if (this.displayText) this.displayText.destroy() // TODO: more to destroy
   }
 
-  public createDialogue(text: string, animate = true): Promise<void> {
-    // set up `currentText`
-    if (this.currentText === undefined) {
-      const x = this.options.padding + 10
-      const y = this.GAME_HEIGHT - this.options.windowHeight - this.options.padding + 10
-      this.currentText = this.HUD_SCENE.make.text({
-        x, y,
-        text:'',
-        style: {
-          wordWrap: { width: this.GAME_WIDTH - (2 * this.options.padding) - 25},
-          fontSize: '18px',
-          color: '#ffffff'
-        }
-      }).setDepth(10)
-    }
+  public assignHUDScene(hudScene): void {
+    this.HUD_SCENE = hudScene
 
+    // set up key captures
     if (this.cursors === undefined) {
       this.cursors = this.HUD_SCENE.input.keyboard.createCursorKeys()
     }
 
-    this.createDialogueBox()
-    this.setText(text, animate)
+    // set up dialogue box graphics
+    this.setUpDialogueBox()
 
+    // set up `currentText`
+    const x = this.options.padding + 10
+    const y = this.GAME_HEIGHT - this.options.windowHeight - this.options.padding + 10
+    this.displayText = this.HUD_SCENE.make.text({
+      x, y,
+      text:'',
+      style: {
+        wordWrap: { width: this.GAME_WIDTH - (2 * this.options.padding) - 25},
+        fontSize: '18px',
+        color: '#ffffff'
+      }
+    }).setDepth(10)
+
+    this.setVisible(false)
+  }
+
+  public startDialogue(text: string, animate = true): Promise<void> {
+    this.setVisible(true)
+    this.setDialogueText(text, animate)
+
+    // set up X button callback for promise
     const setXButtonCallback = (callback) => {
       this.closeBtn.removeListener('pointerdown')
       this.closeBtn.on('pointerdown', () => {
@@ -90,12 +99,10 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
         callback()
       })
     }
-
     return new Promise<void>(resolve => {
       setXButtonCallback(resolve)
     })
   }
-
   
   private get GAME_WIDTH(): number {
     return this.game.scale.width
@@ -103,78 +110,66 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   private get GAME_HEIGHT(): number {
     return this.game.scale.height
   }
-  public set HUD_SCENE(hudScene: Phaser.Scene) {
-    this._HUD_SCENE = hudScene
-  }
-  public get HUD_SCENE(): Phaser.Scene {
-    return this._HUD_SCENE
-  }
 
-  private createDialogueBox(): void {
-    if (this.graphics === undefined) {
-      this.createWindow()
-    } else {
-      this.setVisible(true)
-    }
-    this.visible = true
+  private setVisible(visibility: boolean) {
+    this.visible = visibility
+    
+    this.graphics.setVisible(visibility)
+    this.displayText.setVisible(visibility)
+    this.closeBtn.setVisible(visibility)
   }
 
-  private setText(text: string, animate: boolean) {
-    this.eventCounter = 0
-
+  private setDialogueText(text: string, animate: boolean) {
     if (animate) {
-      this.setTextDispay('')
+      this.eventCounter = 0
+      this.displayText.setText('')
       this.fullText = Array.from(text)
       
       if (this.timedEvent) this.timedEvent.destroy()
       this.timedEvent = this.HUD_SCENE.time.addEvent({
         delay: this.dialogueStepDelay,
-        callback: this.animateText,
+        callback: this.animateNextTextStep,
         callbackScope: this,
         loop: true
       })
     } else { 
-      this.setTextDispay(text)
+      this.displayText.setText(text)
     }
   }
 
-  private animateText() {
-    this.currentText.setText(this.currentText.text + this.fullText[this.eventCounter])
-    if (this.eventCounter === this.fullText.length - 1) {
+  private animateNextTextStep() {
+    this.displayText.setText(this.displayText.text + this.fullText[this.eventCounter])
+    this.eventCounter++
+    if (this.eventCounter >= this.fullText.length) {
       this.timedEvent.remove()
     }
-    this.eventCounter++
   }
 
-  private setTextDispay(text: string) {
-    this.currentText.setText(text)
+  private setUpDialogueBox(): void {
+    this.graphics = this.HUD_SCENE.add.graphics()
+    const {x, y, boxWidth, boxHeight} = this.calculateWindowDimensions()
+    this.createWindowBox(x, y, boxWidth, boxHeight)
+    this.createCloseBtn(this.GAME_WIDTH, this.GAME_HEIGHT)
+    this.createCloseBtnBorder(this.GAME_WIDTH, this.GAME_HEIGHT)
   }
 
-  private setVisible(visibility: boolean) {
-    this.visible = visibility
-    
-    this.currentText.setVisible(visibility)
-    this.closeBtn.setVisible(visibility)
-    this.graphics.setVisible(visibility)
-  }
-
-  private calculateWindowDimensions(width: number, height: number) {
+  private calculateWindowDimensions() {
     const x = this.options.padding
-    const y = height - this.options.windowHeight - this.options.padding
-    const boxWidth = width - (2* this.options.padding)
+    const y = this.GAME_HEIGHT - this.options.windowHeight - this.options.padding
+    const boxWidth = this.GAME_WIDTH - (2* this.options.padding)
     const boxHeight = this.options.windowHeight
     return { x, y, boxWidth, boxHeight }
   }
   
-  private createWindowBox(x, y, rectWidth, rectHeigth) {
+  private createWindowBox(x, y, boxWidth, boxHeight) {
     this.graphics.fillStyle(this.options.windowColor, this.options.windowAlpha)
-    this.graphics.fillRect(x, y, rectWidth, rectHeigth)
+    this.graphics.fillRect(x, y, boxWidth, boxHeight)
     this.graphics.lineStyle(
       this.options.borderThickness,
       this.options.borderColor,
       this.options.borderAlpha
     )
-    this.graphics.strokeRect(x, y, rectWidth, rectHeigth)
+    this.graphics.strokeRect(x, y, boxWidth, boxHeight)
   }
 
   private createCloseBtn(width: number, height: number) {
@@ -210,19 +205,5 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     const x = width - this.options.padding - 18
     const y = height - this.options.padding - this.options.windowHeight
     this.graphics.strokeRect(x, y, 18, 18)
-  }
-
-  private createWindow() {
-    const gameHeight = this.GAME_HEIGHT
-    const gameWidth = this.GAME_WIDTH
-    const {x, y, boxWidth, boxHeight} = this.calculateWindowDimensions(gameWidth, gameHeight)
-    const activeScene = this.HUD_SCENE
-    if (activeScene) {
-      this.graphics = activeScene.add.graphics()
-  
-      this.createWindowBox(x, y, boxWidth, boxHeight)
-      this.createCloseBtn(gameWidth, gameHeight)
-      this.createCloseBtnBorder(gameWidth, gameHeight)
-    }
   }
 }

@@ -5,6 +5,8 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 ## The Todo 📋
 
 - Dialogue system
+  - ✔️ comb over code again
+  - multi-slide dialogue
   - can go through dialogue without mouse
   - can respond
   - can offer different responses

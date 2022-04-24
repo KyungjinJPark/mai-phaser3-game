@@ -24,7 +24,7 @@ export class DialogueManager {
   }
 
   public assignHUDScene(hudScene) {
-    this.dialoguePlugin.HUD_SCENE = hudScene
+    this.dialoguePlugin.assignHUDScene(hudScene)
   }
 
   public async showDialogue(message: string) {
@@ -32,7 +32,7 @@ export class DialogueManager {
     const currScene = CurrentSceneManager.getInstance().getCurrentScene() as (TestScene | TestScene2) // TODO: ASSUMES SCENE TYPE FOR NOW
     currScene.inputManager.disableControls()
     // show dialogue
-    const promise = this.dialoguePlugin.createDialogue(message)
+    const promise = this.dialoguePlugin.startDialogue(message)
     // setup callback on dialogue close
     await promise
     currScene.inputManager.enableControls()
