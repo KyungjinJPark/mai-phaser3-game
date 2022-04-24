@@ -1,4 +1,3 @@
-import { ObjectManager } from "../../managers/ObjectManager"
 import { Settings } from "../../settings/Settings"
 import { Direction } from "../../types/Direction"
 import { PositionHaver } from "./PositionHaver"
@@ -9,7 +8,10 @@ export interface Movable extends PositionHaver {
   mover: GridMover
 }
 
-export type MovementCommand = 'r' | 'u' | 'l' | 'd'
+export type MovementCommands = {
+  instructions: ('r' | 'u' | 'l' | 'd')[],
+  loop: boolean,
+}
 
 const Vector2 = Phaser.Math.Vector2
 
@@ -35,7 +37,8 @@ export class GridMover {
   private facingDirection: Direction = Direction.NONE
   private frozen: boolean
 
-  private movementCommands: MovementCommand[]
+  private moveCommands: MovementCommands
+  private moveCommandsLoopCount = 0
   private cmdsIndex = 0
 
   constructor(
@@ -47,16 +50,17 @@ export class GridMover {
   update(delta: number) {
     if (this.isMoving()) {
       this.updatePosition(delta)
-    } else if (this.movementCommands !== undefined) {
-      const currMoveDir = this.movementCommandMap[this.movementCommands[this.cmdsIndex]]
-      // if (this.canMove(currMoveDir) === CanMove.YES) {
+    } else if (this.moveCommands !== undefined) {
+      if (this.moveCommands.loop || this.moveCommandsLoopCount == 0) {
+        const currMoveDir = this.movementCommandMap[this.moveCommands.instructions[this.cmdsIndex]]
         if (this.tryMove(currMoveDir)) {
           this.cmdsIndex++
-          if (this.cmdsIndex >= this.movementCommands.length) {
+          if (this.cmdsIndex >= this.moveCommands.instructions.length) {
+            this.moveCommandsLoopCount++
             this.cmdsIndex = 0
           } 
         }
-      // }
+      }
     }
     this.movingIntent = Direction.NONE
   }
@@ -108,8 +112,12 @@ export class GridMover {
     }
   }
   
-  setMovementCommands(movementCommands: MovementCommand[]) {
-    this.movementCommands = movementCommands
+  setMovementCommands(movementCommands: MovementCommands) {
+    console.log("setMovementCommands", movementCommands)
+    
+    this.moveCommands = movementCommands
+    this.moveCommandsLoopCount = 0
+    this.cmdsIndex = 0
   }
 
   isMoving(): boolean {

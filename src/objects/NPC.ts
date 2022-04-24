@@ -4,7 +4,7 @@ import { ObjectManager } from "../managers/ObjectManager"
 import { Settings } from "../settings/Settings"
 import { Direction } from "../types/Direction"
 import { Beer, PositionHaver } from "./abilities/PositionHaver"
-import { Movable, GridMover, MovementCommand } from "./abilities/Movable"
+import { Movable, GridMover, MovementCommands } from "./abilities/Movable"
 import { Interactable, Interactee, interactionCommand } from "./abilities/Interactable"
 
 export class NPC implements PositionHaver, Movable, Interactable {
@@ -14,7 +14,7 @@ export class NPC implements PositionHaver, Movable, Interactable {
   public interactee: Interactee
   private spriteKey: string 
   
-  constructor(x: number, y: number, spriteKey: string, interactionCommands?: interactionCommand[], private movementCommands?: MovementCommand[]) {
+  constructor(x: number, y: number, spriteKey: string, interactionCommands?: interactionCommand[], private movementCommands?: MovementCommands) {
     this.spriteKey = spriteKey
     const thisScene = CurrentSceneManager.getInstance().getCurrentScene()
     this.sprite = thisScene.add.sprite(0, 0, spriteKey, 55)
@@ -44,6 +44,10 @@ export class NPC implements PositionHaver, Movable, Interactable {
             break
           case 'transition':
             thisScene.scene.switch(cmd.transition)
+            doInteractionStep(step + 1)
+            break
+          case 'move':
+            this.mover.setMovementCommands(cmd.move)
             doInteractionStep(step + 1)
             break
           case 'function':

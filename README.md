@@ -9,9 +9,9 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
     - ✔️ stops your movement
   - ✔️ cause animation
   - ✔️ transition scene
+  - ✔️ move self
   - trigger other objects to do something
     - e.g.
-      - move self
       - move the player
       - make other play animation
   - do muiltiple above actions
@@ -25,10 +25,17 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 - Animated tiles
 - Depth sorting
 - In-game cutscenes
+- How to manage game animation creation and management
 
 ### Known Issues 🦗
 
-- NPCs with movementCommands won't play interact animations
+- Activating Dialogue
+  - twice doesn't work
+  - thrice works but breaks your controls
+- Movement controls go 💥 if you pause the game (and prob is you unfocus browser)
+- NPCs with movementCommands won't
+  - play interact animations
+  - change their movement commands
 - Dialogue stopping movement breaks on scene tranisition
 
 ### The Done ✅

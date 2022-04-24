@@ -91,7 +91,6 @@ export class TestScene extends Phaser.Scene {
       new Sign(5, 1, 'RIP our dog\nHEE HEE HOO HOO'),
       new Door(9, 7, 'TestScene2'),
       new Sign(10, 7, 'our house'),
-      
     ]
 
     const sf = this.cache.json.get('saveFile')
@@ -100,7 +99,11 @@ export class TestScene extends Phaser.Scene {
     }
 
     this.NPCs = [
-      new NPC(5, 4, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}, {type: 'animation', animation: 'npc_spin'}], ['l','u','u','r','r','d','d','l']),
+      new NPC(5, 4, 'npc', [
+        {type: 'dialogue', dialogue: '2 fast 2 quick'},
+        {type: 'animation', animation: 'npc_spin'},
+        {type: 'move', move: {loop: false, instructions: ['l','u','r','d']}},
+      ], {loop: true, instructions: ['l','u','u','r','r','d','d','l']}),
       new NPC(1, 5, 'npc', [
         {type: 'dialogue', dialogue: 'Why am I alive'},
         {type: 'animation', animation: 'npc_spin'},
@@ -116,7 +119,8 @@ export class TestScene extends Phaser.Scene {
           sf.inventory.push('sword')
           this.cache.json.add('saveFile', sf)
         }},
-        {type: 'transition', transition: 'TestScene2'},
+        {type: 'move', move: {loop: false, instructions: ['l','u','r','d']}},
+        // {type: 'transition', transition: 'TestScene2'},
       ]),
     ]
 
