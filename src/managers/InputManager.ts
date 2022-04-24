@@ -3,6 +3,7 @@ import { CurrentSceneManager } from "./CurrentSceneManager"
 import { Party } from "../objects/Party"
 
 export class InputManager {
+  private disabled: boolean
   private input: Phaser.Input.InputPlugin
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
   private allCommands: Direction[]
@@ -10,11 +11,32 @@ export class InputManager {
   private party: Party
 
   constructor(input: Phaser.Input.InputPlugin) {
+    this.disabled = false
     this.input = input
     this.cursors = input.keyboard.createCursorKeys()
     this.allCommands = []
     this.commandsThisFrame = []
     this.create()
+  }
+
+  disableControls = () => {
+    if (!this.disabled) {
+      this.disabled = true
+      this.allCommands = []
+      this.commandsThisFrame = []
+      this.cursors.space.removeAllListeners()
+      this.cursors.right.removeAllListeners()
+      this.cursors.up.removeAllListeners()
+      this.cursors.left.removeAllListeners()
+      this.cursors.down.removeAllListeners()
+    }
+  }
+
+  enableControls = () => {
+    if (this.disabled) {
+      this.disabled = false
+      this.create()
+    }
   }
 
   create() {
@@ -29,6 +51,7 @@ export class InputManager {
 
     // Interact controls
     this.cursors.space.on('down', () => {
+      console.log('InputManager tryInteract')
       this.party.player.tryInteract()
     })
 

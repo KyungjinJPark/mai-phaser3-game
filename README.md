@@ -27,11 +27,8 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 - In-game cutscenes
 - How to manage game animation creation and management
 
-### Known Issues 🦗
+### Known Issues 🐞
 
-- Activating Dialogue
-  - twice doesn't work
-  - thrice works but breaks your controls
 - Movement controls go 💥 if you pause the game (and prob is you unfocus browser)
 - NPCs with movementCommands won't
   - play interact animations
@@ -82,6 +79,11 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 - Scene transitions
   - saving scene state
   - load scene diffs based on save file
+- 🦗 Activating Dialogue
+  - twice doesn't work
+    - *space keyup wasn't registering when inputs were disabled*
+  - thrice works but breaks your controls
+    - *the end dialogue callback was never updated to the proper one past the first*
 
 ---
 

@@ -58,16 +58,27 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       }).setDepth(10)
     }
 
-    const p = new Promise<void>(resolve => {
-      this.createDialogueBox(resolve)
-    })
+    this.createDialogueBox()
     this.setText(text, animate)
-    return p
+
+    const setXButtonCallback = (callback) => {
+      this.closeBtn.removeListener('pointerdown')
+      this.closeBtn.on('pointerdown', () => {
+        this.setVisible(false)
+
+        if (this.timedEvent) this.timedEvent.remove()
+        callback()
+      })
+    }
+
+    return new Promise<void>(resolve => {
+      setXButtonCallback(resolve)
+    })
   }
 
-  private createDialogueBox(closeBtnCallback): void {
+  private createDialogueBox(): void {
     if (this.graphics === undefined) {
-      this.createWindow(closeBtnCallback)
+      this.createWindow()
     } else {
       this.setVisible(true)
     }
@@ -132,7 +143,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.graphics.strokeRect(x, y, rectWidth, rectHeigth)
   }
 
-  private createCloseBtn(width: number, height: number, closeBtnCallback) {
+  private createCloseBtn(width: number, height: number) {
     const self = this
     this.closeBtn = this.getHUDScene().make.text({
       x: width - this.options.padding - 18,
@@ -155,7 +166,6 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       self.setVisible(false)
 
       if (this.timedEvent) this.timedEvent.remove()
-      closeBtnCallback()
     })
   }
 
@@ -165,7 +175,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.graphics.strokeRect(x, y, 18, 18)
   }
 
-  private createWindow(closeBtnCallback) {
+  private createWindow() {
     const gameHeight = this.getGameHeight()
     const gameWidth = this.getGameWidth()
     const {x, y, boxWidth, boxHeight} = this.calculateWindowDimensions(gameWidth, gameHeight)
@@ -174,7 +184,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       this.graphics = activeScene.add.graphics()
   
       this.createWindowBox(x, y, boxWidth, boxHeight)
-      this.createCloseBtn(gameWidth, gameHeight, closeBtnCallback)
+      this.createCloseBtn(gameWidth, gameHeight)
       this.createCloseBtnBorder(gameWidth, gameHeight)
     }
   }

@@ -1,4 +1,6 @@
 import { DialogueModalPlugin } from '../plugins/DialogueModal'
+import { TestScene } from '../scenes/TestScene'
+import { TestScene2 } from '../scenes/TestScene2'
 import { CurrentSceneManager } from './CurrentSceneManager'
 
 export class DialogueManager {
@@ -29,12 +31,13 @@ export class DialogueManager {
 
   async showDialogue(message: string) {
     // stop player movement
-    CurrentSceneManager.getInstance().getCurrentScene().input.keyboard.enabled = false // TODO: this might be a hack
+    const currScene = CurrentSceneManager.getInstance().getCurrentScene() as (TestScene | TestScene2) // TODO: ASSUMES SCENE TYPE FOR NOW
+    currScene.inputManager.disableControls()
     // show dialogue
     const promise = this.dialoguePlugin.createDialogue(message)
     // setup callback on dialogue close
     await promise
-    CurrentSceneManager.getInstance().getCurrentScene().input.keyboard.enabled = true
+    currScene.inputManager.enableControls()
     // TODO: other callbacks for other events
   }
 }

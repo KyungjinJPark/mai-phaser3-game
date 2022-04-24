@@ -23,7 +23,7 @@ const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 }
 
 export class TestScene extends Phaser.Scene {
-  private inputManager: InputManager
+  public inputManager: InputManager // TODO: public for now, but should be private
   private objectManager: ObjectManager
   private party: Party
   private NPCs: NPC[]

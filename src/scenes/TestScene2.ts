@@ -22,7 +22,7 @@ const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 }
 
 export class TestScene2 extends Phaser.Scene {
-  private inputManager: InputManager
+  public inputManager: InputManager
   private objectManager: ObjectManager
   private party: Party
   private NPCs: NPC[]
