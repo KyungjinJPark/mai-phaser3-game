@@ -11,7 +11,8 @@ type optionalParameters = {
 }
 
 export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
-  private options: optionalParameters & object = {
+  private _HUD_SCENE: Phaser.Scene
+  private options: optionalParameters = {
     borderThickness: 3,
     borderColor: 0x907748,
     borderAlpha: 1,
@@ -24,6 +25,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   }
   private graphics: Phaser.GameObjects.Graphics
   private visible: boolean
+  private cursors: Phaser.Types.Input.Keyboard.CursorKeys
   private closeBtn: Phaser.GameObjects.Text
   private timedEvent: Phaser.Time.TimerEvent
   private dialogueStepDelay: number = 30
@@ -31,31 +33,42 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   private fullText: string[]
   private eventCounter
 
-  constructor(pluginManager) {
+  public constructor(pluginManager) {
     super(pluginManager)
   } 
 
-  init(opts: optionalParameters): void { // optional parameters
+  public init(opts: optionalParameters): void { // optional parameters
     if (!opts) {
       for (const param in opts) {
         this.options[param] = opts[param]
       }
     }
   }
+  public start(): void {}
+  public destroy(): void {} // TOmaybeDO: do I need to destroy all the things?
+  public stop(): void {
+    if (this.timedEvent) this.timedEvent.remove()
+    if (this.currentText) this.currentText.destroy()
+  }
 
-  createDialogue(text: string, animate = true): Promise<void> {
+  public createDialogue(text: string, animate = true): Promise<void> {
+    // set up `currentText`
     if (this.currentText === undefined) {
       const x = this.options.padding + 10
-      const y = this.getGameHeight() - this.options.windowHeight - this.options.padding + 10
-      this.currentText = this.getHUDScene().make.text({
+      const y = this.GAME_HEIGHT - this.options.windowHeight - this.options.padding + 10
+      this.currentText = this.HUD_SCENE.make.text({
         x, y,
         text:'',
         style: {
-          wordWrap: { width: this.getGameWidth() - (2 * this.options.padding) - 25},
+          wordWrap: { width: this.GAME_WIDTH - (2 * this.options.padding) - 25},
           fontSize: '18px',
           color: '#ffffff'
         }
       }).setDepth(10)
+    }
+
+    if (this.cursors === undefined) {
+      this.cursors = this.HUD_SCENE.input.keyboard.createCursorKeys()
     }
 
     this.createDialogueBox()
@@ -69,11 +82,32 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
         if (this.timedEvent) this.timedEvent.remove()
         callback()
       })
+      this.cursors.space.removeListener('down')
+      this.cursors.space.on('down', () => {
+        this.setVisible(false)
+
+        if (this.timedEvent) this.timedEvent.remove()
+        callback()
+      })
     }
 
     return new Promise<void>(resolve => {
       setXButtonCallback(resolve)
     })
+  }
+
+  
+  private get GAME_WIDTH(): number {
+    return this.game.scale.width
+  }
+  private get GAME_HEIGHT(): number {
+    return this.game.scale.height
+  }
+  public set HUD_SCENE(hudScene: Phaser.Scene) {
+    this._HUD_SCENE = hudScene
+  }
+  public get HUD_SCENE(): Phaser.Scene {
+    return this._HUD_SCENE
   }
 
   private createDialogueBox(): void {
@@ -93,7 +127,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       this.fullText = Array.from(text)
       
       if (this.timedEvent) this.timedEvent.destroy()
-      this.timedEvent = this.getHUDScene().time.addEvent({
+      this.timedEvent = this.HUD_SCENE.time.addEvent({
         delay: this.dialogueStepDelay,
         callback: this.animateText,
         callbackScope: this,
@@ -145,7 +179,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
 
   private createCloseBtn(width: number, height: number) {
     const self = this
-    this.closeBtn = this.getHUDScene().make.text({
+    this.closeBtn = this.HUD_SCENE.make.text({
       x: width - this.options.padding - 18,
       y: height - this.options.padding - this.options.windowHeight + 6,
       text: 'X',
@@ -164,7 +198,10 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     })
     this.closeBtn.on('pointerdown', () => {
       self.setVisible(false)
-
+      if (this.timedEvent) this.timedEvent.remove()
+    })
+    this.cursors.space.on('down', () => {
+      self.setVisible(false)
       if (this.timedEvent) this.timedEvent.remove()
     })
   }
@@ -176,10 +213,10 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   private createWindow() {
-    const gameHeight = this.getGameHeight()
-    const gameWidth = this.getGameWidth()
+    const gameHeight = this.GAME_HEIGHT
+    const gameWidth = this.GAME_WIDTH
     const {x, y, boxWidth, boxHeight} = this.calculateWindowDimensions(gameWidth, gameHeight)
-    const activeScene = this.getHUDScene()
+    const activeScene = this.HUD_SCENE
     if (activeScene) {
       this.graphics = activeScene.add.graphics()
   
@@ -187,34 +224,5 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       this.createCloseBtn(gameWidth, gameHeight)
       this.createCloseBtnBorder(gameWidth, gameHeight)
     }
-  }
-
-  private getHUDScene(hudSceneKey = 'HUDScene'): Phaser.Scene {
-    const hudScene = this.game.scene.getScene(hudSceneKey)
-    if (hudScene === undefined || !this.game.scene.isActive(hudSceneKey)) {
-      // This can happen only if im not making things properly
-      console.error('DialogueModalPlugin: Could not find HUDScene OR HUDScene is not active')
-      throw new Error('DialogueModalPlugin: Could not find HUDScene OR HUDScene is not active')
-    }
-    return hudScene
-  }
-
-  private getGameWidth(): number {
-    return this.game.scale.width
-  }
-  
-  private getGameHeight(): number {
-    return this.game.scale.height
-  }
-
-  destroy(): void {
-    // TOmaybeDO: do I need to destroy all the things?
-  }
-
-  start(): void {}
-
-  stop(): void {
-    if (this.timedEvent) this.timedEvent.remove()
-    if (this.currentText) this.currentText.destroy()
   }
 }

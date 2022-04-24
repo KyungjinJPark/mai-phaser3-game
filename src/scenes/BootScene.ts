@@ -5,11 +5,11 @@ const bootSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 }
 
 export class BootScene extends Phaser.Scene {
-  constructor () {
+  public constructor() {
     super(bootSceneConfig)
   }
 
-  public preload () {
+  public preload() {
     this.load.image('green_tiles', 'assets/map/ss_green_tiles.png')
     this.load.tilemapTiledJSON('green_map_0', 'assets/map/tiled_test_0.json')
     this.load.tilemapTiledJSON('green_map_1', 'assets/map/tiled_test_1.json')
@@ -35,9 +35,10 @@ export class BootScene extends Phaser.Scene {
     }
   }
 
-  public create () {
-    // go straight to TestScene
-    DialogueManager.getInstance().init(this)
-    this.scene.start('TestScene')
+  public create() {
+    const dialoguePlugin = this.plugins.get('DialogueModalPlugin') // load the DialogueModalPlugin
+    DialogueManager.getInstance().assignPlugin(dialoguePlugin)
+    this.scene.launch('HUDScene')
+    this.scene.start('TestScene') // go straight to TestScene
   }
 }

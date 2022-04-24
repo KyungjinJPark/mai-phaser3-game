@@ -1,13 +1,16 @@
 import { DialogueModalPlugin } from '../plugins/DialogueModal'
+import { CurrentSceneManager } from './CurrentSceneManager'
 import { TestScene } from '../scenes/TestScene'
 import { TestScene2 } from '../scenes/TestScene2'
-import { CurrentSceneManager } from './CurrentSceneManager'
 
 export class DialogueManager {
   // ======================= singleton code =======================
   private static instance: DialogueManager
+  private constructor() {
+    DialogueManager.instance = this
+  }
   public static getInstance(): DialogueManager {
-    if (!DialogueManager.instance) {
+    if (DialogueManager.instance === undefined) {
       DialogueManager.instance = new DialogueManager()
     }
     return DialogueManager.instance
@@ -16,20 +19,15 @@ export class DialogueManager {
 
   private dialoguePlugin: DialogueModalPlugin
 
-  private constructor() {
-    DialogueManager.instance = this
+  public assignPlugin(dialoguePlugin) {
+    this.dialoguePlugin = dialoguePlugin
   }
 
-  init(scene: Phaser.Scene) {
-    // launch the HUD Scene
-    if (!scene.scene.isActive('HUDScene')) {
-      scene.scene.launch('HUDScene')
-    }
-    // load the DialogueModalPlugin
-    this.dialoguePlugin = scene.plugins.get('DialogueModalPlugin') as any
+  public assignHUDScene(hudScene) {
+    this.dialoguePlugin.HUD_SCENE = hudScene
   }
 
-  async showDialogue(message: string) {
+  public async showDialogue(message: string) {
     // stop player movement
     const currScene = CurrentSceneManager.getInstance().getCurrentScene() as (TestScene | TestScene2) // TODO: ASSUMES SCENE TYPE FOR NOW
     currScene.inputManager.disableControls()
