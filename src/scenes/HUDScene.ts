@@ -5,7 +5,8 @@ const hudSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 }
 
 export class HUDScene extends Phaser.Scene {
-  private graphics = []
+  private gamePaused: boolean = false
+  private pauseUI = []
 
   constructor () {
     super(hudSceneConfig)
@@ -14,36 +15,36 @@ export class HUDScene extends Phaser.Scene {
   create () {
     this.scene.bringToTop()
 
-    // paused game graphics TODO: Seems very messy and slow
+    // Create pause UI
     const w = this.game.scale.width
     const h = this.game.scale.height
-    this.graphics.push(this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.5))
-    this.graphics.push(this.add.text(10, h / 2, 'Paused', { fontSize: '32px' }))
+    this.pauseUI.push(this.add.rectangle(w / 2, h / 2, w, h, 0x000000, 0.5))
+    this.pauseUI.push(this.add.text(10, h / 2, 'Paused', { fontSize: '32px' }))
+    this.pauseUI.push(this.add.text(10, h / 2 + 32, '', { fontSize: '16px' })) // for inventory items
+    this.hidePauseUI()
 
-    // add inventory items to pause menu
-    const saveFile: Object = this.cache.json.get('saveFile')
-    this.graphics.push(this.add.text(10, h / 2 + 32, JSON.stringify(saveFile), { fontSize: '16px' }))
-
-    // set all graphics to invisible
-    this.graphics.forEach(g => g.setVisible(false))
-    
-    // Resume game
+    // Pause game
     const escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
     escKey.on('down', () => {
-      // new Phaser.Events.EventEmitter()
       const gameScene = CurrentSceneManager.getInstance().getCurrentScene().scene
-      if (gameScene.isPaused()) {
+      if (!this.gamePaused) {
+        // new Phaser.Events.EventEmitter()
+        this.showPauseUI()
+        gameScene.pause()
+      } else {
+        this.hidePauseUI()
         gameScene.resume()
       }
+      this.gamePaused = !this.gamePaused
     })
   }
 
-  update () {
-    if (CurrentSceneManager.getInstance().getCurrentScene().scene.isPaused()) {
-      this.graphics.forEach(g => g.setVisible(true))
-      this.graphics[2].setText(JSON.stringify(this.cache.json.get('saveFile')))
-    } else {
-      this.graphics.forEach(g => g.setVisible(false))
-    }
+  private showPauseUI () {
+    this.pauseUI[2].setText('Items: ' + JSON.stringify(this.cache.json.get('saveFile').inventory))
+    this.pauseUI.forEach(g => g.setVisible(true))
+  }
+
+  private hidePauseUI () {
+    this.pauseUI.forEach(g => g.setVisible(false))
   }
 }

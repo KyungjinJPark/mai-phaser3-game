@@ -40,18 +40,8 @@ export class InputManager {
   }
 
   create() {
-    // TODO: Input manager getting a bit too coupled with other systems
-
-    // Pause game
-    const escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
-    escKey.on('down', () => {
-      // new Phaser.Events.EventEmitter()
-      CurrentSceneManager.getInstance().getCurrentScene().scene.pause()
-    })
-
     // Interact controls
     this.cursors.space.on('down', () => {
-      console.log('InputManager tryInteract')
       this.party.player.tryInteract()
     })
 
