@@ -1,7 +1,8 @@
-import { DialogueModalPlugin } from '../plugins/DialogueModal';
+import { DialogueModalPlugin } from '../plugins/DialogueModal'
+import { CurrentSceneManager } from './CurrentSceneManager'
 
 export class DialogueManager {
-  // Singleton code
+  // ======================= singleton code =======================
   private static instance: DialogueManager
   public static getInstance(): DialogueManager {
     if (!DialogueManager.instance) {
@@ -9,6 +10,7 @@ export class DialogueManager {
     }
     return DialogueManager.instance
   }
+  // ==============================================================
 
   private dialoguePlugin: DialogueModalPlugin
 
@@ -25,7 +27,14 @@ export class DialogueManager {
     this.dialoguePlugin = scene.plugins.get('DialogueModalPlugin') as any
   }
 
-  showDialogue(message: string) {
-    this.dialoguePlugin.createDialogue(message)
+  async showDialogue(message: string) {
+    // stop player movement
+    CurrentSceneManager.getInstance().getCurrentScene().input.keyboard.enabled = false // TODO: this might be a hack
+    // show dialogue
+    const promise = this.dialoguePlugin.createDialogue(message)
+    // setup callback on dialogue close
+    await promise
+    CurrentSceneManager.getInstance().getCurrentScene().input.keyboard.enabled = true
+    // TODO: other callbacks for other events
   }
 }

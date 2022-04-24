@@ -43,7 +43,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     }
   }
 
-  createDialogue(text: string, animate = true): void {
+  createDialogue(text: string, animate = true): Promise<void> {
     if (this.currentText === undefined) {
       const x = this.options.padding + 10
       const y = this.getGameHeight() - this.options.windowHeight - this.options.padding + 10
@@ -58,13 +58,16 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       }).setDepth(10)
     }
 
+    const p = new Promise<void>(resolve => {
+      this.createDialogueBox(resolve)
+    })
     this.setText(text, animate)
-    this.createDialogueBox()
+    return p
   }
 
-  private createDialogueBox(): void {
+  private createDialogueBox(closeBtnCallback): void {
     if (this.graphics === undefined) {
-      this.createWindow()
+      this.createWindow(closeBtnCallback)
     } else {
       this.setVisible(true)
     }
@@ -129,7 +132,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.graphics.strokeRect(x, y, rectWidth, rectHeigth)
   }
 
-  private createCloseBtn(width: number, height: number) {
+  private createCloseBtn(width: number, height: number, closeBtnCallback) {
     const self = this
     this.closeBtn = this.getHUDScene().make.text({
       x: width - this.options.padding - 18,
@@ -150,7 +153,9 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     })
     this.closeBtn.on('pointerdown', () => {
       self.setVisible(false)
+
       if (this.timedEvent) this.timedEvent.remove()
+      closeBtnCallback()
     })
   }
 
@@ -160,7 +165,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.graphics.strokeRect(x, y, 18, 18)
   }
 
-  private createWindow() {
+  private createWindow(closeBtnCallback) {
     const gameHeight = this.getGameHeight()
     const gameWidth = this.getGameWidth()
     const {x, y, boxWidth, boxHeight} = this.calculateWindowDimensions(gameWidth, gameHeight)
@@ -169,7 +174,7 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       this.graphics = activeScene.add.graphics()
   
       this.createWindowBox(x, y, boxWidth, boxHeight)
-      this.createCloseBtn(gameWidth, gameHeight)
+      this.createCloseBtn(gameWidth, gameHeight, closeBtnCallback)
       this.createCloseBtnBorder(gameWidth, gameHeight)
     }
   }
