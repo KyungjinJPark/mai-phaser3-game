@@ -24,11 +24,14 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   private graphics: Phaser.GameObjects.Graphics
   private visible: boolean
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
+  // animation
   private timedEvent: Phaser.Time.TimerEvent
   private dialogueStepDelay: number = 30
   private displayText
-  private fullText: string[]
+  private fullText: string
   private eventCounter
+  private finished: boolean
+  private finishedCallback
 
   public constructor(pluginManager) {
     super(pluginManager)
@@ -55,6 +58,9 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     if (this.cursors === undefined) {
       this.cursors = this.HUD_SCENE.input.keyboard.createCursorKeys()
     }
+    this.cursors.space.on('down', () => {
+      this.onSpace();
+    })
 
     // set up dialogue box graphics
     this.setUpDialogueBox()
@@ -76,12 +82,9 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
   }
 
   public async startDialogue(dialogue: string[], animate = true) {
-    // remove dialogue exit if it exists
-    this.cursors.space.removeListener('down')
-
     this.setVisible(true)
     for (let i = 0; i < dialogue.length; i++) {
-      await this.setDialogueText(dialogue[i], true)
+      await this.startDialogueSlide(dialogue[i], animate)
     }
 
     this.setVisible(false)
@@ -102,46 +105,62 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.displayText.setVisible(visibility)
   }
 
-  private setDialogueText(text: string, animate: boolean): Promise<void> {
+  private startDialogueSlide(text: string, animate: boolean): Promise<void> {
     return new Promise<void>(resolveSlide => {
+      // set this dialogue text's resolve callback
+      this.finished = false
+      this.finishedCallback = resolveSlide
+
       if (animate) {
         this.eventCounter = 0
         this.displayText.setText('')
-        this.fullText = Array.from(text)
+        this.fullText = text
         
         if (this.timedEvent) this.timedEvent.destroy()
         Phaser.Time.TimerEvent
         this.timedEvent = this.HUD_SCENE.time.addEvent({
           delay: this.dialogueStepDelay,
-          callback: this.animateNextTextStep(resolveSlide),
+          callback: this.animateNextTextStep,
           callbackScope: this,
           loop: true
         })
       } else { 
         this.displayText.setText(text)
-        this.enableNextSlideOption(resolveSlide)
+        this.enableNextSlideAbility()
       }
     })
   }
 
-  private animateNextTextStep(resolveSlide) {
-    return () => {
-      this.displayText.setText(this.displayText.text + this.fullText[this.eventCounter])
-      this.eventCounter++
-      if (this.eventCounter >= this.fullText.length) {
-        this.timedEvent.remove()
-        this.enableNextSlideOption(resolveSlide)
+  private animateNextTextStep() {
+    this.displayText.setText(this.displayText.text + this.fullText.at(this.eventCounter))
+    this.eventCounter++
+    if (this.eventCounter >= this.fullText.length) {
+      this.timedEvent.remove()
+      this.enableNextSlideAbility()
+    }
+  }
+
+  private skipAnimation() {
+    this.timedEvent.remove()
+    this.displayText.setText(this.fullText)
+    this.enableNextSlideAbility()
+  }
+
+  private enableNextSlideAbility() {
+    this.finished = true
+  }
+
+  private onSpace() {
+    if (this.visible) {
+      if (!this.finished) {
+        this.skipAnimation()
+      } else {
+        this.finishedCallback()
       }
     }
   }
 
-  private enableNextSlideOption(resolveSlide) {
-    this.cursors.space.on('down', () => {
-      resolveSlide()
-      this.cursors.space.removeListener('down')
-    })
-  }
-
+  // ======================= box construction =======================
   private setUpDialogueBox(): void {
     this.graphics = this.HUD_SCENE.add.graphics()
     const {x, y, boxWidth, boxHeight} = this.calculateWindowDimensions()

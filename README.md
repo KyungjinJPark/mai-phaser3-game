@@ -8,13 +8,14 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - ✔️ comb over code again
   - ✔️ multi-slide dialogue
   - ✔️ can go through dialogue without mouse
-  - can skip through dialogue
+  - ✔️ can skip through dialogue
   - can respond
   - can offer different responses
 - Animated tiles
 - Depth sorting
 - In-game cutscenes
 - How to manage game animation creation and management
+- Dialogue storage location
 
 ### Known Issues 🐞
 
