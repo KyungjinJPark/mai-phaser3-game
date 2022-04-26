@@ -1,8 +1,6 @@
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
 import { DialogueManager } from "../managers/DialogueManager"
-import { ObjectManager } from "../managers/ObjectManager"
 import { Settings } from "../settings/Settings"
-import { Direction } from "../types/Direction"
 import { Beer, PositionHaver } from "./abilities/PositionHaver"
 import { Movable, GridMover, MovementCommands } from "./abilities/Movable"
 import { Interactable, Interactee, interactionCommand } from "./abilities/Interactable"
@@ -27,12 +25,12 @@ export class NPC implements PositionHaver, Movable, Interactable {
     // Implement these interaction Commands and Movement Commands
     const dm = DialogueManager.getInstance()
 
-    const doInteractionStep = (step: number) => {
+    const doInteractionStep = async (step: number) => {
       if (step < interactionCommands.length) {
         const cmd = interactionCommands[step]
         switch (cmd.type) {
           case 'dialogue':
-            dm.startDialogue(cmd.dialogue)
+            await dm.startDialogue(cmd.dialogue)
             doInteractionStep(step + 1)
             break
           case 'animation':
