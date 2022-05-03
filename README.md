@@ -4,18 +4,11 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Dialogue system
-  - ✔️ comb over code again
-  - ✔️ multi-slide dialogue
-  - ✔️ can go through dialogue without mouse
-  - ✔️ can skip through dialogue
-  - can respond
-  - can offer different responses
-- Animated tiles
 - Depth sorting
 - In-game cutscenes
 - How to manage game animation creation and management
 - Dialogue storage location
+- ⬇️ Animated tiles
 
 ### Known Issues 🐞
 
@@ -89,6 +82,13 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - inventory
 - GameManager
   - ❌ *I don't remember what this was about*
+- Dialogue system
+  - comb over code again
+  - multi-slide dialogue
+  - can go through dialogue without mouse
+  - can skip through dialogue
+  - can respond
+  - can offer different responses
 
 ---
 
