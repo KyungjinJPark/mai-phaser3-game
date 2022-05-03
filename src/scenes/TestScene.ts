@@ -124,7 +124,8 @@ export class TestScene extends Phaser.Scene {
       new NPC(12, 8, 'npc', [
         {type: 'dialogue', dialogue: { type: 'text', text: ['This is a test', 'for multiple slides', 'of dialogue']}},
         {type: 'dialogue', dialogue: { type: 'text', text: ['Do you think', 'that this dialogue', 'feature is working?']}},
-        {type: 'dialogue', dialogue: { type: 'choice', choice: ['yes', 'no', '*pig noises*']}},
+        {type: 'dialogue', dialogue: { type: 'choice', choice: ['yes', 'no', '*pig noises*'], var: 'sel_0'}},
+        {type: 'dialogue', condition: { var: 'sel_0', value: 0 }, dialogue: { type: 'text', text: ['Great!']}},
       ]),
     ]
 

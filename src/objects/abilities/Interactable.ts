@@ -7,10 +7,15 @@ export interface Interactable extends PositionHaver{
 
 export type interactionCommand = {
   type: 'dialogue' | 'animation' | 'transition' | 'move' | 'function',
+  condition?: {
+    var: string,
+    value: number,
+  },
   dialogue?: {
     type: 'text' | 'choice',
     text?: string[],
     choice?: string[],
+    var?: string,
   },
   animation?: string,
   transition?: string,
