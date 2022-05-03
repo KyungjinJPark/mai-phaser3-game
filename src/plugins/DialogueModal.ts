@@ -10,7 +10,6 @@ type optionalParameters = {
 }
 
 export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
-  private HUD_SCENE: Phaser.Scene
   private options: optionalParameters = {
     borderThickness: 3,
     borderColor: 0x907748,
@@ -21,15 +20,22 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     padding: 16,
     dialogSpeed: 3
   }
-  private graphics: Phaser.GameObjects.Graphics
   private visible: boolean
+  // main
+  private HUD_SCENE: Phaser.Scene
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
+  private graphics: Phaser.GameObjects.Graphics
+  // responding
+  // private responseGraphics: Phaser.GameObjects.Graphics
+  private choices: string[]
+  private selection: number
+  private responseText: Phaser.GameObjects.Text
   // animation
   private timedEvent: Phaser.Time.TimerEvent
   private dialogueStepDelay: number = 30
-  private displayText
+  private displayText: Phaser.GameObjects.Text
   private fullText: string
-  private eventCounter
+  private eventCounter: number
   private finished: boolean
   private finishedCallback
 
@@ -59,7 +65,13 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       this.cursors = this.HUD_SCENE.input.keyboard.createCursorKeys()
     }
     this.cursors.space.on('down', () => {
-      this.onSpace();
+      this.onSpace()
+    })
+    this.cursors.left.on('down', () => {
+      this.onLeft()
+    })
+    this.cursors.right.on('down', () => {
+      this.onRight()
     })
 
     // set up dialogue box graphics
@@ -81,14 +93,23 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
     this.setVisible(false)
   }
 
-  public async startDialogue(dialogue: string[], animate = true) {
-    this.setVisible(true)
-    for (let i = 0; i < dialogue.length; i++) {
-      await this.startDialogueSlide(dialogue[i], animate)
+  public async startDialogue(dialogue, animate = true) {
+    if (dialogue.type === 'text') {
+      const content = dialogue.text
+      this.setVisible(true)
+      for (let i = 0; i < content.length; i++) {
+        await this.startDialogueSlide(content[i], animate)
+      }
+      this.setVisible(false)
+      if (this.timedEvent) this.timedEvent.remove()
+    } else {
+      this.choices = dialogue.choice
+      this.setVisible(true)
+      const choiceSelected = await this.startChoiceSlide()
+      this.setVisible(false)
+      if (this.timedEvent) this.timedEvent.remove()
+      return choiceSelected
     }
-
-    this.setVisible(false)
-    if (this.timedEvent) this.timedEvent.remove()
   }
   
   private get GAME_WIDTH(): number {
@@ -130,6 +151,24 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       }
     })
   }
+  
+  // TODO: Wierd tangling of functionality
+  private startChoiceSlide() {
+    return new Promise<number>(resolveSlide => {
+      this.finished = false
+      this.finishedCallback = () => resolveSlide(this.selection)
+      this.selection = 0
+      this.setChoiceDisplayText()
+      this.finished = true
+    })
+  }
+
+  private setChoiceDisplayText() {
+    const f = this.choices.slice(0, this.selection).join(' ')
+    const s = this.selection === 0 ? '>' : ' >'
+    const t = this.choices.slice(this.selection, this.choices.length).join(' ')
+    this.displayText.setText(f + s + t)
+  }
 
   private animateNextTextStep() {
     this.displayText.setText(this.displayText.text + this.fullText.at(this.eventCounter))
@@ -157,6 +196,20 @@ export class DialogueModalPlugin extends Phaser.Plugins.BasePlugin {
       } else {
         this.finishedCallback()
       }
+    }
+  }
+
+  private onLeft() {
+    if (this.visible) {
+      this.selection = Math.max(0, this.selection - 1)
+      this.setChoiceDisplayText()
+    }
+  }
+
+  private onRight() {
+    if (this.visible) {
+      this.selection = Math.min(this.selection + 1, this.options.dialogSpeed - 1)
+      this.setChoiceDisplayText()
     }
   }
 

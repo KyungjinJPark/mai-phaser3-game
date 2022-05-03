@@ -7,12 +7,16 @@ export interface Interactable extends PositionHaver{
 
 export type interactionCommand = {
   type: 'dialogue' | 'animation' | 'transition' | 'move' | 'function',
-  dialogue?: string[],
+  dialogue?: {
+    type: 'text' | 'choice',
+    text?: string[],
+    choice?: string[],
+  },
   animation?: string,
   transition?: string,
   move?: MovementCommands,
   function?: () => void
-} // TODO: is there a way to enforce the requirement?
+} // TODO: is there a way to enforce whatever data is required via TS?
 
 export interface Interactee {
   interact: () => void

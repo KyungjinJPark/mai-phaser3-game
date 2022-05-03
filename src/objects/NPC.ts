@@ -30,7 +30,7 @@ export class NPC implements PositionHaver, Movable, Interactable {
         const cmd = interactionCommands[step]
         switch (cmd.type) {
           case 'dialogue':
-            await dm.startDialogue(cmd.dialogue)
+            const response = await dm.startDialogue(cmd.dialogue)
             doInteractionStep(step + 1)
             break
           case 'animation':
