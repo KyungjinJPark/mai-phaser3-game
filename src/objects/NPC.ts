@@ -10,7 +10,6 @@ export class NPC implements PositionHaver, Movable, Interactable {
   public beer: Beer
   public mover: GridMover
   public interactee: Interactee
-  private interactVars: { [key: string]: number }
   private spriteKey: string 
   
   constructor(x: number, y: number, spriteKey: string, interactionCommands?: interactionCommand[], private movementCommands?: MovementCommands) {
@@ -23,54 +22,7 @@ export class NPC implements PositionHaver, Movable, Interactable {
     this.mover = new GridMover(this, this.spriteKey)
     this.mover.setMovementCommands(this.movementCommands)
     
-    // Implement these interaction Commands and Movement Commands
-    const dm = DialogueManager.getInstance()
-
-    const doInteractionStep = async (step: number) => {
-      if (step < interactionCommands.length) {
-        const cmd = interactionCommands[step]
-        if (cmd.condition !== undefined && this.interactVars[cmd.condition.var] !== cmd.condition.value) {
-          return // skip this step
-        }
-        switch (cmd.type) {
-          case 'dialogue':
-            const response = await dm.startDialogue(cmd.dialogue)
-            if (response !== undefined) {
-              this.interactVars[cmd.dialogue.var] = response
-            }
-            doInteractionStep(step + 1)
-            break
-          case 'animation':
-            this.sprite.anims.play(cmd.animation)
-            this.sprite.on('animationcomplete', () => {
-              this.sprite.removeListener('animationcomplete')
-              doInteractionStep(step + 1)
-            })
-            break
-          case 'transition':
-            thisScene.scene.switch(cmd.transition)
-            doInteractionStep(step + 1)
-            break
-          case 'move':
-            this.mover.setMovementCommands(cmd.move)
-            doInteractionStep(step + 1)
-            break
-          case 'function':
-            cmd.function()
-            doInteractionStep(step + 1)
-            break
-          default:
-            break
-        }
-      }
-    }
-
-    this.interactee = {
-      interact: () => {
-        doInteractionStep(0)
-      }
-    }
-    this.interactVars = {}
+    this.interactee = new Interactee(this, interactionCommands)
   }
 
   update(delta: number) {

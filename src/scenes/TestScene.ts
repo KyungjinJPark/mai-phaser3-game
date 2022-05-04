@@ -9,14 +9,12 @@ import { ObjectManager } from "../managers/ObjectManager"
 // types
 import { Direction } from "../types/Direction"
 // objects
-import { Interactable } from "../objects/abilities/Interactable"
+import { Interactable, Interactee } from "../objects/abilities/Interactable"
 import { Party } from "../objects/Party"
 import { Player } from '../objects/Player'
 import { Partier } from "../objects/Partier"
 import { NPC } from "../objects/NPC"
-import { Sign } from "../objects/Sign"
-import { Door } from "../objects/Door"
-import { Photo } from "../objects/Photo"
+import { InteractableObj } from "../objects/InteractableObj"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene'
@@ -87,15 +85,28 @@ export class TestScene extends Phaser.Scene {
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     
     const interactables: Interactable[] = [
-      new Sign(31, 0, 'boja sitkny'),
-      new Sign(5, 1, 'RIP our dog\nHEE HEE HOO HOO'),
-      new Door(9, 7, 'TestScene2'),
-      new Sign(10, 7, 'our house'),
+      new InteractableObj(31, 0, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['boja sitkny']}}]),
+      new InteractableObj(5, 1, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['RIP our dog\nHEE HEE HOO HOO']}}]),
+      new InteractableObj(9, 7, '', [{type: 'transition', transition: 'TestScene2'}]),
+      new InteractableObj(10, 7, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['our house']}}]),
     ]
 
     const sf = this.cache.json.get('saveFile')
     if (sf.TestScene_hasPhoto) {
-      interactables.push(new Photo(3, 1))
+      interactables.push(new InteractableObj(3, 1, 'photo', [
+        {type: 'function', function: function() { //TODO: I THINK making this a NON-arrow function makes `this` refer to the caller?
+          // destroy self and beer
+          const dis = this as Interactee
+          dis.parent.sprite.destroy()
+          dis.parent.beer.destroy() // makes an assumption that all things with positions will be registered with the ObjectManager
+          // change save file json
+          const currScene = CurrentSceneManager.getInstance().getCurrentScene()
+          const sf = currScene.cache.json.get('saveFile')
+          sf.TestScene_hasPhoto = false
+          sf.inventory.push('photo')
+          currScene.cache.json.add('saveFile', sf)
+        }},
+      ]))
     }
 
     this.NPCs = [

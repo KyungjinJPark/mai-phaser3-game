@@ -12,10 +12,9 @@ import { Direction } from "../types/Direction"
 import { Interactable } from "../objects/abilities/Interactable"
 import { Player } from '../objects/Player'
 import { NPC } from "../objects/NPC"
-import { Sign } from "../objects/Sign"
 import { Partier } from "../objects/Partier"
-import { Door } from "../objects/Door"
 import { Party } from "../objects/Party"
+import { InteractableObj } from "../objects/InteractableObj"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene2'
@@ -62,7 +61,7 @@ export class TestScene2 extends Phaser.Scene {
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     
     const interactables: Interactable[] = [
-      new Door(18, 6, 'TestScene'),
+      new InteractableObj(9, 7, '', [{type: 'transition', transition: 'TestScene2'}]),
     ]
 
     this.NPCs = [
@@ -96,5 +95,4 @@ export class TestScene2 extends Phaser.Scene {
     this.NPCs.forEach((npc) => {
       npc.update(delta)
     })
-  }
-}
+  }}
