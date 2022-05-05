@@ -1,52 +1,60 @@
 import { CurrentSceneManager } from "../../managers/CurrentSceneManager"
 import { DialogueManager } from "../../managers/DialogueManager"
-import { GridMover, MovementCommands } from "./Movable"
-import { PositionHaver } from "./PositionHaver"
+import { Positionable } from "./Positionable"
+import { MovementCommands } from "./Movable"
+import { BaseObject } from "../BaseObject"
 
-export interface Interactable extends PositionHaver{
-  interactee: Interactee
+export interface Interactable extends BaseObject, Positionable {
+  interactAbility: InteractAbility
 }
 
-export type interactionCommand = {
-  type: 'dialogue' | 'animation' | 'transition' | 'move' | 'function',
-  condition?: {
-    var: string,
-    value: number,
-  },
-  dialogue?: {
+type dialogueCmd = {
+  type: 'dialogue',
+  dialogue: {
     type: 'text' | 'choice',
     text?: string[],
     choice?: string[],
     var?: string,
-  },
-  animation?: string,
-  transition?: string,
-  move?: MovementCommands,
-  function?: () => void
-} // TODO: is there a way to enforce whatever data is required via TS?
-
-export class Interactee {
-  public parent: Interactable
-  private parentSprite: Phaser.GameObjects.Sprite
-  private parentMover: GridMover
-  private interactionCommands: interactionCommand[]
-  private interactVars: { [key: string]: number }
-
-  public constructor(parent: Interactable, interactionCommands: interactionCommand[]) {
-    this.parent = parent
-    this.parentSprite = parent.sprite
-    this.parentMover = (parent as any).mover
-    this.interactionCommands = interactionCommands
-    this.interactVars = {}
   }
+}
+type moveCmd = {
+  type: 'move',
+  move: MovementCommands,
+}
+type animationCmd = {
+  type: 'animation',
+  animation: string,
+}
+type transitionCmd = {
+  type: 'transition',
+  transition: string,
+}
+type functionCmd = {
+  type: 'function',
+  function: () => void
+}
+export type InteractionCommand = (dialogueCmd | moveCmd | animationCmd | transitionCmd | functionCmd) & {
+  condition?: {
+    var: string,
+    value: number,
+  },
+}
+
+export class InteractAbility {
+  private interactVars: { [key: string]: number } = {}
+
+  public constructor(
+    private parent: BaseObject,
+    private interactCmds: InteractionCommand[]
+  ) {}
     
   public interact() {
     this.doInteractionStep(0)
   }
 
   private doInteractionStep = async (step: number) => {
-    if (step < this.interactionCommands.length) {
-      const cmd = this.interactionCommands[step]
+    if (step < this.interactCmds.length) {
+      const cmd = this.interactCmds[step]
       if (cmd.condition !== undefined && this.interactVars[cmd.condition.var] !== cmd.condition.value) {
         return // skip this step
       }
@@ -59,9 +67,9 @@ export class Interactee {
           this.doInteractionStep(step + 1)
           break
         case 'animation':
-          this.parentSprite.anims.play(cmd.animation)
-          this.parentSprite.on('animationcomplete', () => {
-            this.parentSprite.removeListener('animationcomplete')
+          this.parent.sprite.anims.play(cmd.animation) // TODO: assumes sprite exists
+          this.parent.gameObject.on('animationcomplete', () => {
+            this.parent.gameObject.removeListener('animationcomplete')
             this.doInteractionStep(step + 1)
           })
           break
@@ -71,11 +79,11 @@ export class Interactee {
           this.doInteractionStep(step + 1) // TODO: should we continue the interaction even when the scene changes?
           break
         case 'move':
-          this.parentMover.setMovementCommands(cmd.move)
+          this.parent.moveAbility.setMovementCommands(cmd.move) // TODO: assumes parent is Movable
           this.doInteractionStep(step + 1)
           break
         case 'function':
-          cmd.function.bind(this)() // this gives the SCENE access to `public parent`, but should it have this access?
+          cmd.function.bind(this.parent)() // this gives the scene access to parent
           this.doInteractionStep(step + 1)
           break
         default:

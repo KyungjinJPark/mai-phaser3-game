@@ -2,19 +2,17 @@
 import { Settings } from "../settings/Settings"
 // managers
 import { InputManager } from "../managers/InputManager"
-import { DialogueManager } from "../managers/DialogueManager"
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
-// systems
 import { ObjectManager } from "../managers/ObjectManager"
 // types
 import { Direction } from "../types/Direction"
 // objects
-import { Interactable, Interactee } from "../objects/abilities/Interactable"
 import { Party } from "../objects/Party"
 import { Player } from '../objects/Player'
 import { Partier } from "../objects/Partier"
 import { NPC } from "../objects/NPC"
-import { InteractableObj } from "../objects/InteractableObj"
+import { SimpleInteractable } from "../objects/SimpleInteractable"
+import { BaseObject } from "../objects/BaseObject"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene'
@@ -34,6 +32,7 @@ export class TestScene extends Phaser.Scene {
     // Initialize managers
     CurrentSceneManager.getInstance().setCurrentScene(this)
     this.inputManager = new InputManager(this.input)
+    this.objectManager = new ObjectManager()
 
     // make map
     let map = this.make.tilemap({ key: 'green_map_0' })
@@ -43,13 +42,14 @@ export class TestScene extends Phaser.Scene {
       layer.setDepth(i*10)
       layer.scale = Settings.zoom
     }
+    this.objectManager.setMap(map)
 
     // create party
-    const player = new Player(3, 3, 'reaper')
-    const partiers = [new Partier(3, 3, 'reaper'), new Partier(3, 3, 'reaper')]
+    const player = new Player(this, this.objectManager, 3, 3, 'reaper')
+    const partiers = [new Partier(this, this.objectManager, 3, 3, 'reaper'), new Partier(this, this.objectManager, 3, 3, 'reaper')]
     this.party = new Party(player, partiers)
-    partiers[0].sprite.setDepth(24.9) // TODO: stopgap bc no depth sorting
-    partiers[1].sprite.setDepth(24.8)
+    partiers[0].gameObject.setDepth(24.9) // TODO: stopgap bc no depth sorting
+    partiers[1].gameObject.setDepth(24.8)
 
     this.inputManager.setParty(this.party)
 
@@ -76,46 +76,44 @@ export class TestScene extends Phaser.Scene {
     this.createAnim('npc', Direction.DOWN, 54 + 0, 56 + 0)
     // ========================================================
 
-
     // create & set up camera
     const mapWidth = map.widthInPixels * Settings.zoom
     const mapHeight = map.heightInPixels * Settings.zoom
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
-    this.cameras.main.startFollow(this.party.player.sprite) // TODO: won't need this
+    this.cameras.main.startFollow(this.party.player.gameObject) // TODO: won't need this
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
-    
-    const interactables: Interactable[] = [
-      new InteractableObj(31, 0, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['boja sitkny']}}]),
-      new InteractableObj(5, 1, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['RIP our dog\nHEE HEE HOO HOO']}}]),
-      new InteractableObj(9, 7, '', [{type: 'transition', transition: 'TestScene2'}]),
-      new InteractableObj(10, 7, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['our house']}}]),
+
+    const interactables: SimpleInteractable[] = [
+      new SimpleInteractable(this, this.objectManager, 31, 0, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['boja sitkny']}}]),
+      new SimpleInteractable(this, this.objectManager, 5, 1, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['RIP our dog\nHEE HEE HOO HOO']}}]),
+      new SimpleInteractable(this, this.objectManager, 9, 7, '', [{type: 'transition', transition: 'TestScene2'}]),
+      new SimpleInteractable(this, this.objectManager, 10, 7, '', [{type: 'dialogue', dialogue: {type: 'text', text: ['our house']}}]),
     ]
 
     const sf = this.cache.json.get('saveFile')
     if (sf.TestScene_hasPhoto) {
-      interactables.push(new InteractableObj(3, 1, 'photo', [
+      interactables.push(new SimpleInteractable(this, this.objectManager, 3, 1, 'photo', [
         {type: 'function', function: function() { //TODO: I THINK making this a NON-arrow function makes `this` refer to the caller?
-          // destroy self and beer
-          const dis = this as Interactee
-          dis.parent.sprite.destroy()
-          dis.parent.beer.destroy() // makes an assumption that all things with positions will be registered with the ObjectManager
           // change save file json
           const currScene = CurrentSceneManager.getInstance().getCurrentScene()
           const sf = currScene.cache.json.get('saveFile')
           sf.TestScene_hasPhoto = false
           sf.inventory.push('photo')
           currScene.cache.json.add('saveFile', sf)
+          // destroy self
+          const dis = this as BaseObject
+          dis.destroy()
         }},
       ]))
     }
 
     this.NPCs = [
-      new NPC(5, 4, 'npc', [
+      new NPC(this, this.objectManager, 5, 4, 'npc', [
         {type: 'dialogue', dialogue: { type: 'text', text: ['2 fast 2 quick']}},
         {type: 'animation', animation: 'npc_spin'}, // TODO: 🐞
-        {type: 'move', move: {loop: false, instructions: ['l','u','r','d']}},
+        {type: 'move', move: {loop: false, instructions: ['l','u','r','d']}}, // TODO: 🐞
       ], {loop: true, instructions: ['l','u','u','r','r','d','d','l']}),
-      new NPC(1, 5, 'npc', [
+      new NPC(this, this.objectManager, 1, 5, 'npc', [
         {type: 'dialogue', dialogue: { type: 'text', text: ['Why am I alive']}},
         {type: 'animation', animation: 'npc_spin'},
         {type: 'function', function: () => {
@@ -132,20 +130,13 @@ export class TestScene extends Phaser.Scene {
           this.NPCs[2].sprite.play('npc_spin')
         }},
       ]),
-      new NPC(12, 8, 'npc', [
+      new NPC(this, this.objectManager, 12, 8, 'npc', [
         {type: 'dialogue', dialogue: { type: 'text', text: ['This is a test', 'for multiple slides', 'of dialogue']}},
         {type: 'dialogue', dialogue: { type: 'text', text: ['Do you think', 'that this dialogue', 'feature is working?']}},
         {type: 'dialogue', dialogue: { type: 'choice', choice: ['yes', 'no', '*pig noises*'], var: 'sel_0'}},
         {type: 'dialogue', condition: { var: 'sel_0', value: 0 }, dialogue: { type: 'text', text: ['Great!']}},
       ]),
     ]
-
-    // init Grid logic
-    this.objectManager = new ObjectManager(
-      map,
-      [].concat(interactables, this.NPCs),
-      [].concat(this.party.player, this.party.partiers, this.NPCs)
-    )
   }
 
   createAnim(spriteKey: string, direction: Direction, startFrames: number, endFrame: number) {

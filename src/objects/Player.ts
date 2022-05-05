@@ -1,40 +1,19 @@
 import { ObjectManager } from "../managers/ObjectManager"
-import { Settings } from "../settings/Settings"
-import { Beer, PositionHaver } from "./abilities/PositionHaver"
-import { Movable, GridMover } from "./abilities/Movable"
-import { CurrentSceneManager } from "../managers/CurrentSceneManager"
+import { Collidability } from "../types/Collidability"
+import { BaseObject } from "./BaseObject"
 
-export class Player implements PositionHaver, Movable {
-  public sprite: Phaser.GameObjects.Sprite
-  public beer: Beer
-  public mover: GridMover
-  private spriteKey: string
-  private objectManager: ObjectManager
-
-  constructor(x: number, y: number, spriteKey: string) {
-    this.spriteKey = spriteKey
-    this.sprite = CurrentSceneManager.getInstance().getCurrentScene().add.sprite(0, 0, spriteKey, 1)
-    this.sprite.setDepth(25)
-    this.sprite.scale = Settings.zoom
-    this.beer = new Beer(this, x, y)
-    this.mover = new GridMover(this, this.spriteKey, true)
+export class Player extends BaseObject {
+  public constructor(scene: Phaser.Scene, objManager: ObjectManager, x: number, y: number, imageKey: string) {
+    super(scene, objManager, true, imageKey, 1, { tileX: x, tileY: y, collidability:Collidability.YES }, undefined, { isPlayer: true, moveCmds: undefined })
   }
 
-  update(delta: number) {
-    this.mover.update(delta)
-  }
-
-  tryInteract() {
-    if (!this.mover.isMoving()) {
-      const interactSpot = this.mover.tilePosInDir(this.mover.getFacingDirection())
-      const interactable = this.beer.getObjManager().getInteractableAt(interactSpot)
+  public tryInteract() {
+    if (!this.moveAbility.isMoving()) {
+      const interactSpot = this.moveAbility.tilePosInDir(this.moveAbility.getFacingDirection())
+      const interactable = this.objManager.getInteractableAt(interactSpot)
       if (interactable !== undefined) {
-        interactable.interactee.interact()
+        interactable.interactAbility.interact()
       }
     }
-  }
-
-  getSprite() { // TODO: remove this
-    return this.sprite
   }
 }

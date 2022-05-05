@@ -2,19 +2,18 @@
 import { Settings } from "../settings/Settings"
 // managers
 import { InputManager } from "../managers/InputManager"
-import { DialogueManager } from "../managers/DialogueManager"
 import { CurrentSceneManager } from "../managers/CurrentSceneManager"
-// systems
 import { ObjectManager } from "../managers/ObjectManager"
 // types
 import { Direction } from "../types/Direction"
-// objects
+// abilities
 import { Interactable } from "../objects/abilities/Interactable"
+// objects
 import { Player } from '../objects/Player'
 import { NPC } from "../objects/NPC"
 import { Partier } from "../objects/Partier"
 import { Party } from "../objects/Party"
-import { InteractableObj } from "../objects/InteractableObj"
+import { SimpleInteractable } from "../objects/SimpleInteractable"
 
 const testSceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   key: 'TestScene2'
@@ -34,6 +33,7 @@ export class TestScene2 extends Phaser.Scene {
     // Initialize managers
     CurrentSceneManager.getInstance().setCurrentScene(this)
     this.inputManager = new InputManager(this.input)
+    this.objectManager = new ObjectManager()
 
     // make map
     let map = this.make.tilemap({ key: 'green_map_1' })
@@ -43,13 +43,14 @@ export class TestScene2 extends Phaser.Scene {
       layer.setDepth(i*10)
       layer.scale = Settings.zoom
     }
+    this.objectManager.setMap(map)
 
     // create party
-    const player = new Player(3, 3, 'reaper')
-    const partiers = [new Partier(3, 3, 'reaper'), new Partier(3, 3, 'reaper')]
+    const player = new Player(this, this.objectManager, 3, 3, 'reaper')
+    const partiers = [new Partier(this, this.objectManager, 3, 3, 'reaper'), new Partier(this, this.objectManager, 3, 3, 'reaper')]
     this.party = new Party(player, partiers)
-    partiers[0].sprite.setDepth(24.9) // TODO: stopgap bc no depth sorting
-    partiers[1].sprite.setDepth(24.8)
+    partiers[0].gameObject.setDepth(24.9) // TODO: stopgap bc no depth sorting
+    partiers[1].gameObject.setDepth(24.8)
 
     this.inputManager.setParty(this.party)
 
@@ -57,23 +58,16 @@ export class TestScene2 extends Phaser.Scene {
     const mapWidth = map.widthInPixels * Settings.zoom
     const mapHeight = map.heightInPixels * Settings.zoom
     this.cameras.main.setBounds(0, 0, mapWidth, mapHeight)
-    this.cameras.main.startFollow(this.party.player.getSprite())
+    this.cameras.main.startFollow(this.party.player.sprite)
     this.cameras.main.roundPixels = true // it do bleed.. only sometimes
     
     const interactables: Interactable[] = [
-      new InteractableObj(9, 7, '', [{type: 'transition', transition: 'TestScene2'}]),
+      new SimpleInteractable(this, this.objectManager, 9, 7, '', [{type: 'transition', transition: 'TestScene2'}]),
     ]
 
     this.NPCs = [
-      // new NPC(7, 10, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}], {loop: true, instructions: ['l','u','u','r','r','d','d','l']}),
+      // new NPC(this, this.objectManager, 7, 10, 'npc', [{type: 'dialogue', dialogue: '2 fast 2 quick'}], {loop: true, instructions: ['l','u','u','r','r','d','d','l']}),
     ]
-
-    // init Grid logic
-    this.objectManager = new ObjectManager(
-      map,
-      [].concat(interactables, this.NPCs),
-      [].concat(this.party.player, this.party.partiers, this.NPCs)
-    )
   }
 
   createAnim(spriteKey: string, direction: Direction, startFrames: number, endFrame: number) {

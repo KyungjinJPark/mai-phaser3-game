@@ -4,8 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- GameObject Class
-  - Try some sort of mixin strat again
 - Depth sorting
 - Easy scene creation
 - In-game cutscenes
@@ -93,6 +91,11 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
   - can respond
   - can offer different responses
 - Door, Sign, Photo -> InteractableObj
+- BaseObject Class
+  - ❌ Try some sort of mixin strat again
+    - *did a do all approach*
+- ObjectManager registers objects based on non-null abilities
+- Other refactors 🤭
 
 ---
 

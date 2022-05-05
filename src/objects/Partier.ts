@@ -1,26 +1,9 @@
 import { ObjectManager } from "../managers/ObjectManager"
-import { Settings } from "../settings/Settings"
-import { Beer, PositionHaver } from "./abilities/PositionHaver"
-import { Movable, GridMover } from "./abilities/Movable"
-import { CurrentSceneManager } from "../managers/CurrentSceneManager"
-import { Collidable } from "../types/Collidable"
+import { Collidability } from "../types/Collidability"
+import { BaseObject } from "./BaseObject"
 
-export class Partier implements PositionHaver, Movable {
-  public sprite: Phaser.GameObjects.Sprite
-  public beer: Beer
-  public mover: GridMover
-  private spriteKey: string
-
-  constructor(x: number, y: number, spriteKey: string) {
-    this.spriteKey = spriteKey
-    this.sprite = CurrentSceneManager.getInstance().getCurrentScene().add.sprite(0, 0, spriteKey, 1)
-    this.sprite.setDepth(25)
-    this.sprite.scale = Settings.zoom
-    this.beer = new Beer(this, x, y, Collidable.TO_NON_PLAYERS)
-    this.mover = new GridMover(this, this.spriteKey)
-  }
-
-  update(delta: number) {
-    this.mover.update(delta)
+export class Partier extends BaseObject {
+  public constructor(scene: Phaser.Scene, objManager: ObjectManager, x: number, y: number, imageKey: string) {
+    super(scene, objManager, true, imageKey, 1, { tileX: x, tileY: y, collidability: Collidability.TO_NON_PLAYERS }, undefined, { isPlayer: false, moveCmds: undefined })
   }
 }

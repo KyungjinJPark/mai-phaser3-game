@@ -1,62 +1,83 @@
-import { Movable } from "../objects/abilities/Movable"
+import { Collidability } from "../types/Collidability"
+import { Positionable } from "../objects/abilities/Positionable"
 import { Interactable } from "../objects/abilities/Interactable"
-import { Collidable } from "../types/Collidable"
-import { Beer, PositionHaver } from "../objects/abilities/PositionHaver"
+import { Movable } from "../objects/abilities/Movable"
+import { BaseObject } from "../objects/BaseObject"
 
-export class ObjectManager { // world state manager for physics system
-  constructor(
-    private map: Phaser.Tilemaps.Tilemap,
-    private interactables: Interactable[],
-    private movables: Movable[]
-  ) {
-    const all: PositionHaver[] = [].concat(this.interactables, this.movables)
-    all.forEach(obj => {
-      obj.beer.assignObjManager(this)
-    })
+/**
+ * An `ObjectManager` knows of all objects in its scene. It knows about the
+ * collidable map tiles and objects. It also keeps track of interactable
+ * objects to pass to any interactor (likely the player).
+ */
+export class ObjectManager {
+  private map: Phaser.Tilemaps.Tilemap
+  // private objects: BaseObject[] = []
+  private positionables: BaseObject[] = []
+  private interactables: Interactable[] = []
+
+  public registerObj(obj: BaseObject) {
+    // this.objects.push(obj)
+    if (obj.positionAbility) {
+      this.registerPositionable(obj)
+    }
+    if (obj.interactAbility) {
+      this.registerInteractable(obj)
+    }
   }
 
-  remove(beer: Beer) {
-    const ii = this.interactables.findIndex(obj => obj.beer === beer) // assumes unique beers for diffferent objects
+  public remove(remObj: BaseObject) {
+    const ii = this.interactables.findIndex(obj => obj === remObj) // assumes unique objects for diffferent objects
     if (ii != -1) {
       this.interactables.splice(ii, 1)
     }
-    const mi = this.movables.findIndex(obj => obj.beer === beer)
+    const mi = this.positionables.findIndex(obj => obj === remObj)
     if (mi != -1) {
-      this.movables.splice(mi, 1)
+      this.positionables.splice(mi, 1)
     }
+  }
+  
+  // Map
+  public setMap(map: Phaser.Tilemaps.Tilemap) {
+    this.map = map
+  }
+
+  // Positionables
+  private registerPositionable(obj: BaseObject) {
+    this.positionables.push(obj)
+  }
+
+  // Interactables
+  private registerInteractable(interactable: Interactable) {
+    this.interactables.push(interactable)
+  }
+
+  public getInteractableAt(tilePos: Phaser.Math.Vector2): Interactable {
+    for (const interactable of this.interactables) {
+      if (interactable.positionAbility.tilePos.equals(tilePos)) {
+        return interactable
+      }
+    }
+    return undefined
   }
 
   // Movables
-  // registerMovables(movables: Movable[]) {
-  //   this.movables = movables
-  //   // initialize movalbles with a Grid Physics system
-  //   this.movables.forEach(movable => {
-  //     movable.initMover(this)
-  //   })
-  //   // // when registering additional
-  //   // for (const param in interactables) {
-  //   //   this.interactables[param] = interactables[param]
-  //   // }
-  // }
-
-  getCollisionTypesAt(tilePos: Phaser.Math.Vector2): Collidable[] {
-    let answer = false
-    // does map collision tile here?
-    if (!this.mapHasTileAt(tilePos)) return [Collidable.YES]
-    answer = this.map.layers.some((layer) => {
+  public getCollidabilityAt(tilePos: Phaser.Math.Vector2): Collidability[] {
+    // does map collision tile here? // TODO: what did this code do again?
+    if (!this.mapHasTileAt(tilePos)) return [Collidability.YES]
+    const answer = this.map.layers.some((layer) => {
       const tile = this.map.getTileAt(tilePos.x, tilePos.y, false, layer.name)
       return (tile && tile.properties.collides)
     })
-    if (answer) return [Collidable.YES]
+    if (answer) return [Collidability.YES]
+
     // is there a registered collidable here?
     const collideTypes = new Set()
-    const registereds: PositionHaver[] = [].concat(this.interactables, this.movables)
-    registereds.forEach(obj => {
-      if (obj.beer.getTilePosition().equals(tilePos)) {
-        collideTypes.add(obj.beer.getCollidableType())
+    this.positionables.forEach(obj => {
+      if (obj.positionAbility.tilePos.equals(tilePos)) {
+        collideTypes.add(obj.positionAbility.collidability)
       }
     })
-    const types: Collidable[] = Array.from(collideTypes) as any
+    const types: Collidability[] = Array.from(collideTypes) as any
     return types
   }
 
@@ -64,23 +85,5 @@ export class ObjectManager { // world state manager for physics system
     return this.map.layers.some((layer) => {
       return this.map.hasTileAt(tilePos.x, tilePos.y, layer.name)
     })
-  }
-  
-  // Interactables
-  // registerInteractables(interactables: { [key: string]: Interactable }) {
-  //   this.interactables = interactables
-  //   // // when registering additional
-  //   // for (const param in interactables) {
-  //   //   this.interactables[param] = interactables[param]
-  //   // }
-  // }
-
-  getInteractableAt(tilePos: Phaser.Math.Vector2): Interactable {
-    for (const interactable of this.interactables) {
-      if (interactable.beer.getTilePosition().equals(tilePos)) {
-        return interactable
-      }
-    }
-    return undefined
   }
 }

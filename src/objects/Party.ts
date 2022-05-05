@@ -1,17 +1,16 @@
 import { CanMove } from "../types/CanMove";
 import { Direction } from "../types/Direction";
-import { Partier } from "./Partier";
 import { Player } from "./Player";
+import { Partier } from "./Partier";
 
 export class Party {
   private _player: Player
   private _partiers: Partier[]
-  private moveQueue: Direction[]
+  private moveQueue: Direction[] = []
 
-  constructor(player: Player, partiers: Partier[]) {
+  public constructor(player: Player, partiers: Partier[]) {
     this._player = player
     this._partiers = partiers
-    this.moveQueue = []
   }
 
   public get player(): Player {
@@ -30,24 +29,24 @@ export class Party {
   }
 
   public tryMove(moveDir: Direction): boolean {
-    const canMove = this.player.mover.canMove(moveDir)
+    const canMove = this.player.moveAbility.canMove(moveDir)
     if (canMove === CanMove.YES) {
       this.moveParty(moveDir) 
       return true
     } else if (canMove === CanMove.COLLIDES) {
-      this.player.mover.tryMove(moveDir)
+      this.player.moveAbility.tryMove(moveDir)
       return true
-    } // TOmaybeDO: should it return true if frozen?
+    }
     // return false only when the move did nothing
     return false
   }
 
   private moveParty(moveDir: Direction) {
     // move player
-    this.player.mover.move(moveDir)
+    this.player.moveAbility.move(moveDir)
     // move partiers
     this.moveQueue.forEach((dir, i) => {
-      this.partiers[i].mover.move(dir)
+      this.partiers[i].moveAbility.move(dir)
     })
     // push new move to queue
     this.moveQueue.splice(0, 0, moveDir)
