@@ -1,23 +1,12 @@
+import { BaseGameScene } from "../scenes/BaseGameScene"
+
 export class CurrentSceneManager {
-  // Singleton code
-  private static instance: CurrentSceneManager
-  public static getInstance(): CurrentSceneManager {
-    if (!CurrentSceneManager.instance) {
-      CurrentSceneManager.instance = new CurrentSceneManager()
-    }
-    return CurrentSceneManager.instance
+  private static _scene: BaseGameScene
+  
+  public static get scene(): BaseGameScene {
+    return CurrentSceneManager._scene
   }
-
-  private currentScene: Phaser.Scene
-
-  private constructor() {
-    CurrentSceneManager.instance = this
-  }
-
-  getCurrentScene(): Phaser.Scene {
-    return this.currentScene
-  }
-  setCurrentScene(scene: Phaser.Scene) {
-    this.currentScene = scene
+  public static set scene(scene: BaseGameScene) {
+    CurrentSceneManager._scene = scene
   }
 }

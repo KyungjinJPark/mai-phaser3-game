@@ -29,7 +29,7 @@ export class DialogueManager {
 
   public async startDialogue(dialogue) {
     // stop player movement
-    const currScene = CurrentSceneManager.getInstance().getCurrentScene() as (TestScene | TestScene2) // TODO: ASSUMES SCENE TYPE FOR NOW
+    const currScene = CurrentSceneManager.scene
     currScene.inputManager.disableControls()
     // show dialogue
     const ret = await this.dialoguePlugin.startDialogue(dialogue)

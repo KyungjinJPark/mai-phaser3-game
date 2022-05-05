@@ -30,14 +30,14 @@ export class HUDScene extends Phaser.Scene {
     // Pause game
     const escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
     escKey.on('down', () => {
-      const gameScene = CurrentSceneManager.getInstance().getCurrentScene().scene
+      const scenePlugin = CurrentSceneManager.scene.scene
       if (!this.gamePaused) {
         // new Phaser.Events.EventEmitter()
         this.showPauseUI()
-        gameScene.pause()
+        scenePlugin.pause()
       } else {
         this.hidePauseUI()
-        gameScene.resume()
+        scenePlugin.resume()
       }
       this.gamePaused = !this.gamePaused
     })

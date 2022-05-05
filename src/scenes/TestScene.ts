@@ -109,7 +109,7 @@ export class TestScene extends BaseGameScene {
       this.objects.push(new SimpleInteractable(this, this.objectManager, 3, 1, 'photo', [
         {type: 'function', function: function() { //TODO: I THINK making this a NON-arrow function makes `this` refer to the caller?
           // change save file json
-          const currScene = CurrentSceneManager.getInstance().getCurrentScene()
+          const currScene = CurrentSceneManager.scene 
           const sf = currScene.cache.json.get('saveFile')
           sf.TestScene_hasPhoto = false
           sf.inventory.push('photo')

@@ -74,7 +74,7 @@ export class InteractAbility {
           })
           break
         case 'transition':
-          const thisScene = CurrentSceneManager.getInstance().getCurrentScene()
+          const thisScene = CurrentSceneManager.scene
           thisScene.scene.switch(cmd.transition)
           this.doInteractionStep(step + 1) // TODO: should we continue the interaction even when the scene changes?
           break

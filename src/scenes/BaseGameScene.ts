@@ -23,7 +23,7 @@ export abstract class BaseGameScene extends Phaser.Scene {
 
   public create() {
     // Initialize managers
-    CurrentSceneManager.getInstance().setCurrentScene(this) // `this` refers to the child. Not sure if this is just for abstract classes or all parent classes.
+    CurrentSceneManager.scene = this // `this` refers to the child. Not sure if this is just for abstract classes or all parent classes.
     this.inputManager = new InputManager(this.input)
     this.objectManager = new ObjectManager()
     this.objects = []
