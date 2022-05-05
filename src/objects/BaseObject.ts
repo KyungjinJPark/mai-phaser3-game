@@ -58,7 +58,7 @@ export class BaseObject implements Positionable, Interactable, Movable {
   }
 
   public update(delta: number) {
-    this.moveAbility.update(delta)
+    this.moveAbility?.update(delta)
   }
 
   public destroy() {
