@@ -40,6 +40,11 @@ export class PositionAbility {
 
   public set tilePos(pos: Phaser.Math.Vector2) {
     this._tilePos = pos.clone()
+
+    // depth sorting
+    // 20 - 29.99 are reserved for non-map objects (for depth sorting)
+    // WARN: this pushes objects into the 30+ z-index if the scene is 1000+ tiles tall
+    this.parent.gameObject.setDepth(20 + (pos.y / 100))
   }
 
   public get collidability(): Collidability {

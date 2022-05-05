@@ -48,9 +48,6 @@ export class TestScene extends Phaser.Scene {
     const player = new Player(this, this.objectManager, 3, 3, 'reaper')
     const partiers = [new Partier(this, this.objectManager, 3, 3, 'reaper'), new Partier(this, this.objectManager, 3, 3, 'reaper')]
     this.party = new Party(player, partiers)
-    partiers[0].gameObject.setDepth(24.9) // TODO: stopgap bc no depth sorting
-    partiers[1].gameObject.setDepth(24.8)
-
     this.inputManager.setParty(this.party)
 
     // ====================== ANIMATIONS ======================

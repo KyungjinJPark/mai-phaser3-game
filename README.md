@@ -4,7 +4,6 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
 
 ## The Todo 📋
 
-- Depth sorting
 - Easy scene creation
 - In-game cutscenes
 - How to manage game animation creation and management
@@ -96,6 +95,7 @@ This is a simple RPG game built mostly from scratch using `Phaser 3`. Not sure w
     - *did a do all approach*
 - ObjectManager registers objects based on non-null abilities
 - Other refactors 🤭
+- Depth sorting
 
 ---
 
