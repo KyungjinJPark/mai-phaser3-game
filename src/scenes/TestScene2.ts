@@ -20,7 +20,7 @@ export class TestScene2 extends BaseGameScene {
     this.setUpCamera()
     
     this.objects.push(
-      new SimpleInteractable(this, this.objectManager, 9, 7, '', [{type: 'transition', transition: 'TestScene2'}]),
+      new SimpleInteractable(this, this.objectManager, 18, 6, '', [{type: 'transition', transition: 'TestScene'}]),
     )
   }
 
